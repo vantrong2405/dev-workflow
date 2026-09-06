@@ -1,14 +1,14 @@
 # Worklog INDEX: [Ticket_ID]
 
 Project slug/home/worklog path are resolved by `bin/lib/resolve-paths.sh` and printed at the start
-of every `/dev-workflow:*` run (`project=… home=… worklog=…`) — do not re-copy them here. Chat
+of every `/ak:*` run (`project=… home=… worklog=…`) — do not re-copy them here. Chat
 locale lives once at `domain-knowledge/INDEX.md` (per workspace, not per ticket); do not duplicate
 it here either.
 
 - **Ticket:** [url]
 - **Feature alias:** [name]
 - **Touches UI?** ☐ Yes ☐ No
-- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change ☐ Refactor   (see `references/ba-integrity.md` §Classify — set at `:spec`, mirrors `01-intent.md`; drives investigation strategy in `:clarify`; Refactor skips `:clarify`/`:confirm` entirely)
+- **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change ☐ Refactor   (see `references/ba-integrity.md` §Classify — set at `:spec`, mirrors `02-spec.md`; drives investigation strategy in `:clarify`; Refactor skips `:clarify`/`:confirm` entirely)
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (see `references/risk.md`)
 - **Pilot:** ☐ yes ☐ no   (if yes, G9 requires row in `pilot/PILOT-*.md`)
 
@@ -54,4 +54,4 @@ Format: `Gate/claim | reason | owner | expiry YYYY-MM-DD | PM note?`
 
 ## Next action
 
-- [ ] `/dev-workflow:…`
+- [ ] `/ak:…`

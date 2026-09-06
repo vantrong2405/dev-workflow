@@ -1,6 +1,6 @@
-<img alt="dev-workflow" src="./assets/logo/logo-light.svg" width="200">
+<img alt="ak" src="./assets/logo/logo-light.svg" width="200">
 
-# dev-workflow
+# ak
 
 [![Version](https://img.shields.io/badge/version-0.4.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -20,28 +20,28 @@ Without a gated process, AI coding often:
 - Marks "done" without evidence
 - Drifts from what was actually confirmed
 
-dev-workflow blocks progress until structural gates **G0–G9** and a required semantic **AUDIT**
+ak blocks progress until structural gates **G0–G9** and a required semantic **AUDIT**
 pass. The checker (`bin/check-gates.sh`) is the source of truth — the AI must not invent a PASS.
 
 ## Install
 
 ```bash
-git clone https://github.com/ninhlee99/dev-workflow.git
-cd dev-workflow
+git clone https://github.com/trongdn2405/ak.git
+cd ak
 bash install.sh          # Claude Code by default — see docs/INSTALL.md for Cursor/Codex/Antigravity
 ```
 
 Then in any project:
 
 ```text
-/dev-workflow TICKET-123 https://tracker/TICKET-123
+/ak TICKET-123 https://tracker/TICKET-123
 ```
 
 Full install/update/uninstall paths per host: [docs/INSTALL.md](./docs/INSTALL.md).
 
 ## Flow
 
-`:start` (also the bare `/dev-workflow` alias) is the single entry point for one ticket — analyze
+`:start` (also the bare `/ak` alias) is the single entry point for one ticket — analyze
 once, ask once, then run to the first real stop. `learning`/`coaching` bootstrap or correct domain
 knowledge independently, outside this pipeline.
 
@@ -71,14 +71,14 @@ diagram and the full stage-by-stage walkthrough.
 
 | Command | Effect |
 |---------|--------|
-| `/dev-workflow:spec` | Testable ACs + Risk tier (P0/P1/P2) |
-| `/dev-workflow:clarify` | Spec/intent vs running behavior; decisions recorded |
-| `/dev-workflow:confirm` | Human sign-off — required before plan/build |
-| `/dev-workflow:plan` / `:build` | TDD plan + implementation + coverage map |
-| `/dev-workflow:review` / `:fix` | Neutral diff review + triage/fix |
-| `/dev-workflow:test` | Real test run + machine evidence (SHA/CI/junit) |
-| `/dev-workflow:ship` | Ship safety checklist (gate G9) |
-| `/dev-workflow:audit` | Semantic coherence check + human sign-off |
+| `/ak:spec` | Testable ACs + Risk tier (P0/P1/P2) |
+| `/ak:clarify` | Spec/intent vs running behavior; decisions recorded |
+| `/ak:confirm` | Human sign-off — required before plan/build |
+| `/ak:plan` / `:build` | TDD plan + implementation + coverage map |
+| `/ak:review` / `:fix` | Neutral diff review + triage/fix |
+| `/ak:test` | Real test run + machine evidence (SHA/CI/junit) |
+| `/ak:ship` | Ship safety checklist (gate G9) |
+| `/ak:audit` | Semantic coherence check + human sign-off |
 
 Full command reference (all 16, arguments, and when each runs standalone):
 [docs/USER-GUIDE.md §4](./docs/USER-GUIDE.md#4-commands-cheat-sheet).

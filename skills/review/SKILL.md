@@ -2,17 +2,17 @@
 name: review
 description: >-
   Neutral code review of the diff for 500/missing/injection/case defects,
-  then fill AC How/By evidence. Use /dev-workflow:fix when P0/P1 stay OPEN.
+  then fill AC How/By evidence. Use /ak:fix when P0/P1 stay OPEN.
 argument-hint: "<Ticket ID> After build — review diff + fill 06-review-qa.md evidence"
 arguments: [ticket_id]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:review
+# /ak:review
 
 Apply `references/skill-quality.md`; independence means re-deriving conclusions from the diff and contracts.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 Verify implementation against requirements **and** review the actual code change (G7).
@@ -55,11 +55,11 @@ Every finding needs `path:line` (or hunk) + concrete fix proposal.
 4. Write findings into `templates/06-review-qa.md` Code review tables (Sev, Class, Location, Evidence, Risk, Fix proposal, Status=`OPEN`).
 5. Fill AC/NEG/PERM/EDGE How/By/Date evidence (+ UI checklist if Touches UI = Yes).
 6. Re-check clarify decisions still hold after impl.
-7. Run `/dev-workflow:check <Ticket> [slug] G7` before any G7 PASS claim.
+7. Run `/ak:check <Ticket> [slug] G7` before any G7 PASS claim.
 
 ## Result rules
 
-- Any P0/P1 finding still `OPEN` → Result **FAIL** → next `/dev-workflow:fix <Ticket>`
+- Any P0/P1 finding still `OPEN` → Result **FAIL** → next `/ak:fix <Ticket>`
   (`check-gates.sh` G7 verifies this by reading Sev/Status columns directly — do not rely on
   self-discipline alone, the checker will catch a P0 left OPEN under a hand-written PASS line)
 - Missing How/By on any AC row, or empty UI checklist when UI=Yes → **FAIL**

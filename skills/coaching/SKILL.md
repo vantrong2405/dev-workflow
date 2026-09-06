@@ -9,11 +9,11 @@ arguments: [topic_or_ticket_id, answer_text]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:coaching
+# /ak:coaching
 
 Apply `references/skill-quality.md`; this stage owns a confirmed knowledge delta and its impact list.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 Use when user corrects or changes business rules, or answers a coaching ticket `:learning` opened.
@@ -41,6 +41,11 @@ tests, config, copy) and present location, old assumption, follow-up, and owner.
 edit active ticket decisions; route them back to `:spec`/`:clarify`.
 
 If knowledge is empty, route to `:learning`.
+
+If this correction changes the project's slug, workspace root, or chat locale (not a business
+fact), refresh the affected repo's `CLAUDE.md` too — same `<!-- ak:managed:start -->`/`:end` block
+`:learning` seeds, update only what's between the markers. Ordinary business/domain corrections
+don't touch it.
 
 ## Diff, don't overwrite
 

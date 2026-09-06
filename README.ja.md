@@ -1,6 +1,6 @@
-<img alt="dev-workflow" src="./assets/logo/logo-light.svg" width="200">
+<img alt="ak" src="./assets/logo/logo-light.svg" width="200">
 
-# dev-workflow
+# ak
 
 [![Version](https://img.shields.io/badge/version-0.4.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -20,29 +20,29 @@ Claude Code、Cursor、Codex、Antigravity向けの**要件ファーストのAI�
 - エビデンスなしに「完了」と表示する
 - 実際にconfirmされた内容から逸脱する
 
-dev-workflowは、構造的ゲート **G0–G9** と必須の意味論的 **AUDIT** がPASSするまで先に進めないよう
+akは、構造的ゲート **G0–G9** と必須の意味論的 **AUDIT** がPASSするまで先に進めないよう
 ブロックする。チェッカー（`bin/check-gates.sh`）が唯一の真実の源であり、AIがPASSを自称することは
 許されない。
 
 ## インストール
 
 ```bash
-git clone https://github.com/ninhlee99/dev-workflow.git
-cd dev-workflow
+git clone https://github.com/trongdn2405/ak.git
+cd ak
 bash install.sh          # デフォルトはClaude Code — Cursor/Codex/Antigravityはdocs/INSTALL.mdを参照
 ```
 
 その後、任意のプロジェクトで:
 
 ```text
-/dev-workflow TICKET-123 https://tracker/TICKET-123
+/ak TICKET-123 https://tracker/TICKET-123
 ```
 
 host別のインストール/更新/アンインストールの完全な手順: [docs/INSTALL.md](./docs/INSTALL.md)。
 
 ## フロー
 
-`:start`（`/dev-workflow` の裸のエイリアスでもある）は1チケットに対する唯一のエントリーポイントだ —
+`:start`（`/ak` の裸のエイリアスでもある）は1チケットに対する唯一のエントリーポイントだ —
 一度だけ分析、一度だけ質問、その後最初の本当の停止点まで実行する。`learning`/`coaching` はこの
 パイプラインの外で独立してドメイン知識を初期構築・修正する。
 
@@ -71,14 +71,14 @@ epic的なリクエストはまず `:decompose` を通り、childチケットに
 
 | コマンド | 効果 |
 |---------|--------|
-| `/dev-workflow:spec` | テスト可能なAC + Risk tier（P0/P1/P2） |
-| `/dev-workflow:clarify` | spec/意図と実際の挙動を照合; 決定事項を記録 |
-| `/dev-workflow:confirm` | 人によるサインオフ — plan/buildの前に必須 |
-| `/dev-workflow:plan` / `:build` | TDDプラン + 実装 + カバレッジマップ |
-| `/dev-workflow:review` / `:fix` | 中立的なdiffレビュー + トリアージ/修正 |
-| `/dev-workflow:test` | 実際のテスト + 機械エビデンス（SHA/CI/junit） |
-| `/dev-workflow:ship` | ship安全性チェックリスト（ゲートG9） |
-| `/dev-workflow:audit` | 意味論的整合性チェック + 人によるサインオフ |
+| `/ak:spec` | テスト可能なAC + Risk tier（P0/P1/P2） |
+| `/ak:clarify` | spec/意図と実際の挙動を照合; 決定事項を記録 |
+| `/ak:confirm` | 人によるサインオフ — plan/buildの前に必須 |
+| `/ak:plan` / `:build` | TDDプラン + 実装 + カバレッジマップ |
+| `/ak:review` / `:fix` | 中立的なdiffレビュー + トリアージ/修正 |
+| `/ak:test` | 実際のテスト + 機械エビデンス（SHA/CI/junit） |
+| `/ak:ship` | ship安全性チェックリスト（ゲートG9） |
+| `/ak:audit` | 意味論的整合性チェック + 人によるサインオフ |
 
 完全なコマンドリファレンス（全16コマンド、引数、各コマンドが単独で動作する条件）:
 [docs/USER-GUIDE.md §4](./docs/USER-GUIDE.md#4-commands-cheat-sheet)。

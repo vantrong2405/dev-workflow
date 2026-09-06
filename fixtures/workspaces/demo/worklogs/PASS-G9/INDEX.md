@@ -12,11 +12,11 @@
 - **Last stop:** test
 - **Waiting on:** ☐ none
 - **G3 user sign-off:** ☑ PASS
-- **Signed off by:** Ninh Lee
+- **Signed off by:** trongdn2405
 - **Signed off at:** 2026-08-11
 
 ```
-CONFIRM G3: PASS-G9 Ninh Lee 2026-08-11
+CONFIRM G3: PASS-G9 trongdn2405 2026-08-11
 ```
 
 ## Waivers

@@ -8,11 +8,11 @@ arguments: [ticket_id]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:fix
+# /ak:fix
 
 Apply `references/skill-quality.md`; every triage decision needs current evidence and an accountable owner.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 Remediate code-review findings without cargo-cult patching.
@@ -69,7 +69,7 @@ will still fail G7, not silently pass.
 
 - `06c-fix-log.md` triage complete for every former OPEN finding
 - Remaining OPEN P0/P1 = 0 (or WAIVE documented)
-- Next: `/dev-workflow:review <Ticket>` to refresh evidence, then `:test`
+- Next: `/ak:review <Ticket>` to refresh evidence, then `:test`
 
 ## 9/10 controls
 

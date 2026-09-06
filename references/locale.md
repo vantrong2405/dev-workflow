@@ -4,7 +4,7 @@ Every stage must **setup and reply in the user's language**.
 
 ## Setup — ask once per workspace, on the first command
 
-The **first `/dev-workflow:*` command run in a workspace** (any command — `:learning`, `:spec`,
+The **first `/ak:*` command run in a workspace** (any command — `:learning`, `:spec`,
 `:start`, whichever the user reaches for first) must ask explicitly, before doing anything else:
 
 ```
@@ -32,7 +32,7 @@ latest message on every turn — that reopens exactly the "guessed wrong" proble
 exists to close. Only fall back to inference when `domain-knowledge/` cannot be resolved at all
 (e.g. a command run outside any workspace context):
 
-1. `DEV_WORKFLOW_LANG` / `LANG` / editor UI locale if known.
+1. `AK_LANG` / `LANG` / editor UI locale if known.
 2. Language of the user's message in this chat.
 3. Default English, and note in the reply that this is a guess pending a real workspace to store
    the answer in.
@@ -57,7 +57,7 @@ kept per-ticket for worklog portability):
 
 When explaining first-time setup (`:learning`, install hints, missing workspace):
 - Speak in user language.
-- Keep paths, env var names, commands in original English form (e.g. `DEV_WORKFLOW_WORKSPACES_ROOT`).
+- Keep paths, env var names, commands in original English form (e.g. `AK_WORKSPACES_ROOT`).
 
 ## Forbid
 

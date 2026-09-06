@@ -9,11 +9,11 @@ arguments: [ticket_id]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:confirm
+# /ak:confirm
 
 Apply `references/skill-quality.md`; this stage records decisions but never manufactures or reinterprets them.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 **Risk=P2 fast path**: G3 is soft for P2 (see `references/risk.md`) — a real human `CONFIRM G3:`

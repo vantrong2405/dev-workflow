@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/resolve-paths.sh"
 
 TICKET=""
-SLUG_HINT="${DEV_WORKFLOW_PROJECT_SLUG:-}"
+SLUG_HINT="${AK_PROJECT_SLUG:-}"
 FORCE=0
 PURGE=0
 
@@ -46,7 +46,7 @@ if [[ -z "${WORKLOG:-}" || ! -d "$WORKLOG" ]]; then
     echo "ERROR: cannot resolve project home" >&2
     exit 1
   }
-  WORKLOG="${DEV_WORKFLOW_PROJECT_HOME}/worklogs/${TICKET}"
+  WORKLOG="${AK_PROJECT_HOME}/worklogs/${TICKET}"
 fi
 
 if [[ ! -d "$WORKLOG" ]]; then
@@ -54,8 +54,8 @@ if [[ ! -d "$WORKLOG" ]]; then
   exit 1
 fi
 
-HOME_P="${DEV_WORKFLOW_PROJECT_HOME:-$(cd "$WORKLOG/../.." && pwd)}"
-SLUG="${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-$(basename "$HOME_P")}"
+HOME_P="${AK_PROJECT_HOME:-$(cd "$WORKLOG/../.." && pwd)}"
+SLUG="${AK_PROJECT_SLUG_RESOLVED:-$(basename "$HOME_P")}"
 
 case "$WORKLOG" in
   */domain-knowledge|*/domain-knowledge/*)
@@ -77,7 +77,7 @@ esac
 if [[ $FORCE -eq 0 ]]; then
   if ! "$SCRIPT_DIR/check-gates.sh" "$TICKET" --project "$SLUG" --min G9 >/dev/null 2>&1; then
     echo "REFUSE: ticket ${TICKET} failed G9 check. Finish :ship or re-run with --force." >&2
-    echo "hint: /dev-workflow:clean ${TICKET} --force" >&2
+    echo "hint: /ak:clean ${TICKET} --force" >&2
     exit 1
   fi
 fi

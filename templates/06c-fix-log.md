@@ -43,4 +43,4 @@ For each OPEN finding from review. Status after triage: `FIX` | `SKIP` | `DEFER`
 ☐ All FIX items done + related tests green  
 ☐ Blocked — list remaining P0/P1  
 
-**Next:** re-check review findings → `/dev-workflow:review` (update Status) → `/dev-workflow:test` when P0/P1 clear.
+**Next:** re-check review findings → `/ak:review` (update Status) → `/ak:test` when P0/P1 clear.

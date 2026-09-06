@@ -6,3 +6,4 @@ arguments: [ticket_id]
 
 Create implementation plan.
 Invoke `skills/plan`.
+Next: `/ak:build`.

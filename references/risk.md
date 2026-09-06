@@ -50,7 +50,7 @@ duplicate-scan already answered the one question that would have made this unsaf
 else depend on this text/logic).
 
 **This no-ask auto-run is a property of `:start`'s step-1 offer, not of Trivial itself.** Calling
-`/dev-workflow:build <Ticket>` (or any other stage) directly on a Trivial-shaped ticket still
+`/ak:build <Ticket>` (or any other stage) directly on a Trivial-shaped ticket still
 self-analyzes per the stage's own fallback (see `references/stage-contract.md`), but does not get
 the "run and report after the fact" treatment — that behavior only exists inside `:start`'s
 step-1 fast-path check.
@@ -61,9 +61,16 @@ Risk is P0/P1, or when the ticket doesn't otherwise qualify above.
 
 | Tier | When | Lane | Rules |
 |---|---|---|---|
-| **P0** | money, authz/permission, PII, legacy data, irreversible migrate | Hard | All G0–G9 + AUDIT. No WAIVE G3/G8. Dual `CONFIRM G3` + `CONFIRM G3-PM`. Machine evidence + **CI-native verify** under `--strict`. **`02b-security.md` required**. |
-| **P1** | normal product behavior change | Hard | All G0–G9 + AUDIT. Machine evidence required. `--strict` required for the final AUDIT check. **Small-P1 exception below softens AUDIT only** — every other G0–G9 requirement stays hard. |
-| **P2** | copy, config, docs, tiny non-behavioral chore | Fast | Required hard: G0, G1, G6, G8, G9. **G2/G3/G4/G5/G7 soft** unless `--strict` (warn, not fail) — a P2 ticket can reach G9 with no human `CONFIRM G3` round-trip, though one is still welcome. Still prefer INDEX WAIVE rows when skipping intentionally. |
+| **P0** | money, authz/permission, PII, legacy data, irreversible migrate | Hard | The only hard-gated tier. All G0–G9 + AUDIT. No WAIVE G3/G8. Dual `CONFIRM G3` + `CONFIRM G3-PM`. Machine evidence + **CI-native verify** under `--strict`. **`02b-security.md` required**. `--strict` never softens P0. |
+| **P1** | normal product behavior change | Fast | Required hard: G0, G1, G6, G8, G9 (real test evidence still required — softening ceremony is not softening proof). **G2/G3/G4/G5/G7 soft** unless `--strict` (warn, not fail) — same lane as P2, so a normal-behavior ticket does not force a mid-flow `CONFIRM G3` round-trip; `:audit` after G9 remains the one human sign-off point. `--strict` makes every gate hard again, same as P0. |
+| **P2** | copy, config, docs, tiny non-behavioral chore | Fast | Same as P1's fast lane above (required hard: G0, G1, G6, G8, G9; G2/G3/G4/G5/G7 soft unless `--strict`). Still prefer INDEX WAIVE rows when skipping intentionally. |
+
+**Why P1 moved to the fast lane:** the old P1=Hard default forced a `CONFIRM G3` stop on every
+normal-behavior ticket, which is ceremony, not safety — the actual safety-critical cases (money,
+authz, PII, migration) are already covered by P0 regardless of how "normal" the diff looks. One
+human checkpoint (`:audit`, after G9, before ship) is enough for P1/P2; P0 keeps the full hard gate
+chain because that's the tier where a skipped human review is a real incident, not friction. Pass
+`--strict` on any ticket to force the old hard behavior back (e.g. before a client-facing merge).
 
 ## How to choose
 
@@ -81,30 +88,17 @@ Ground the call in objective signal before falling back to judgment — check, i
 
 "Unsure" should mean "I checked the above and it's genuinely ambiguous," not "I didn't check."
 Only after checking touched paths and diff shape and still being unable to place it →
-**P1** (fail toward the hard lane, not the fast one).
+**P1** (the accurate label matters for tracking even though P1 and P2 share the same fast lane
+now — fail toward P1 over P2 when ambiguous, never toward inventing a P0-like hard stop that
+isn't warranted).
 
-## Small-P1 audit exception
+## Fast lane (P1 and P2)
 
-A P1 ticket still needs every other G0–G9 requirement (this is not a P1.5 tier — Risk stays P1,
-evidence bar stays full), but AUDIT becomes soft (warn, not fail) when **all** of these hold:
-
-- Single file changed, or changes confined to one existing module with no new file.
-- No new/changed public API contract, route, or schema/migration.
-- No new user-visible state (no new error class, no new consumer, no new permission branch) —
-  same "pure analog" bar `skills/clarify/SKILL.md`'s fast path already uses.
-
-If any of these is false, or it's genuinely ambiguous, run full AUDIT — this exception exists for
-a narrow, obviously-small P1 (e.g. a one-line validation-rule fix in a single existing function),
-not as a general P1 discount. `check-gates.sh --min AUDIT` still runs; it warns instead of failing
-when the exception applies and `--strict` was not passed. `--strict` always makes AUDIT hard again,
-same as it does for G3 on P2.
-
-## Fast lane (P2)
-
-Checker softens G2/G3/G4/G5/G7 when Risk=P2 and not `--strict`.
-Still need AC, tests/machine evidence, and G9. `CONFIRM G3` is soft for P2 — skip the human
-round-trip on a genuinely tiny, non-behavioral change, or still ask for one when you'd rather
-have it on record. `--strict` always makes G3 hard again, regardless of Risk.
+Checker softens G2/G3/G4/G5/G7 when Risk=P1 or P2 and not `--strict`.
+Still need AC, tests/machine evidence, and G9. `CONFIRM G3` is soft for P1/P2 — skip the human
+round-trip on a normal-behavior or tiny change, or still ask for one when you'd rather
+have it on record. `--strict` always makes G3 hard again, regardless of Risk. AUDIT is not in this
+soft list — it stays the one required human checkpoint after G9, for every Risk tier.
 
 ## Stage timeboxes (adoption)
 

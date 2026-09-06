@@ -39,7 +39,8 @@ One row per distinct command in `04-plan.md` and PASS command in `05-impl-log.md
 
 ## Screenshots / recordings
 
-List paths or embed inline for any UI-touching AC. Leave N/A if no UI.
+For any UI-touching AC: capture per `references/ui-evidence.md` (highlight box on the exact
+element, before/after pair for a bug fix) — not a plain unmarked screenshot. Leave N/A if no UI.
 
 | AC / scenario | File / URL | Notes |
 |---|---|---|

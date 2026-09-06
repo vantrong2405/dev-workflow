@@ -1,6 +1,6 @@
-<img alt="dev-workflow" src="./assets/logo/logo-light.svg" width="200">
+<img alt="ak" src="./assets/logo/logo-light.svg" width="200">
 
-# dev-workflow
+# ak
 
 [![Version](https://img.shields.io/badge/version-0.4.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -20,28 +20,28 @@ Không có quy trình gate, AI viết code thường:
 - Đánh dấu "xong" mà không có bằng chứng
 - Trôi khỏi những gì đã thực sự được xác nhận
 
-dev-workflow chặn tiến trình cho tới khi các gate cấu trúc **G0–G9** và **AUDIT** ngữ nghĩa bắt buộc
+ak chặn tiến trình cho tới khi các gate cấu trúc **G0–G9** và **AUDIT** ngữ nghĩa bắt buộc
 đều pass. Bộ kiểm tra (`bin/check-gates.sh`) là nguồn sự thật duy nhất — AI không được tự bịa ra PASS.
 
 ## Cài đặt
 
 ```bash
-git clone https://github.com/ninhlee99/dev-workflow.git
-cd dev-workflow
+git clone https://github.com/trongdn2405/ak.git
+cd ak
 bash install.sh          # mặc định Claude Code — xem docs/INSTALL.md cho Cursor/Codex/Antigravity
 ```
 
 Sau đó trong bất kỳ project nào:
 
 ```text
-/dev-workflow TICKET-123 https://tracker/TICKET-123
+/ak TICKET-123 https://tracker/TICKET-123
 ```
 
 Đường dẫn cài đặt/cập nhật/gỡ đầy đủ theo từng host: [docs/INSTALL.md](./docs/INSTALL.md).
 
 ## Luồng
 
-`:start` (cũng là alias trần `/dev-workflow`) là điểm vào duy nhất cho một ticket — phân tích một
+`:start` (cũng là alias trần `/ak`) là điểm vào duy nhất cho một ticket — phân tích một
 lần, hỏi một lần, rồi chạy tới điểm dừng thật đầu tiên. `learning`/`coaching` khởi tạo hoặc sửa domain
 knowledge độc lập, nằm ngoài pipeline này.
 
@@ -71,14 +71,14 @@ bộ hướng dẫn từng bước.
 
 | Lệnh | Tác dụng |
 |---------|--------|
-| `/dev-workflow:spec` | AC có thể kiểm chứng + Risk tier (P0/P1/P2) |
-| `/dev-workflow:clarify` | Đối chiếu spec/intent với hành vi hệ thống hiện tại; ghi lại quyết định |
-| `/dev-workflow:confirm` | Con người ký xác nhận — bắt buộc trước plan/build |
-| `/dev-workflow:plan` / `:build` | Kế hoạch TDD + triển khai + bản đồ coverage |
-| `/dev-workflow:review` / `:fix` | Review diff trung lập + triage/fix |
-| `/dev-workflow:test` | Test thật + bằng chứng máy (SHA/CI/junit) |
-| `/dev-workflow:ship` | Checklist an toàn khi ship (gate G9) |
-| `/dev-workflow:audit` | Kiểm tra sự nhất quán ngữ nghĩa + con người ký xác nhận |
+| `/ak:spec` | AC có thể kiểm chứng + Risk tier (P0/P1/P2) |
+| `/ak:clarify` | Đối chiếu spec/intent với hành vi hệ thống hiện tại; ghi lại quyết định |
+| `/ak:confirm` | Con người ký xác nhận — bắt buộc trước plan/build |
+| `/ak:plan` / `:build` | Kế hoạch TDD + triển khai + bản đồ coverage |
+| `/ak:review` / `:fix` | Review diff trung lập + triage/fix |
+| `/ak:test` | Test thật + bằng chứng máy (SHA/CI/junit) |
+| `/ak:ship` | Checklist an toàn khi ship (gate G9) |
+| `/ak:audit` | Kiểm tra sự nhất quán ngữ nghĩa + con người ký xác nhận |
 
 Tham chiếu lệnh đầy đủ (cả 16 lệnh, tham số, và khi nào mỗi lệnh chạy độc lập):
 [docs/USER-GUIDE.md §4](./docs/USER-GUIDE.md#4-commands-cheat-sheet).

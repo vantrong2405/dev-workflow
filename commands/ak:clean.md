@@ -8,3 +8,4 @@ Clean one ticket worklog to free memory.
 Invoke `skills/clean`.
 Run `bin/clean-worklog.sh`.
 Never touch domain-knowledge or other tickets.
+Next: `/ak` or `/ak:status` to start the next ticket.

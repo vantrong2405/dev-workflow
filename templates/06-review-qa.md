@@ -27,7 +27,7 @@
 
 Status values: `OPEN` → `:fix` triages to `FIXED` / `SKIPPED` / `DEFERRED`.
 
-**G7 Result FAIL** while any P0/P1 is `OPEN`. Next: `/dev-workflow:fix <Ticket>`.
+**G7 Result FAIL** while any P0/P1 is `OPEN`. Next: `/ak:fix <Ticket>`.
 
 ## AC evidence (required — forbid "ok" only)
 

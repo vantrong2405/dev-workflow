@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Safely update dev-workflow source and refresh one or all coding-agent integrations.
+# Safely update ak source and refresh one or all coding-agent integrations.
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

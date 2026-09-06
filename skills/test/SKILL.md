@@ -8,18 +8,22 @@ arguments: [ticket_id]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:test
+# /ak:test
 
 Apply `references/skill-quality.md`; filenames and logs count only when tied to executed assertions.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
-1. Refuse if `06-review-qa.md` still has P0/P1 Status=`OPEN` — run `/dev-workflow:fix` first.
+1. Refuse if `06-review-qa.md` still has P0/P1 Status=`OPEN` — run `/ak:fix` first.
 2. Fill `06b-test-evidence.md` (output + SHA + CI URL or junit path).
 3. Prefer real junit/xml path so `--strict` can parse failures=0.
-4. Run `/dev-workflow:check <Ticket> [slug] G8` (add `--strict` before merge path).
-5. Zero failing tests required.
+4. If `Touches UI = Yes`: read `references/ui-evidence.md` before capturing any screenshot — a
+   plain screenshot proves the screen loaded, not that the bug is real or the fix works. Use the
+   before/after technique for a bug fix, the highlight-box technique to point at the exact element
+   for anything else.
+5. Run `/ak:check <Ticket> [slug] G8` (add `--strict` before merge path).
+6. Zero failing tests required.
 
 ## Non-strict vs `--strict` — what actually changes
 

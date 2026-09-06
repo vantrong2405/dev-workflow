@@ -1,6 +1,6 @@
-# .github/workflows/dev-workflow-gates.yml
+# .github/workflows/ak-gates.yml
 # Copy into the *product* repo (not only the plugin). Mark as required status check.
-name: dev-workflow-gates
+name: ak-gates
 
 on:
   pull_request:
@@ -24,13 +24,13 @@ jobs:
 
       - name: Resolve plugin
         run: |
-          if [[ -n "${{ vars.DEV_WORKFLOW_PLUGIN_PATH }}" ]]; then
-            echo "PLUGIN=${{ vars.DEV_WORKFLOW_PLUGIN_PATH }}" >> "$GITHUB_ENV"
-          elif [[ -d "$HOME/.claude/plugins/dev-workflow" ]]; then
-            echo "PLUGIN=$HOME/.claude/plugins/dev-workflow" >> "$GITHUB_ENV"
+          if [[ -n "${{ vars.AK_PLUGIN_PATH }}" ]]; then
+            echo "PLUGIN=${{ vars.AK_PLUGIN_PATH }}" >> "$GITHUB_ENV"
+          elif [[ -d "$HOME/.claude/plugins/ak" ]]; then
+            echo "PLUGIN=$HOME/.claude/plugins/ak" >> "$GITHUB_ENV"
           else
-            git clone --depth 1 https://github.com/ninhlee99/dev-workflow.git /tmp/dev-workflow
-            echo "PLUGIN=/tmp/dev-workflow" >> "$GITHUB_ENV"
+            git clone --depth 1 https://github.com/trongdn2405/ak.git /tmp/ak
+            echo "PLUGIN=/tmp/ak" >> "$GITHUB_ENV"
           fi
 
       - name: Gate check (strict)

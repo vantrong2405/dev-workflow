@@ -1,6 +1,6 @@
 # Security policy
 
-This covers vulnerabilities in the **dev-workflow plugin itself** — its installer, gate checker
+This covers vulnerabilities in the **ak plugin itself** — its installer, gate checker
 (`bin/check-gates.sh`), or generated artifacts. For the P0 security gate a *ticket* goes through
 when using the plugin, see [references/security.md](./references/security.md) instead — that's
 unrelated to reporting a bug here.
@@ -14,12 +14,12 @@ Only the latest released version (see [CHANGELOG.md](./CHANGELOG.md)) receives s
 This is a solo-maintained repository, not an organization — there is no dedicated security team or
 org-owned mailbox behind it. Two channels, in order of preference:
 
-1. [GitHub private vulnerability reporting](https://github.com/ninhlee99/dev-workflow/security) —
+1. [GitHub private vulnerability reporting](https://github.com/trongdn2405/ak/security) —
    use the "Report a vulnerability" button on the Security tab if present. This is the preferred
    channel once enabled; it keeps the report private to maintainer + GitHub and supports draft
    advisories.
-2. If that button isn't there yet, email **levanninh2101@gmail.com** with subject
-   `dev-workflow security: <short summary>`. This is a personal address, not a monitored security
+2. If that button isn't there yet, email **trongdn2405@gmail.com** with subject
+   `ak security: <short summary>`. This is a personal address, not a monitored security
    inbox — expect the same response time as channel 1, not faster, but no stronger delivery
    guarantee than any other personal email.
 

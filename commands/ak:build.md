@@ -6,3 +6,4 @@ arguments: [ticket_id]
 
 Implement from plan.
 Invoke `skills/build`.
+Next: `/ak:review`.

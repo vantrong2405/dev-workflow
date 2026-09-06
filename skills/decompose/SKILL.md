@@ -4,24 +4,24 @@ description: >-
   Split one large/epic request into isolated child tickets before any of them
   enters the pipeline. Surfaces every risk, dependency, and open question up
   front in one pass so the user confirms once, not once per child ticket.
-  Use /dev-workflow:decompose. Never runs :spec/:clarify itself.
+  Use /ak:decompose. Never runs :spec/:clarify itself.
 argument-hint: "<epic description or path> — analyze scope, propose child tickets + dependencies + risks, wait for one confirm before any child worklog opens"
 arguments: [epic_description]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:decompose
+# /ak:decompose
 
 Apply `references/skill-quality.md`. This stage owns **splitting decisions and
 the up-front risk/question map**; it does not own any child ticket's spec,
 clarify, or code.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per
 `references/locale.md` before anything else.
 
 ## When to run this
 
-- User calls `/dev-workflow:decompose <description>` directly on a request too
+- User calls `/ak:decompose <description>` directly on a request too
   big for one worklog (touches multiple modules/services, mixes ticket Types,
   or would need its own epic-tracking to stay isolated per `task-isolation.md`).
 - `:start`/`:spec` detect the same shape and offer this stage instead of
@@ -82,9 +82,10 @@ once, shared with `skills/start/SKILL.md`; do not restate either here.
      right altitude: "Trả phí theo tenant hay theo user trong tenant?" (shapes
      which children exist). Wrong altitude: "nút Save màu gì?" (belongs to a
      child's own `:spec`).
-   - State plainly which children are P0/P1 (hard lane, full G0–G9+AUDIT,
-     no shortcuts) versus P2 candidates — so the user isn't surprised later
-     by how heavy a given child turns out to be.
+   - State plainly which children are P0 (hard lane, full G0–G9+AUDIT, no shortcuts, mid-flow
+     `CONFIRM G3` required) versus P1/P2 (fast lane — G2/G3/G4/G5/G7 soft, `:audit` after G9 is
+     the human checkpoint) — so the user isn't surprised later by how heavy a given child turns
+     out to be.
 
 5. **Wait for one confirm covering the whole split** — free-text reply is
    fine, matched the same way `:clarify`'s "Ask once" step matches answers:

@@ -2,27 +2,27 @@
 name: plan
 description: >-
   Break spec+clarify decisions into small tasks with DoD/tests when they exist;
-  self-analyzes the ticket directly when they don't. Use /dev-workflow:plan standalone
+  self-analyzes the ticket directly when they don't. Use /ak:plan standalone
   or after spec/clarify.
 argument-hint: "[Ticket ID] Uses confirmed spec+clarify scope if present, else self-analyzes the ticket — write a TDD-ready implementation plan into the worklog. Ticket ID optional, derived if omitted"
 arguments: [ticket_id]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:plan
+# /ak:plan
 
 Apply `references/skill-quality.md`; this stage owns an executable traceability plan, not plausible prose.
 
 ## Precondition
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 No Ticket ID given → follow `references/task-isolation.md` "No Ticket ID given": proceed with
 this stage normally; only derive an `adhoc-<slug>` worklog name once a decision actually needs
 persisting, not before.
 
-Run `/dev-workflow:check <Ticket> [slug] G3` for awareness.
+Run `/ak:check <Ticket> [slug] G3` for awareness.
 - **PASS** (real `CONFIRM G3:` phrase, no open clarify claim): plan from that confirmed scope, as
   below.
 - **FAIL because a clarify claim is still OPEN/unconfirmed**: don't silently resolve it yourself —

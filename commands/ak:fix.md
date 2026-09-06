@@ -8,3 +8,4 @@ Triage and fix review comments.
 Invoke `skills/fix`.
 Read `references/code-review.md`.
 Log decisions in `06c-fix-log.md`.
+Next: `/ak:review` again, to confirm the fix actually resolved it.

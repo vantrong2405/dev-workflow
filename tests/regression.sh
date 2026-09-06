@@ -12,19 +12,19 @@ bad() { printf 'FAIL: %s\n' "$1"; FAIL=$((FAIL + 1)); }
 
 assert_success() {
   local name="$1"; shift
-  if "$@" >/tmp/dev-workflow-test.out 2>/tmp/dev-workflow-test.err; then ok "$name"; else bad "$name"; fi
+  if "$@" >/tmp/ak-test.out 2>/tmp/ak-test.err; then ok "$name"; else bad "$name"; fi
 }
 
 assert_failure() {
   local name="$1"; shift
-  if "$@" >/tmp/dev-workflow-test.out 2>/tmp/dev-workflow-test.err; then bad "$name"; else ok "$name"; fi
+  if "$@" >/tmp/ak-test.out 2>/tmp/ak-test.err; then bad "$name"; else ok "$name"; fi
 }
 
 assert_failure_output() {
   local name="$1" pattern="$2"; shift 2
-  if "$@" >/tmp/dev-workflow-test.out 2>/tmp/dev-workflow-test.err; then
+  if "$@" >/tmp/ak-test.out 2>/tmp/ak-test.err; then
     bad "$name"
-  elif grep -qE "$pattern" /tmp/dev-workflow-test.out /tmp/dev-workflow-test.err; then
+  elif grep -qE "$pattern" /tmp/ak-test.out /tmp/ak-test.err; then
     ok "$name"
   else
     bad "$name"
@@ -33,15 +33,15 @@ assert_failure_output() {
 
 assert_output() {
   local name="$1" pattern="$2"; shift 2
-  if "$@" >/tmp/dev-workflow-test.out 2>/tmp/dev-workflow-test.err &&
-     grep -qE "$pattern" /tmp/dev-workflow-test.out; then
+  if "$@" >/tmp/ak-test.out 2>/tmp/ak-test.err &&
+     grep -qE "$pattern" /tmp/ak-test.out; then
     ok "$name"
   else
     bad "$name"
   fi
 }
 
-export DEV_WORKFLOW_WORKSPACES_ROOT="$FIXTURES"
+export AK_WORKSPACES_ROOT="$FIXTURES"
 
 assert_output "--json emits valid JSON on PASS" '"ok": true' \
   "$CHECK" PASS-G8 --project demo --min G8 --json
@@ -57,7 +57,7 @@ cp -R "$FIXTURES/workspaces/demo/domain-knowledge" "$tmp_root/workspaces/demo/"
 cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/TYPE-MISSING"
 sed -i.bak '/Type:/d' "$tmp_root/workspaces/demo/worklogs/TYPE-MISSING/INDEX.md"
 rm -f "$tmp_root/workspaces/demo/worklogs/TYPE-MISSING/INDEX.md.bak"
-export DEV_WORKFLOW_WORKSPACES_ROOT="$tmp_root/workspaces"
+export AK_WORKSPACES_ROOT="$tmp_root/workspaces"
 
 assert_failure "G1 rejects a worklog with no ticket Type" \
   "$CHECK" TYPE-MISSING --project demo --min G1
@@ -84,7 +84,7 @@ rm -f "$tmp_root/workspaces/demo/worklogs/DISCOVERY-MISSING/04-plan.md.bak"
 
 assert_failure_output "G4 rejects a plan without command discovery proof" \
   'G4 FAIL:.*Command discovery' \
-  "$CHECK" DISCOVERY-MISSING --project demo --min G4
+  "$CHECK" DISCOVERY-MISSING --project demo --min G4 --strict
 
 cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/LEDGER-MISSING"
 find "$tmp_root/workspaces/demo/worklogs/LEDGER-MISSING" -type f -name '*.md' -exec \

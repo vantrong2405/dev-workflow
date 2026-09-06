@@ -52,7 +52,7 @@ representing the community in public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the maintainer at **levanninh2101@gmail.com**. All complaints will
+reported to the maintainer at **trongdn2405@gmail.com**. All complaints will
 be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the

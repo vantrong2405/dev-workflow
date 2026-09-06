@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Shared path resolution for dev-workflow — no hardcoded user projects.
+# Shared path resolution for ak — no hardcoded user projects.
 # Source from other scripts:  source "$(dirname "$0")/lib/resolve-paths.sh"
 #
 # Exports (when resolve_* succeeds):
-#   DEV_WORKFLOW_PLUGIN_DIR
-#   DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED
-#   DEV_WORKFLOW_PROJECT_SLUG_RESOLVED
-#   DEV_WORKFLOW_PROJECT_HOME
+#   AK_PLUGIN_DIR
+#   AK_WORKSPACES_ROOT_RESOLVED
+#   AK_PROJECT_SLUG_RESOLVED
+#   AK_PROJECT_HOME
 #
 # Env overrides (optional):
-#   DEV_WORKFLOW_PLUGIN
-#   DEV_WORKFLOW_WORKSPACES_ROOT
-#   DEV_WORKFLOW_EXTRA_WORKSPACE_ROOTS   (colon-separated)
-#   DEV_WORKFLOW_PROJECT_SLUG
+#   AK_PLUGIN
+#   AK_WORKSPACES_ROOT
+#   AK_EXTRA_WORKSPACE_ROOTS   (colon-separated)
+#   AK_PROJECT_SLUG
 
 _dw_slugify() {
   echo "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//; s/-+/-/g'
@@ -33,7 +33,7 @@ _dw_project_home_from_root() {
 }
 
 # Multiple projects under one workspaces root is the normal case (one
-# domain repo → one dev-workflow project). PROJECT.md's own "Repos" table
+# domain repo → one ak project). PROJECT.md's own "Repos" table
 # already declares which real repo path(s) belong to that project — use it
 # to answer "which project owns the repo I'm standing in right now" instead
 # of making the caller type --project every time more than one project
@@ -83,19 +83,19 @@ _dw_match_project_by_cwd_repo() {
 
 # Plugin install dir (this package), never a customer app path.
 resolve_plugin_dir() {
-  if [[ -n "${DEV_WORKFLOW_PLUGIN:-}" && -x "${DEV_WORKFLOW_PLUGIN}/bin/check-gates.sh" ]]; then
-    DEV_WORKFLOW_PLUGIN_DIR="$(cd "$DEV_WORKFLOW_PLUGIN" && pwd)"
+  if [[ -n "${AK_PLUGIN:-}" && -x "${AK_PLUGIN}/bin/check-gates.sh" ]]; then
+    AK_PLUGIN_DIR="$(cd "$AK_PLUGIN" && pwd)"
     return 0
   fi
   local cand
   for cand in \
-    "${HOME}/.claude/skills/dev-workflow-plugin" \
-    "${HOME}/.claude/plugins/dev-workflow" \
-    "${HOME}/.codex/plugins/dev-workflow" \
-    "${HOME}/.cursor/skills/dev-workflow"
+    "${HOME}/.claude/skills/ak-plugin" \
+    "${HOME}/.claude/plugins/ak" \
+    "${HOME}/.codex/plugins/ak" \
+    "${HOME}/.cursor/skills/ak"
   do
     if [[ -x "${cand}/bin/check-gates.sh" ]]; then
-      DEV_WORKFLOW_PLUGIN_DIR="$(cd "$cand" && pwd)"
+      AK_PLUGIN_DIR="$(cd "$cand" && pwd)"
       return 0
     fi
     # cursor thin pointer — follow sibling or env only
@@ -104,11 +104,11 @@ resolve_plugin_dir() {
   local here
   here="$(cd "$(dirname "${BASH_SOURCE[1]:-${BASH_SOURCE[0]}}")" && pwd)"
   if [[ -x "${here}/check-gates.sh" ]]; then
-    DEV_WORKFLOW_PLUGIN_DIR="$(cd "${here}/.." && pwd)"
+    AK_PLUGIN_DIR="$(cd "${here}/.." && pwd)"
     return 0
   fi
   if [[ -x "${here}/../check-gates.sh" ]]; then
-    DEV_WORKFLOW_PLUGIN_DIR="$(cd "${here}/../.." && pwd)"
+    AK_PLUGIN_DIR="$(cd "${here}/../.." && pwd)"
     return 0
   fi
   return 1
@@ -119,7 +119,7 @@ _dw_collect_workspace_roots() {
   local -a roots=()
   local d git_root
 
-  [[ -n "${DEV_WORKFLOW_WORKSPACES_ROOT:-}" ]] && roots+=("$DEV_WORKFLOW_WORKSPACES_ROOT")
+  [[ -n "${AK_WORKSPACES_ROOT:-}" ]] && roots+=("$AK_WORKSPACES_ROOT")
   roots+=("$(_dw_default_workspaces_root)")
 
   d="${PWD}"
@@ -127,7 +127,7 @@ _dw_collect_workspace_roots() {
   for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
     [[ -d "$d/workspaces" ]] && roots+=("$d")
     [[ -d "$d/.workspaces" ]] && roots+=("$d/.workspaces")
-    [[ -f "$d/.dev-workflow.json" ]] && roots+=("$d")
+    [[ -f "$d/.ak.json" ]] && roots+=("$d")
     [[ -d "$d/tasks/domain-knowledge" ]] && roots+=("$d")
     [[ "$d" == "/" ]] && break
     d="$(dirname "$d")"
@@ -143,10 +143,10 @@ _dw_collect_workspace_roots() {
 
   roots+=("$PWD")
 
-  if [[ -n "${DEV_WORKFLOW_EXTRA_WORKSPACE_ROOTS:-}" ]]; then
+  if [[ -n "${AK_EXTRA_WORKSPACE_ROOTS:-}" ]]; then
     local IFS=':'
     local e
-    for e in $DEV_WORKFLOW_EXTRA_WORKSPACE_ROOTS; do
+    for e in $AK_EXTRA_WORKSPACE_ROOTS; do
       [[ -n "$e" ]] && roots+=("$e")
     done
   fi
@@ -165,10 +165,10 @@ _dw_collect_workspace_roots() {
   printf '%s\n' "${out[@]}"
 }
 
-# Read slug from .dev-workflow.json if present: {"projectSlug":"…"} or {"slug":"…"}
+# Read slug from .ak.json if present: {"projectSlug":"…"} or {"slug":"…"}
 _dw_slug_from_marker() {
   local dir="$1"
-  local f="$dir/.dev-workflow.json"
+  local f="$dir/.ak.json"
   [[ -f "$f" ]] || return 1
   if command -v python3 >/dev/null 2>&1; then
     python3 - "$f" <<'PY' 2>/dev/null
@@ -181,9 +181,9 @@ PY
 
 # Infer project slug from user tree (no product hardcode).
 resolve_project_slug() {
-  local hint="${1:-${DEV_WORKFLOW_PROJECT_SLUG:-}}"
+  local hint="${1:-${AK_PROJECT_SLUG:-}}"
   if [[ -n "$hint" ]]; then
-    DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$hint")"
+    AK_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$hint")"
     return 0
   fi
 
@@ -199,14 +199,14 @@ resolve_project_slug() {
     # a specific repo the whole time.
     slug="$(_dw_match_project_by_cwd_repo "$root" "$PWD" || true)"
     if [[ -n "${slug:-}" ]]; then
-      DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$slug")"
-      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$root"
+      AK_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$slug")"
+      AK_WORKSPACES_ROOT_RESOLVED="$root"
       return 0
     fi
     slug="$(_dw_slug_from_marker "$root" || true)"
     if [[ -n "${slug:-}" ]]; then
-      DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$slug")"
-      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$root"
+      AK_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$slug")"
+      AK_WORKSPACES_ROOT_RESOLVED="$root"
       return 0
     fi
     # nearest workspaces/*/PROJECT.md or ~/.workspaces/<slug>/PROJECT.md
@@ -222,8 +222,8 @@ resolve_project_slug() {
       homes+=("$(basename "$(dirname "$f")")")
     done
     if [[ ${#homes[@]} -eq 1 ]]; then
-      DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="${homes[0]}"
-      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$root"
+      AK_PROJECT_SLUG_RESOLVED="${homes[0]}"
+      AK_WORKSPACES_ROOT_RESOLVED="$root"
       return 0
     fi
     # More than one project under this root and no explicit --project hint:
@@ -248,25 +248,25 @@ resolve_project_slug() {
   fi
   [[ -z "$base" || "$base" == "." ]] && base="$(basename "$PWD")"
   if [[ -n "$base" && "$base" != "/" ]]; then
-    DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$base")"
+    AK_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$base")"
     return 0
   fi
   return 1
 }
 
 resolve_workspaces_root() {
-  local prefer_slug="${1:-${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-}}"
+  local prefer_slug="${1:-${AK_PROJECT_SLUG_RESOLVED:-}}"
   local root f
 
-  if [[ -n "${DEV_WORKFLOW_WORKSPACES_ROOT:-}" && -d "${DEV_WORKFLOW_WORKSPACES_ROOT}" ]]; then
-    DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$DEV_WORKFLOW_WORKSPACES_ROOT" && pwd)"
+  if [[ -n "${AK_WORKSPACES_ROOT:-}" && -d "${AK_WORKSPACES_ROOT}" ]]; then
+    AK_WORKSPACES_ROOT_RESOLVED="$(cd "$AK_WORKSPACES_ROOT" && pwd)"
     return 0
   fi
 
   while IFS= read -r root; do
     [[ -z "$root" ]] && continue
     if [[ -n "$prefer_slug" && -f "$(_dw_project_home_from_root "$root" "$prefer_slug")/PROJECT.md" ]]; then
-      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
+      AK_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
       return 0
     fi
   done < <(_dw_collect_workspace_roots)
@@ -275,32 +275,32 @@ resolve_workspaces_root() {
     [[ -z "$root" ]] && continue
     if [[ "$root" == "$(_dw_default_workspaces_root)" ]]; then
       mkdir -p "$root"
-      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
+      AK_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
       return 0
     fi
     if [[ -d "$root/workspaces" ]]; then
-      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
+      AK_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
       return 0
     fi
-    if [[ -f "$root/.dev-workflow.json" ]]; then
-      DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
+    if [[ -f "$root/.ak.json" ]]; then
+      AK_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
       return 0
     fi
   done < <(_dw_collect_workspace_roots)
 
   # Default: always outside repo under ~/.workspaces
   mkdir -p "$(_dw_default_workspaces_root)"
-  DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$(_dw_default_workspaces_root)" && pwd)"
+  AK_WORKSPACES_ROOT_RESOLVED="$(cd "$(_dw_default_workspaces_root)" && pwd)"
   return 0
 }
 
 resolve_project_home() {
   local slug="${1:-}"
   resolve_project_slug "$slug" || true
-  slug="${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-}"
+  slug="${AK_PROJECT_SLUG_RESOLVED:-}"
   [[ -n "$slug" ]] || return 1
   resolve_workspaces_root "$slug" || return 1
-  DEV_WORKFLOW_PROJECT_HOME="$(_dw_project_home_from_root "$DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED" "$slug")"
+  AK_PROJECT_HOME="$(_dw_project_home_from_root "$AK_WORKSPACES_ROOT_RESOLVED" "$slug")"
   return 0
 }
 
@@ -311,7 +311,7 @@ resolve_worklog_dir() {
   local root candidate
 
   resolve_project_slug "$slug" || true
-  slug="${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-}"
+  slug="${AK_PROJECT_SLUG_RESOLVED:-}"
 
   while IFS= read -r root; do
     [[ -z "$root" ]] && continue
@@ -319,18 +319,18 @@ resolve_worklog_dir() {
       candidate="$(_dw_project_home_from_root "$root" "$slug")/worklogs/$ticket"
       if [[ -d "$candidate" ]]; then
         echo "$(cd "$candidate" && pwd)"
-        DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
-        DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="$slug"
-        DEV_WORKFLOW_PROJECT_HOME="$(cd "$(_dw_project_home_from_root "$root" "$slug")" && pwd)"
+        AK_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
+        AK_PROJECT_SLUG_RESOLVED="$slug"
+        AK_PROJECT_HOME="$(cd "$(_dw_project_home_from_root "$root" "$slug")" && pwd)"
         return 0
       fi
     else
       for candidate in "$root/workspaces"/*/worklogs/"$ticket" "$root"/*/worklogs/"$ticket"; do
         if [[ -d "$candidate" ]]; then
           echo "$(cd "$candidate" && pwd)"
-          DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
-          DEV_WORKFLOW_PROJECT_SLUG_RESOLVED="$(basename "$(dirname "$(dirname "$candidate")")")"
-          DEV_WORKFLOW_PROJECT_HOME="$(cd "$(dirname "$(dirname "$candidate")")" && pwd)"
+          AK_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
+          AK_PROJECT_SLUG_RESOLVED="$(basename "$(dirname "$(dirname "$candidate")")")"
+          AK_PROJECT_HOME="$(cd "$(dirname "$(dirname "$candidate")")" && pwd)"
           return 0
         fi
       done

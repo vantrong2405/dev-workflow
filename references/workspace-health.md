@@ -7,7 +7,7 @@ Script: `bin/check-workspace.sh [slug]`.
 
 ```
 ~/.workspaces/
-  [.dev-workflow.json]          # optional marker
+  [.ak.json]          # optional marker
   <slug>/
     PROJECT.md                  # required
     domain-knowledge/           # required dir
@@ -26,7 +26,7 @@ Script: `bin/check-workspace.sh [slug]`.
 | W3 | `worklogs/` directory exists |
 | W4 | No worklog file living **outside** `worklogs/<Ticket_ID>/` under project home |
 | W5 | Each `worklogs/<Ticket_ID>/` has `INDEX.md` (warn if missing) |
-| W6 | Marker `.dev-workflow.json` slug matches folder if both present (warn) |
+| W6 | Marker `.ak.json` slug matches folder if both present (warn) |
 
 Exit `0` only if W0–W4 PASS. W5/W6 warn-only.
 
@@ -34,12 +34,12 @@ Exit `0` only if W0–W4 PASS. W5/W6 warn-only.
 
 - `:learning` after create — must PASS before promote knowledge.
 - `:start` / `:status` — run once; print result; FAIL → fix layout before gates.
-- Manual: `"$DEV_WORKFLOW_PLUGIN/bin/check-workspace.sh" [slug]`
+- Manual: `"$AK_PLUGIN/bin/check-workspace.sh" [slug]`
 
 ## Fail → fix
 
 | Fail | Action |
 |------|--------|
-| W0 | Set `DEV_WORKFLOW_WORKSPACES_ROOT` or add `.dev-workflow.json` |
+| W0 | Set `AK_WORKSPACES_ROOT` or add `.ak.json` |
 | W1–W3 | Re-run `:learning` or copy `templates/workspaces/_project/` |
 | W4 | Move stray files into correct `worklogs/<Ticket>/` |

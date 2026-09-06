@@ -1,4 +1,4 @@
-# Hướng dẫn sử dụng — dev-workflow v0.4
+# Hướng dẫn sử dụng — ak v0.4
 
 [English](USER-GUIDE.md) · **[Tiếng Việt](USER-GUIDE.vi.md)** · [日本語](USER-GUIDE.ja.md)
 
@@ -35,7 +35,7 @@ ký của bạn là trọng tài cho ý nghĩa — cái này không thay thế �
 **Theo từng ticket:** build/bằng chứng chỉ nằm trong `worklogs/<Ticket_ID>/` — các ticket không
 dùng chung worklog.
 
-**Sau khi xong:** `/dev-workflow:clean TICKET-123` lưu trữ worklog đó (giữ nguyên domain knowledge).
+**Sau khi xong:** `/ak:clean TICKET-123` lưu trữ worklog đó (giữ nguyên domain knowledge).
 
 ### Đặt tên (dễ nhầm lẫn)
 
@@ -58,8 +58,8 @@ directory của bạn nhưng không sửa source của sản phẩm. Đọc [INS
 đường dẫn chính xác, cách cập nhật, smoke test cô lập, và xử lý sự cố.
 
 ```bash
-git clone https://github.com/ninhlee99/dev-workflow.git
-cd dev-workflow
+git clone https://github.com/trongdn2405/ak.git
+cd ak
 bash install.sh             # chỉ Claude Code (mặc định)
 bash install.sh --cursor    # chỉ Cursor
 bash install.sh --codex     # chỉ Codex
@@ -80,24 +80,24 @@ clone, và refresh agent đó mà không đụng tới thay đổi repository c�
 
 Sau đó trong repo **sản phẩm** của bạn (khuyến nghị):
 
-1. Copy `templates/ci/github-actions-dev-workflow.yml` → `.github/workflows/dev-workflow-gates.yml`
-2. Branch protection → bắt buộc status check `dev-workflow-gates`
+1. Copy `templates/ci/github-actions-ak.yml` → `.github/workflows/ak-gates.yml`
+2. Branch protection → bắt buộc status check `ak-gates`
 3. Marker tùy chọn ở root project:
 
 ```json
 { "projectSlug": "my-app" }
 ```
 
-Lưu thành `.dev-workflow.json` (xem `templates/workspaces/_project/dev-workflow.json.example`).
+Lưu thành `.ak.json` (xem `templates/workspaces/_project/ak.json.example`).
 
 Smoke test:
 
 ```bash
-export DEV_WORKFLOW_WORKSPACES_ROOT=/path/to/dev-workflow/fixtures
-export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-workspace.sh" demo
+export AK_WORKSPACES_ROOT=/path/to/ak/fixtures
+export AK_PLUGIN=/path/to/ak
+"$AK_PLUGIN/bin/check-workspace.sh" demo
 # kỳ vọng RESULT: PASS
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" PASS-G9 --project demo --min G9 --strict
+"$AK_PLUGIN/bin/check-gates.sh" PASS-G9 --project demo --min G9 --strict
 # kỳ vọng RESULT: PASS
 ```
 
@@ -146,17 +146,17 @@ danh sách child phẳng; nếu một child trông như cần decompose tiếp, 
 ### 3.1 Lần đầu trên một project
 
 ```
-/dev-workflow:learning
+/ak:learning
 ```
 
 Dán một brief ngắn: tên project, repo, domain.
 AI tạo `~/.workspaces/<slug>/` và hỏi khi business rule chưa rõ ràng.
-Bạn trả lời bằng `/dev-workflow:coaching` khi AI hiểu sai hoặc spec đã đổi.
+Bạn trả lời bằng `/ak:coaching` khi AI hiểu sai hoặc spec đã đổi.
 
 ### 3.2 Bắt đầu một ticket
 
 ```
-/dev-workflow TICKET-123 https://your-tracker/TICKET-123
+/ak TICKET-123 https://your-tracker/TICKET-123
 ```
 
 AI phân tích một lần, hỏi một lần, rồi chạy tới **điểm dừng thật đầu tiên**. Bạn cũng có thể chạy
@@ -168,7 +168,7 @@ từng stage bằng tay (bên dưới).
 `"full pipeline"` sau đó nếu bạn muốn hoàn tác và làm lại theo đầy đủ nghi thức. Điều này chỉ xảy ra
 khi duplicate-scan sạch; nếu tìm thấy nơi khác, `:start` quay lại kiểu "đề nghị và chờ" thông thường
 của P2. **Việc tự chạy không hỏi này chỉ áp dụng cho `:start`** — gọi trực tiếp
-`/dev-workflow:build TICKET-123` vẫn tự phân tích trên một ticket có dạng Trivial, nhưng nó không bỏ
+`/ak:build TICKET-123` vẫn tự phân tích trên một ticket có dạng Trivial, nhưng nó không bỏ
 qua bước báo cáo trước, vì hành vi không-hỏi này gắn với bước đề nghị đầu tiên của `:start`.
 Xem `references/risk.md` mục "Trivial" — ngưỡng `≤5 dòng` là một ước lượng khởi điểm chưa được
 kiểm chứng, được theo dõi giống như ngưỡng chặn đếm-claim của epic-signal.
@@ -176,7 +176,7 @@ kiểm chứng, được theo dõi giống như ngưỡng chặn đếm-claim c�
 ### 3.3 Spec (G1)
 
 ```
-/dev-workflow:spec TICKET-123
+/ak:spec TICKET-123
 ```
 
 Phải tạo ra `02-spec.md` với:
@@ -206,7 +206,7 @@ Phải tạo ra `02-spec.md` với:
 ### 3.4 Clarify (G2)
 
 ```
-/dev-workflow:clarify TICKET-123
+/ak:clarify TICKET-123
 ```
 
 Điền `03-clarify-report.md` + `03-qa-log.md`.
@@ -228,7 +228,7 @@ mục "Duplicate-scan".
 ### 3.5 Confirm (G3) — **bạn gửi lại phần này**
 
 ```
-/dev-workflow:confirm TICKET-123
+/ak:confirm TICKET-123
 ```
 
 AI tóm tắt các quyết định, rồi đưa cho bạn một dòng sẵn sàng gửi với ticket và ngày đã điền sẵn —
@@ -260,11 +260,11 @@ Quy tắc:
 ### 3.6 Plan → Build → Review → Fix → Test
 
 ```
-/dev-workflow:plan   TICKET-123
-/dev-workflow:build  TICKET-123
-/dev-workflow:review TICKET-123
-/dev-workflow:fix    TICKET-123   # chỉ khi còn phát hiện P0/P1 OPEN
-/dev-workflow:test   TICKET-123
+/ak:plan   TICKET-123
+/ak:build  TICKET-123
+/ak:review TICKET-123
+/ak:fix    TICKET-123   # chỉ khi còn phát hiện P0/P1 OPEN
+/ak:test   TICKET-123
 ```
 
 | Stage | Artifact | Phải bao gồm |
@@ -283,15 +283,15 @@ AC/hệ thống; không bao giờ SKIP P0 mà không có waiver của PM.
 ### 3.7 Check + Ship (gate merge)
 
 ```
-/dev-workflow:check TICKET-123
-/dev-workflow:ship  TICKET-123
+/ak:check TICKET-123
+/ak:ship  TICKET-123
 ```
 
 Trước khi merge, từ terminal (hoặc CI):
 
 ```bash
-export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min G9 --strict
+export AK_PLUGIN=/path/to/ak
+"$AK_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min G9 --strict
 ```
 
 `--strict` bật các kiểm tra chuẩn CI (SHA so với git HEAD, phân tích junit) và kéo theo
@@ -305,7 +305,7 @@ Canary `N/A` cần lý do ≥ 10 ký tự (và không được là placeholder l
 ### 3.7.5 Audit (nhất quán ngữ nghĩa, trước khi ship hoàn tất)
 
 ```
-/dev-workflow:audit TICKET-123
+/ak:audit TICKET-123
 ```
 
 G9 structural PASS chỉ chứng minh các field đã được điền và không phải placeholder — nó không chứng
@@ -324,13 +324,13 @@ một kết luận COHERENT/N/A đã giải quyết. Bất kỳ cặp nào thi�
 PASS.
 
 ```bash
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min AUDIT --strict
+"$AK_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min AUDIT --strict
 ```
 
 ### 3.8 Clean (giải phóng bộ nhớ sau ticket)
 
 ```
-/dev-workflow:clean TICKET-123
+/ak:clean TICKET-123
 ```
 
 - Mặc định: **lưu trữ** `worklogs/TICKET-123/` → `worklogs/.archive/TICKET-123-<UTC>/`
@@ -343,21 +343,21 @@ PASS.
 CLI:
 
 ```bash
-"$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug>
-"$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug> --force --purge
+"$AK_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug>
+"$AK_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug> --force --purge
 ```
 
-### 3.9 Feedback (báo cáo bug của dev-workflow)
+### 3.9 Feedback (báo cáo bug của ak)
 
 ```
-/dev-workflow:feedback [điều gì đó bị sai]
+/ak:feedback [điều gì đó bị sai]
 ```
 
-- Dùng khi **chính dev-workflow** hoạt động sai — output của một skill, một gate, một artifact được
+- Dùng khi **chính ak** hoạt động sai — output của một skill, một gate, một artifact được
   tạo ra — không phải bug trong sản phẩm/ticket bạn đang xây dựng.
 - Tổng hợp mọi thứ bạn đã mô tả trong phiên này, kiểm tra `gh issue list` để tìm trùng lặp đã có,
   rồi hỏi bạn xác nhận từng title/body trước khi tạo issue.
-- Tạo issue qua `gh issue create --repo ninhlee99/dev-workflow`; báo lại URL issue, hoặc lý do một
+- Tạo issue qua `gh issue create --repo trongdn2405/ak`; báo lại URL issue, hoặc lý do một
   mục bị bỏ qua (trùng lặp, bị từ chối).
 - Yêu cầu `gh` đã cài đặt và xác thực (`gh auth status`). Bất kỳ tài khoản GitHub đã xác thực nào
   cũng có thể mở issue trên repo public — không cần quyền write.
@@ -384,7 +384,7 @@ CLI:
 | `:audit` | Nhất quán ngữ nghĩa + con người ký xác nhận | Ticket ID (sau G9 PASS) |
 | `:clean` | Lưu trữ/xóa worklog ticket | Ticket ID; tùy chọn `--force` / `--purge` |
 | `:status` | Tôi đang ở đâu? | Ticket ID tùy chọn |
-| `:feedback` | Báo cáo bug/điểm khó chịu của dev-workflow | Mô tả tự do |
+| `:feedback` | Báo cáo bug/điểm khó chịu của ak | Mô tả tự do |
 
 Không có Ticket ID? `:start`/`:spec`/`:clarify`/`:plan`/`:build` vẫn chạy — không có gì bị từ chối.
 Nếu công việc cần ghi lại một quyết định, AI tự suy ra một tên `adhoc-<slug>` ngắn từ chính task đó
@@ -401,8 +401,7 @@ tra cứu chỉ-đọc, một claim được giải quyết gọn gàng), không
 | Tệp | Vai trò | Gate |
 |------|------|------|
 | `INDEX.md` | Status, Type, Risk, Pilot, waiver, dòng CONFIRM | tất cả |
-| `01-intent.md` | Intent, Type, provenance của yêu cầu | — |
-| `02-spec.md` | Type/Risk, provenance, AC/NEG/PERM/EDGE, UI oracle | G1 |
+| `02-spec.md` | Intent, Type/Risk, provenance, AC/NEG/PERM/EDGE, UI oracle | G1 |
 | `02b-security.md` | Threat / secrets / contract (**chỉ P0**) | G1 |
 | `03-clarify-report.md` | Claim MATCH/NO/UNCLEAR | G2 |
 | `03-qa-log.md` | Câu hỏi mở | G5 |
@@ -474,7 +473,7 @@ Ngưỡng thành công: mỗi chỉ số miss-spec / reopen / escape ≤ một n
 
 | Triệu chứng | Cách sửa |
 |---------|-----|
-| `worklog not found` | `cd` vào product project, hoặc đặt `DEV_WORKFLOW_WORKSPACES_ROOT` / `--project <slug>` |
+| `worklog not found` | `cd` vào product project, hoặc đặt `AK_WORKSPACES_ROOT` / `--project <slug>` |
 | G3 FAIL thiếu CONFIRM | Gõ đúng câu; đảm bảo có cả INDEX và `03b-human-confirm.md` |
 | G3 FAIL tên AI | Dùng tên người thật, không phải Claude/Cursor/… |
 | G8 FAIL SHA | Đưa `git rev-parse HEAD` thật vào bảng bằng chứng máy |

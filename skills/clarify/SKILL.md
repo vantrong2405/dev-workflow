@@ -8,11 +8,11 @@ arguments: [ticket_id, confirm_text]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:clarify
+# /ak:clarify
 
 Apply `references/skill-quality.md` and the type dispatch in `references/stage-contract.md`.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 No Ticket ID given → follow `references/task-isolation.md` "No Ticket ID given": proceed with
@@ -21,7 +21,7 @@ persisting, not before.
 
 Compare spec to running behavior and force decisions.
 
-**Read `Type:` from INDEX.md (or `01-intent.md` if INDEX.md predates this field) before
+**Read `Type:` from INDEX.md (or `02-spec.md`'s own `Type:` field if INDEX.md predates it) before
 investigating anything.** `:spec` already classified this ticket as Bug / New feature / Spec
 change / Requirement change — `references/ba-integrity.md` has a *different* investigation
 strategy for each (route→controller→service tracing is the **Bug** procedure only; it does not
@@ -35,10 +35,9 @@ and note `Source: self-analyzed (no upstream :spec)` next to it so later stages 
 pass never happened.
 
 Read `references/clarify-check.md` (full 5-step process: read spec+risk, classify+investigate by
-Type, write claims, write questions, ask/match/echo/re-ask).
-Write this ticket's own artifacts: `03-clarify-report.md`, `03-qa-log.md`. `03-clarify-README.md`
-is static process documentation (G2 PASS rules, forbidden shortcuts) — read it, do not fill it in
-per ticket.
+Type, write claims, write questions, ask/match/echo/re-ask; it also has the G2 PASS rules and
+storage location).
+Write this ticket's own artifacts: `03-clarify-report.md`, `03-qa-log.md`.
 Classify claims as MATCH/NO/UNCLEAR.
 
 **Fast path — every claim already MATCH from `:spec`'s own intent Q&A.** The test is not "did
@@ -52,13 +51,13 @@ answer, not just what it is) has real value for whoever reads this ticket later;
 citation loses that trail. If unsure which case a claim is, default to the full report.
 
 If the ticket has exactly the claim(s) `:spec` already resolved this way, running the full
-MAP→DIFF→CONFIRM→LOG conversation would just restate what `01-intent.md` already says — real
-ceremony, not real verification, on a ticket this small. Still write all three artifacts (G2 checks
-`03-clarify-report.md` exists), but the report may be a one-line-per-claim table citing
-`01-intent.md`'s answer as the MATCH evidence directly,
-skip the ask/echo conversation in the section below, and `03-qa-log.md`/`03-clarify-README.md` may
-stay minimal (no open Q&A to log). The moment any claim is NO/UNCLEAR, or a MATCH needs evidence
-`:spec` didn't already establish, drop the fast path and run the full process for that claim.
+MAP→DIFF→CONFIRM→LOG conversation would just restate what `02-spec.md`'s own Intent section already
+says — real ceremony, not real verification, on a ticket this small. Still write both artifacts (G2
+checks `03-clarify-report.md` exists), but the report may be a one-line-per-claim table citing that
+Intent Q&A as the MATCH evidence directly, skip the ask/echo conversation in the section below, and
+`03-qa-log.md` may stay minimal (no open Q&A to log). The moment any claim is NO/UNCLEAR, or a MATCH
+needs evidence `:spec` didn't already establish, drop the fast path and run the full process for
+that claim.
 
 ## Ask once, in plain language — not a form to fill out
 
@@ -71,7 +70,7 @@ Then:
 
 1. Present all non-MATCH claims as a short numbered list — one line each, sharpest form of the
    question, a recommended answer alongside it (same recommend-an-answer instinct the `grilling`
-   skill uses; dev-workflow installs `grilling` automatically if not already present). Do not dump
+   skill uses; ak installs `grilling` automatically if not already present). Do not dump
    the full evidence table here — that's already in `03-clarify-report.md` for reference.
 2. User replies in **one free-text message** — any order, several claims answered in one sentence,
    some skipped. Do not require the user to echo claim numbers/IDs or answer in a fixed format.

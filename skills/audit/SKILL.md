@@ -11,11 +11,11 @@ arguments: [ticket_id]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:audit
+# /ak:audit
 
 Apply `references/skill-quality.md`; a missing, UNCLEAR, or INCOHERENT pair can never PASS.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 Verify the worklog's own claims agree with each other — not a second code review, not a second
@@ -25,14 +25,6 @@ clarify check. Both of those must already have structurally passed.
 
 Refuse to run if `check-gates.sh <Ticket> --min G9 --strict` has not exited 0. Print the command
 and ask the user to run it first if unclear.
-
-**Small-P1 exception.** Check `references/risk.md` "Small-P1 audit exception" first. If Risk=P1
-and the ticket meets every condition there (single file/module, no new API/route/schema, no new
-user-visible state), say so once and offer the skip: `"Ticket nhỏ, đủ điều kiện Small-P1
-exception — bỏ qua AUDIT, chạy check --min AUDIT (không --strict) để ghi nhận, hay vẫn muốn full
-AUDIT?"` Wait for the answer; never decide silently. Risk=P0 never gets this exception regardless
-of diff size — proceed to full AUDIT below for P0, and for any P1 that doesn't meet the exception
-or where the user chose full AUDIT anyway.
 
 ## Steps
 

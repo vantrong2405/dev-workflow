@@ -32,7 +32,7 @@ run_update() {
 new_home
 if run_update &&
    grep -q 'pull --ff-only' "$TEST_HOME/git.calls" &&
-   [[ -L "$TEST_HOME/.claude/plugins/dev-workflow" ]] &&
+   [[ -L "$TEST_HOME/.claude/plugins/ak" ]] &&
    [[ ! -e "$TEST_HOME/.cursor" ]]; then
   ok "default fast-forwards source and refreshes Claude only"
 else
@@ -42,7 +42,7 @@ fi
 new_home
 if run_update --cursor &&
    grep -q 'pull --ff-only' "$TEST_HOME/git.calls" &&
-   [[ -L "$TEST_HOME/.cursor/skills/dev-workflow-audit" ]] &&
+   [[ -L "$TEST_HOME/.cursor/skills/ak-audit" ]] &&
    [[ ! -e "$TEST_HOME/.claude" ]]; then
   ok "--cursor refreshes Cursor only"
 else

@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/resolve-paths.sh
 source "$SCRIPT_DIR/lib/resolve-paths.sh"
 
-SLUG_HINT="${1:-${DEV_WORKFLOW_PROJECT_SLUG:-}}"
+SLUG_HINT="${1:-${AK_PROJECT_SLUG:-}}"
 FAILS=0
 WARNS=0
 
@@ -16,11 +16,11 @@ fail() { echo "FAIL  $1 — $2"; FAILS=$((FAILS + 1)); }
 warn() { echo "WARN  $1 — $2"; WARNS=$((WARNS + 1)); }
 
 if ! resolve_plugin_dir; then
-  fail W0 "cannot resolve plugin dir (set DEV_WORKFLOW_PLUGIN)"
+  fail W0 "cannot resolve plugin dir (set AK_PLUGIN)"
   echo "RESULT: FAIL"
   exit 1
 fi
-pass W0 "plugin=${DEV_WORKFLOW_PLUGIN_DIR}"
+pass W0 "plugin=${AK_PLUGIN_DIR}"
 
 if ! resolve_project_home "$SLUG_HINT"; then
   fail W0 "cannot resolve project home (slug/root)"
@@ -28,9 +28,9 @@ if ! resolve_project_home "$SLUG_HINT"; then
   exit 1
 fi
 
-ROOT="${DEV_WORKFLOW_WORKSPACES_ROOT_RESOLVED}"
-HOME_P="${DEV_WORKFLOW_PROJECT_HOME}"
-SLUG="${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED}"
+ROOT="${AK_WORKSPACES_ROOT_RESOLVED}"
+HOME_P="${AK_PROJECT_HOME}"
+SLUG="${AK_PROJECT_SLUG_RESOLVED}"
 echo "project=${SLUG} home=${HOME_P} root=${ROOT}"
 
 if [[ ! -f "${HOME_P}/PROJECT.md" ]]; then
@@ -96,7 +96,7 @@ if [[ -d "${HOME_P}/worklogs" ]]; then
 fi
 
 # W6 marker slug
-MARKER="${ROOT}/.dev-workflow.json"
+MARKER="${ROOT}/.ak.json"
 if [[ -f "$MARKER" ]]; then
   mslug="$(_dw_slug_from_marker "$ROOT" || true)"
   if [[ -n "${mslug:-}" && "$mslug" != "$SLUG" ]]; then
@@ -105,7 +105,7 @@ if [[ -f "$MARKER" ]]; then
     pass W6 "marker ok or unused"
   fi
 else
-  pass W6 "no .dev-workflow.json (optional)"
+  pass W6 "no .ak.json (optional)"
 fi
 
 if [[ $FAILS -gt 0 ]]; then

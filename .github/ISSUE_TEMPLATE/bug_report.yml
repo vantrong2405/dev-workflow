@@ -1,15 +1,15 @@
 name: Bug report
-description: Something in dev-workflow itself misbehaves — a skill's output, a gate, a generated artifact.
+description: Something in ak itself misbehaves — a skill's output, a gate, a generated artifact.
 labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
-        For a bug in the *product/ticket you're building with dev-workflow*, this isn't the right
-        place — that belongs in your own project's tracker. This is for dev-workflow's own skills,
+        For a bug in the *product/ticket you're building with ak*, this isn't the right
+        place — that belongs in your own project's tracker. This is for ak's own skills,
         gates, or generated artifacts misbehaving.
 
-        If you're using Claude Code, `/dev-workflow:feedback [what went wrong]` can file this for
+        If you're using Claude Code, `/ak:feedback [what went wrong]` can file this for
         you automatically after asking you to confirm the title/body.
 
   - type: input
@@ -24,7 +24,7 @@ body:
     id: command
     attributes:
       label: Command run
-      description: e.g. `/dev-workflow:clarify TICKET-123`
+      description: e.g. `/ak:clarify TICKET-123`
     validations:
       required: true
 

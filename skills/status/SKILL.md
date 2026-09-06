@@ -2,17 +2,17 @@
 name: status
 description: >-
   Show domain-knowledge freshness, workspaces learning progress, and ticket
-  worklog gates; suggest next /dev-workflow:* command.
+  worklog gates; suggest next /ak:* command.
 argument-hint: "<Ticket ID?> Leave empty for domain-knowledge only; with ticket also show gate progress and next subcommand"
 arguments: [ticket_id]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:status
+# /ak:status
 
 Apply `references/skill-quality.md`; status is read-only and separates structural, semantic, and human-final state.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 Show concise knowledge and gate progress.

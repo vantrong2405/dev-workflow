@@ -45,7 +45,7 @@ numbers here from that evidence — not from a new guess.
 ## On match
 
 Say so once and hand off:
-`"Việc này giống 1 epic (nhiều phần độc lập) — chạy /dev-workflow:decompose
+`"Việc này giống 1 epic (nhiều phần độc lập) — chạy /ak:decompose
 trước để tách rõ ràng, rồi quay lại đây cho từng phần?"` Wait for the answer;
 never silently decompose inline, never auto-run `:decompose` on the user's
 behalf.

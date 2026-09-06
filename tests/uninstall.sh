@@ -32,7 +32,7 @@ run_uninstall_without_agy() {
 }
 
 run_uninstall_with_project_commands() {
-  DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS="$TEST_HOME/project-commands" \
+  AK_PROJECT_CLAUDE_COMMANDS="$TEST_HOME/project-commands" \
     HOME="$TEST_HOME" PATH="$TEST_BIN:$PATH" bash "$ROOT/uninstall.sh" "$@" \
     >"$TEST_HOME/uninstall.out" 2>"$TEST_HOME/uninstall.err"
 }
@@ -42,9 +42,9 @@ run_install --claude
 mkdir -p "$TEST_HOME/.claude/commands" "$TEST_HOME/.cursor"
 touch "$TEST_HOME/.claude/commands/keep-me.md" "$TEST_HOME/.cursor/keep-me"
 if run_uninstall &&
-   [[ ! -e "$TEST_HOME/.claude/plugins/dev-workflow" ]] &&
-   [[ ! -e "$TEST_HOME/.claude/skills/dev-workflow-plugin" ]] &&
-   [[ ! -e "$TEST_HOME/.claude/commands/dev-workflow:audit.md" ]] &&
+   [[ ! -e "$TEST_HOME/.claude/plugins/ak" ]] &&
+   [[ ! -e "$TEST_HOME/.claude/skills/ak-plugin" ]] &&
+   [[ ! -e "$TEST_HOME/.claude/commands/ak:audit.md" ]] &&
    [[ -f "$TEST_HOME/.claude/commands/keep-me.md" ]] &&
    [[ -f "$TEST_HOME/.cursor/keep-me" ]]; then
   ok "default uninstalls Claude only and preserves unrelated files"
@@ -60,9 +60,9 @@ fi
 
 new_home
 mkdir -p "$TEST_HOME/project-commands"
-touch "$TEST_HOME/project-commands/dev-workflow:audit.md" "$TEST_HOME/project-commands/keep-me.md"
+touch "$TEST_HOME/project-commands/ak:audit.md" "$TEST_HOME/project-commands/keep-me.md"
 if run_uninstall_with_project_commands --claude &&
-   [[ ! -e "$TEST_HOME/project-commands/dev-workflow:audit.md" ]] &&
+   [[ ! -e "$TEST_HOME/project-commands/ak:audit.md" ]] &&
    [[ -f "$TEST_HOME/project-commands/keep-me.md" ]]; then
   ok "Claude project commands are removed without touching neighbors"
 else
@@ -73,22 +73,22 @@ new_home
 run_install --cursor
 touch "$TEST_HOME/.cursor/commands/keep-me.md" "$TEST_HOME/.cursor/skills/keep-me"
 if run_uninstall --cursor &&
-   [[ "$(find "$TEST_HOME/.cursor/skills" -maxdepth 1 -name 'dev-workflow-*' | wc -l | tr -d ' ')" -eq 0 ]] &&
-   [[ ! -e "$TEST_HOME/.cursor/commands/dev-workflow:audit.md" ]] &&
+   [[ "$(find "$TEST_HOME/.cursor/skills" -maxdepth 1 -name 'ak-*' | wc -l | tr -d ' ')" -eq 0 ]] &&
+   [[ ! -e "$TEST_HOME/.cursor/commands/ak:audit.md" ]] &&
    [[ -f "$TEST_HOME/.cursor/commands/keep-me.md" ]] &&
    [[ -f "$TEST_HOME/.cursor/skills/keep-me" ]]; then
-  ok "--cursor removes only dev-workflow entries"
+  ok "--cursor removes only ak entries"
 else
-  bad "--cursor removes only dev-workflow entries"
+  bad "--cursor removes only ak entries"
 fi
 
 new_home
 run_install --codex
 touch "$TEST_HOME/.codex/skills/keep-me"
 if run_uninstall --codex &&
-   [[ "$(find "$TEST_HOME/.codex/skills" -maxdepth 1 -name 'dev-workflow-*' | wc -l | tr -d ' ')" -eq 0 ]] &&
-   [[ ! -e "$TEST_HOME/.codex/plugins/dev-workflow" ]] &&
-   [[ ! -e "$TEST_HOME/.agents/plugins/plugins/dev-workflow" ]] &&
+   [[ "$(find "$TEST_HOME/.codex/skills" -maxdepth 1 -name 'ak-*' | wc -l | tr -d ' ')" -eq 0 ]] &&
+   [[ ! -e "$TEST_HOME/.codex/plugins/ak" ]] &&
+   [[ ! -e "$TEST_HOME/.agents/plugins/plugins/ak" ]] &&
    [[ ! -e "$TEST_HOME/.agents/plugins/marketplace.json" ]] &&
    [[ -f "$TEST_HOME/.codex/skills/keep-me" ]]; then
   ok "--codex removes generated marketplace seed and owned entries"
@@ -108,7 +108,7 @@ else
 fi
 
 new_home
-if run_uninstall --agy && grep -q '^plugin uninstall dev-workflow$' "$TEST_HOME/agy.calls"; then
+if run_uninstall --agy && grep -q '^plugin uninstall ak$' "$TEST_HOME/agy.calls"; then
   ok "--agy delegates uninstall to agy"
 else
   bad "--agy delegates uninstall to agy"
@@ -117,10 +117,10 @@ fi
 new_home
 run_install --all
 if run_uninstall --all &&
-   [[ ! -e "$TEST_HOME/.claude/plugins/dev-workflow" ]] &&
-   [[ ! -e "$TEST_HOME/.cursor/skills/dev-workflow-audit" ]] &&
-   [[ ! -e "$TEST_HOME/.codex/skills/dev-workflow-audit" ]] &&
-   grep -q '^plugin uninstall dev-workflow$' "$TEST_HOME/agy.calls"; then
+   [[ ! -e "$TEST_HOME/.claude/plugins/ak" ]] &&
+   [[ ! -e "$TEST_HOME/.cursor/skills/ak-audit" ]] &&
+   [[ ! -e "$TEST_HOME/.codex/skills/ak-audit" ]] &&
+   grep -q '^plugin uninstall ak$' "$TEST_HOME/agy.calls"; then
   ok "--all uninstalls every supported host"
 else
   bad "--all uninstalls every supported host"
@@ -130,7 +130,7 @@ new_home
 run_install --claude
 if run_uninstall_without_agy --all; then
   bad "--all rejects missing agy before partial uninstall"
-elif [[ -L "$TEST_HOME/.claude/plugins/dev-workflow" ]]; then
+elif [[ -L "$TEST_HOME/.claude/plugins/ak" ]]; then
   ok "--all rejects missing agy before partial uninstall"
 else
   bad "--all rejects missing agy before partial uninstall"

@@ -6,3 +6,4 @@ arguments: [ticket_id]
 
 Run tests and record evidence.
 Invoke `skills/test`.
+Next: `/ak:check`.

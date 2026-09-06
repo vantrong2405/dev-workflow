@@ -6,3 +6,4 @@ arguments: [ticket_id]
 
 User confirms clarify decisions and spec changes.
 Invoke `skills/confirm`.
+Next: `/ak:plan`.

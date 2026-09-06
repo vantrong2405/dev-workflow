@@ -42,7 +42,7 @@ Two different kinds of "I don't know" come up during learning; they route differ
   `file:line` that's unclear, and **keep exploring the rest of the scope** — one
   unclear function does not stall the whole pass. At the end of the pass, report the
   opened ticket paths so the user knows what's waiting, and answer them whenever
-  (async) via `/dev-workflow:coaching <ticket-id> <answer>`.
+  (async) via `/ak:coaching <ticket-id> <answer>`.
 
 Do not open a ticket for something a few more minutes of code reading would resolve —
 tickets are for genuine business-intent gaps, not a shortcut around exploration effort.
