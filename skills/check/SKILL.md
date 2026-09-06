@@ -2,12 +2,12 @@
 name: check
 description: >-
   Run deterministic structural gates G0–G9 or AUDIT. Supports --strict, --verify-net, and JSON.
-argument-hint: "<Ticket ID> [slug?] [G8|G9?] — never invent PASS"
+argument-hint: "<Ticket ID> [slug?] [tests|ready|final] — never invent PASS"
 arguments: [ticket_id, project_slug, min_gate]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:check
+# /ak:check
 
 Apply `references/skill-quality.md`; report deterministic structure/provenance only, never semantic correctness.
 

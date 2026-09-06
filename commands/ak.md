@@ -6,3 +6,5 @@ arguments: [ticket_id, url_or_path, extra]
 
 Default entry point — one analysis pass, one confirm, continuous dispatch.
 Invoke `skills/start`.
+Next: none to call yourself — it runs the whole chain and stops only where a human actually
+needs to decide something.

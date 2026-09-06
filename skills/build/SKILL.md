@@ -2,13 +2,13 @@
 name: build
 description: >-
   TDD then implement. Uses plan/spec/clarify decisions when they exist; self-analyzes
-  the ticket directly when they don't. Use /dev-workflow:build standalone or after plan.
+  the ticket directly when they don't. Use /ak:build standalone or after plan.
 argument-hint: "[Ticket ID] Uses confirmed plan if present, else self-analyzes and calls :plan first — implement with TDD and log claim↔test mapping in the worklog. Ticket ID optional, derived if omitted"
 arguments: [ticket_id]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:build
+# /ak:build
 
 Apply `references/skill-quality.md`; this stage owns scoped RED→GREEN evidence at the smallest responsible seam.
 
@@ -17,9 +17,9 @@ Apply `references/skill-quality.md`; this stage owns scoped RED→GREEN evidence
 A Senior dev handed a ticket checks the spec is confirmed before opening an editor — do the same
 here, but "checks" doesn't mean "refuses to start without one already on file":
 
-0. If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per
+0. If first `/ak:*` command in this workspace, ask `[LOCALE]` per
    `references/locale.md` before anything else.
-1. Run `/dev-workflow:check <Ticket> [slug] G5` for awareness.
+1. Run `/ak:check <Ticket> [slug] G5` for awareness.
 2. If it PASSes, build from the existing `04-plan.md` as normal.
 3. If it FAILs because `04-plan.md` doesn't exist yet (standalone `:build` call, no `:plan` run),
    **invoke `:plan` yourself** first — per the composition model, `:build` pulls in the stage it
@@ -61,12 +61,12 @@ error is not proof the validation logic exists yet.
 
 Also invoke the `tdd` skill for a more thorough red-green-refactor treatment (refactor-phase
 discipline, project-specific test patterns) on top of the required cycle above — it does not
-replace the required cycle. dev-workflow installs `tdd` automatically if it isn't already present.
+replace the required cycle. ak installs `tdd` automatically if it isn't already present.
 Fill **Commit SHA** at the top of `05-impl-log.md` with the real commit the PASS claim is made
 against — required for P0/P1/`--strict`, same bar as G8's test evidence. A PASS recorded with no
 SHA, or against a stale one, is not verifiable evidence.
 Do not edit another ticket’s impl log or reuse its PASS marks.
-Run `/dev-workflow:check <Ticket> [slug] G6` before any G6 PASS claim.
+Run `/ak:check <Ticket> [slug] G6` before any G6 PASS claim.
 Coverage gaps, failing tests, or missing/stale Commit SHA keep build FAIL.
 Never invent PASS; never invent a confirmed decision — a self-analyzed plan may proceed to code,
 but a clarify claim someone already flagged OPEN may not be silently resolved by `:build`.

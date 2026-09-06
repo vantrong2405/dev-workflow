@@ -9,13 +9,13 @@ arguments: [brief]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:learning
+# /ak:learning
 
 Apply `references/skill-quality.md`; this stage owns provenance-backed knowledge, not confident-looking summaries.
 
 Self-learn from brief and bootstrap workspace.
 Read `references/project-root.md`, `references/learning.md`, `references/locale.md`, `references/workspace-health.md`.
-If this is the first `/dev-workflow:*` command in this workspace (`domain-knowledge/INDEX.md`
+If this is the first `/ak:*` command in this workspace (`domain-knowledge/INDEX.md`
 missing or its `Chat locale` field unset), ask `[LOCALE]` per `references/locale.md` **before**
 anything else — before creating the workspace, before the `[LEARNING]` business questions below.
 Reply and ask `[LEARNING]` in **user language**.
@@ -32,6 +32,14 @@ For every promoted material fact, record truth label, `path:line`/source, verifi
 List areas deliberately not explored; do not imply project-wide completeness from a targeted pass.
 After create: run `bin/check-workspace.sh <slug>` — must PASS before later stages.
 
+**Seed/update the product repo's own `CLAUDE.md`** (each repo listed in `PROJECT.md`'s Repos
+table, not the ak plugin's own tree): find the `<!-- ak:managed:start -->` … `<!-- ak:managed:end
+-->` block. Missing entirely → append `templates/CLAUDE.md`'s block (with real Project/slug/
+workspace-root/locale filled in) to the end of that repo's `CLAUDE.md`, creating the file fresh
+with just that block if the repo has no `CLAUDE.md` yet. Block already present → replace only what
+is between the markers with the refreshed values; never touch a single line outside them — that's
+the repo owner's own content, not this pipeline's. Report the exact path written.
+
 Read `references/learning.md` fully before exploring — it defines the "captured enough" DoD bar
 (Bad vs Good example), the target-driven exploration rule (follow real entrypoints, don't
 full-read the repo), and the **"Ticket vs inline"** routing rule for unclear items. Do not tick
@@ -46,6 +54,6 @@ the rest of the scope. Reserve inline `[LEARNING]` questions for structural/navi
 only (which repo/slug, which of two same-named services is live) — anything that's actually about
 *why* the code behaves this way goes to a ticket, not the inline prompt. Report opened ticket paths
 at the end of the pass; they don't block `Exit` (see `learning.md`), they're answered async via
-`/dev-workflow:coaching <ticket-id> <answer>`.
+`/ak:coaching <ticket-id> <answer>`.
 
 Refuse hardcoded paths, invented business, and jumping to later stages.

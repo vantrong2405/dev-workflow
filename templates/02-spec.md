@@ -8,6 +8,21 @@
 
 If the full spec lives elsewhere (e.g. `tasks/specs/Feature.md`), link it — do not duplicate unless needed.
 
+## Intent
+
+**Goal (1–2 sentences):** …
+
+**User / persona:** …
+
+**Q&A (verbatim):**
+
+**Q:** …
+**A (verbatim):** …
+
+**Confirmed assumptions:**
+
+1. …
+
 ## Out of scope
 
 - …
@@ -82,4 +97,3 @@ Screen/field not decided yet → `☐ TBD — confirm before :build closes`, nev
 ## Links
 
 - Full spec: …
-- Intent: `01-intent.md`

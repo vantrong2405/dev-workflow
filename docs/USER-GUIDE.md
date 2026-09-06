@@ -1,4 +1,4 @@
-# User guide — dev-workflow v0.4
+# User guide — ak v0.4
 
 **[English](USER-GUIDE.md)** · [Tiếng Việt](USER-GUIDE.vi.md) · [日本語](USER-GUIDE.ja.md)
 
@@ -32,7 +32,7 @@ sign-off is the judge of meaning — neither substitutes for the other.
 
 **Per ticket:** build/evidence live only in `worklogs/<Ticket_ID>/` — tickets do not share worklogs.
 
-**After done:** `/dev-workflow:clean TICKET-123` archives that worklog (keeps domain knowledge).
+**After done:** `/ak:clean TICKET-123` archives that worklog (keeps domain knowledge).
 
 ### Naming (easy to mix up)
 
@@ -55,8 +55,8 @@ files under your home directory but does not edit product source. Read [INSTALL.
 for exact paths, updates, isolated smoke testing, and troubleshooting.
 
 ```bash
-git clone https://github.com/ninhlee99/dev-workflow.git
-cd dev-workflow
+git clone https://github.com/trongdn2405/ak.git
+cd ak
 bash install.sh             # Claude Code only (default)
 bash install.sh --cursor    # Cursor only
 bash install.sh --codex     # Codex only
@@ -77,24 +77,24 @@ fast-forwards the clone, and refreshes that agent without touching local reposit
 
 Then in your **product** repo (recommended):
 
-1. Copy `templates/ci/github-actions-dev-workflow.yml` → `.github/workflows/dev-workflow-gates.yml`
-2. Branch protection → require status check `dev-workflow-gates`
+1. Copy `templates/ci/github-actions-ak.yml` → `.github/workflows/ak-gates.yml`
+2. Branch protection → require status check `ak-gates`
 3. Optional marker at project root:
 
 ```json
 { "projectSlug": "my-app" }
 ```
 
-Save as `.dev-workflow.json` (see `templates/workspaces/_project/dev-workflow.json.example`).
+Save as `.ak.json` (see `templates/workspaces/_project/ak.json.example`).
 
 Smoke test:
 
 ```bash
-export DEV_WORKFLOW_WORKSPACES_ROOT=/path/to/dev-workflow/fixtures
-export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-workspace.sh" demo
+export AK_WORKSPACES_ROOT=/path/to/ak/fixtures
+export AK_PLUGIN=/path/to/ak
+"$AK_PLUGIN/bin/check-workspace.sh" demo
 # expect RESULT: PASS
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" PASS-G9 --project demo --min G9 --strict
+"$AK_PLUGIN/bin/check-gates.sh" PASS-G9 --project demo --min G9 --strict
 # expect RESULT: PASS
 ```
 
@@ -145,17 +145,17 @@ decomposing again.
 ### 3.1 First time on a project
 
 ```
-/dev-workflow:learning
+/ak:learning
 ```
 
 Paste a short brief: project name, repos, domains.  
 AI creates `~/.workspaces/<slug>/` and asks when business rules are unclear.  
-You answer with `/dev-workflow:coaching` when AI is wrong or specs change.
+You answer with `/ak:coaching` when AI is wrong or specs change.
 
 ### 3.2 Start a ticket
 
 ```
-/dev-workflow TICKET-123 https://your-tracker/TICKET-123
+/ak TICKET-123 https://your-tracker/TICKET-123
 ```
 
 AI analyzes once, asks once, then runs to the **first genuine stop**. You can also run stages
@@ -167,7 +167,7 @@ other occurrence to keep in sync), `:start` runs `:build` immediately and report
 of asking first — say `"full pipeline"` afterward if you want it undone and redone with full ceremony.
 This only fires when the duplicate-scan is clean; if it finds another occurrence, `:start` falls back
 to the normal P2 offer-and-wait. **This no-ask auto-run is `:start`-only** — calling
-`/dev-workflow:build TICKET-123` directly still self-analyzes on a Trivial-shaped ticket, but it
+`/ak:build TICKET-123` directly still self-analyzes on a Trivial-shaped ticket, but it
 doesn't skip reporting first, since `:start`'s step-1 offer is what the no-ask behavior lives on.
 See `references/risk.md` "Trivial" — the `≤5 lines` threshold is an
 unvalidated starting guess, tracked the same way as the epic-signal claim-count backstop.
@@ -175,7 +175,7 @@ unvalidated starting guess, tracked the same way as the epic-signal claim-count 
 ### 3.3 Spec (G1)
 
 ```
-/dev-workflow:spec TICKET-123
+/ak:spec TICKET-123
 ```
 
 Must produce `02-spec.md` with:
@@ -201,10 +201,14 @@ Must produce `02-spec.md` with:
 | **P1** | Normal behavior / API change (default) |
 | **P2** | Copy, config, docs, tiny non-behavioral chore |
 
+**P0 is the only hard-gated tier.** P1 and P2 share the same fast lane: G2/G3/G4/G5/G7 soften to
+warn-only (no mid-flow `CONFIRM G3` stop) unless you pass `--strict`. `:audit` after G9 stays the
+one human sign-off point for P1/P2 — see `references/risk.md` for the full rationale.
+
 ### 3.4 Clarify (G2)
 
 ```
-/dev-workflow:clarify TICKET-123
+/ak:clarify TICKET-123
 ```
 
 Fills `03-clarify-report.md` + `03-qa-log.md`.  
@@ -226,7 +230,7 @@ permission check) across the codebase. Found more than one occurrence → become
 ### 3.5 Confirm (G3) — **you send this back**
 
 ```
-/dev-workflow:confirm TICKET-123
+/ak:confirm TICKET-123
 ```
 
 AI summarizes the decisions, then hands you a ready-to-send line with the ticket and date already
@@ -258,11 +262,11 @@ Rules:
 ### 3.6 Plan → Build → Review → Fix → Test
 
 ```
-/dev-workflow:plan   TICKET-123
-/dev-workflow:build  TICKET-123
-/dev-workflow:review TICKET-123
-/dev-workflow:fix    TICKET-123   # only if P0/P1 findings OPEN
-/dev-workflow:test   TICKET-123
+/ak:plan   TICKET-123
+/ak:build  TICKET-123
+/ak:review TICKET-123
+/ak:fix    TICKET-123   # only if P0/P1 findings OPEN
+/ak:test   TICKET-123
 ```
 
 | Stage | Artifact | Must include |
@@ -279,15 +283,15 @@ Rules:
 ### 3.7 Check + Ship (merge gate)
 
 ```
-/dev-workflow:check TICKET-123
-/dev-workflow:ship  TICKET-123
+/ak:check TICKET-123
+/ak:ship  TICKET-123
 ```
 
 Before merge, from terminal (or CI):
 
 ```bash
-export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min G9 --strict
+export AK_PLUGIN=/path/to/ak
+"$AK_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min G9 --strict
 ```
 
 `--strict` turns on CI-native checks (SHA vs git HEAD, junit parse) and implies `--verify-net`.
@@ -300,7 +304,7 @@ Canary `N/A` needs a reason ≥ 10 characters (and must not be a repeated placeh
 ### 3.7.5 Audit (semantic coherence, before ship is final)
 
 ```
-/dev-workflow:audit TICKET-123
+/ak:audit TICKET-123
 ```
 
 G9 structural PASS only proves fields are filled and not placeholders — it does not prove the
@@ -318,13 +322,13 @@ Every C1–C8 section requires two verbatim evidence quotes, a non-placeholder r
 COHERENT/N/A verdict. Any missing, UNCLEAR, or INCOHERENT pair blocks PASS.
 
 ```bash
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min AUDIT --strict
+"$AK_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min AUDIT --strict
 ```
 
 ### 3.8 Clean (free memory after ticket)
 
 ```
-/dev-workflow:clean TICKET-123
+/ak:clean TICKET-123
 ```
 
 - Default: **archive** `worklogs/TICKET-123/` → `worklogs/.archive/TICKET-123-<UTC>/`
@@ -337,24 +341,40 @@ COHERENT/N/A verdict. Any missing, UNCLEAR, or INCOHERENT pair blocks PASS.
 CLI:
 
 ```bash
-"$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug>
-"$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug> --force --purge
+"$AK_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug>
+"$AK_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug> --force --purge
 ```
 
-### 3.9 Feedback (report a dev-workflow bug)
+### 3.9 Feedback (report a ak bug)
 
 ```
-/dev-workflow:feedback [what went wrong]
+/ak:feedback [what went wrong]
 ```
 
-- Use when **dev-workflow itself** misbehaves — a skill's output, a gate, a generated artifact —
+- Use when **ak itself** misbehaves — a skill's output, a gate, a generated artifact —
   not a bug in the product/ticket you are building.
 - Aggregates whatever you've described this session, checks `gh issue list` for an existing
   duplicate, then asks you to confirm each title/body before filing.
-- Files via `gh issue create --repo ninhlee99/dev-workflow`; reports back the issue URL(s), or the
+- Files via `gh issue create --repo trongdn2405/ak`; reports back the issue URL(s), or the
   reason an item was skipped (duplicate, declined).
 - Requires `gh` installed and authenticated (`gh auth status`). Any authenticated GitHub account
   can open an issue on a public repo — write access is not required.
+
+### 3.10 Flow diagram (bug/UI-flow reproduction)
+
+```
+/ak:flow-diagram [logs / bug description / route+controller context]
+```
+
+- Standalone utility, not part of G0–G9 — no ticket/worklog required.
+- Reconstructs the reported UI flow and each bug as a plain-text Unicode box-drawing diagram
+  (Senior QA Automation / Tech Lead persona): role/account stated, concrete fake login
+  credentials, `[Action hiện tại]`/`[Action tiếp theo]` prefixes, a dedicated
+  `📍🌐🎯💡` block per bug grounded in the real code. N bugs in the input → N independent diagrams.
+- **Never asks mid-task.** It filters noise, makes the best-supported call, and delivers the
+  finished diagram(s) in one response — you review the result and decide what to do with it, the
+  same way `:confirm`/`:audit` are the only points where you're asked to decide something.
+- Format spec + full example: [references/flow-diagram.md](../references/flow-diagram.md).
 
 ---
 
@@ -378,7 +398,8 @@ CLI:
 | `:audit` | Semantic coherence + human sign-off | Ticket ID (after G9 PASS) |
 | `:clean` | Archive/purge ticket worklog | Ticket ID; optional `--force` / `--purge` |
 | `:status` | Where am I? | Optional Ticket ID |
-| `:feedback` | Report a dev-workflow bug/pain point | Free text description |
+| `:feedback` | Report a ak bug/pain point | Free text description |
+| `:flow-diagram` | Bug/UI-flow reproduction diagram | Logs/description; never asks mid-task |
 
 No Ticket ID? `:start`/`:spec`/`:clarify`/`:plan`/`:build` still run — nothing is refused. If the
 work needs a decision recorded, the AI derives a short `adhoc-<slug>` name from the task itself
@@ -394,8 +415,7 @@ Created under `~/.workspaces/<project-slug>/worklogs/<Ticket_ID>/`:
 | File | Role | Gate |
 |------|------|------|
 | `INDEX.md` | Status, Type, Risk, Pilot, waivers, CONFIRM lines | all |
-| `01-intent.md` | Intent, Type, requirement provenance | — |
-| `02-spec.md` | Type/Risk, provenance, AC/NEG/PERM/EDGE, UI oracles | G1 |
+| `02-spec.md` | Intent, Type/Risk, provenance, AC/NEG/PERM/EDGE, UI oracles | G1 |
 | `02b-security.md` | Threat / secrets / contract (**P0 only**) | G1 |
 | `03-clarify-report.md` | Claims MATCH/NO/UNCLEAR | G2 |
 | `03-qa-log.md` | Open questions | G5 |
@@ -466,7 +486,7 @@ Success bar: each of miss-spec / reopen / escape ≤ half of baseline; `gate_blo
 
 | Symptom | Fix |
 |---------|-----|
-| `worklog not found` | `cd` into product project, or set `DEV_WORKFLOW_WORKSPACES_ROOT` / `--project <slug>` |
+| `worklog not found` | `cd` into product project, or set `AK_WORKSPACES_ROOT` / `--project <slug>` |
 | G3 FAIL missing CONFIRM | Type exact phrase; ensure both INDEX and `03b-human-confirm.md` |
 | G3 FAIL AI name | Use a real human name, not Claude/Cursor/… |
 | G8 FAIL SHA | Put real `git rev-parse HEAD` into machine evidence table |

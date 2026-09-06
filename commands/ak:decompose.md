@@ -6,3 +6,4 @@ arguments: [epic_description]
 
 Split scope, surface risks/dependencies, one confirm.
 Invoke `skills/decompose`.
+Next: `/ak` on the first unblocked child ticket.

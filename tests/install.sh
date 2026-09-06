@@ -28,8 +28,8 @@ run_install_without_agy() {
 
 new_home
 if run_install &&
-   [[ -L "$TEST_HOME/.claude/plugins/dev-workflow" ]] &&
-   [[ -f "$TEST_HOME/.claude/commands/dev-workflow:audit.md" ]] &&
+   [[ -L "$TEST_HOME/.claude/plugins/ak" ]] &&
+   [[ -f "$TEST_HOME/.claude/commands/ak:audit.md" ]] &&
    [[ ! -e "$TEST_HOME/.cursor" ]] &&
    [[ ! -e "$TEST_HOME/.codex" ]] &&
    [[ ! -e "$TEST_HOME/agy.calls" ]]; then
@@ -40,7 +40,7 @@ fi
 
 new_home
 if run_install --claude &&
-   [[ -L "$TEST_HOME/.claude/plugins/dev-workflow" ]] &&
+   [[ -L "$TEST_HOME/.claude/plugins/ak" ]] &&
    [[ ! -e "$TEST_HOME/.cursor" ]] &&
    [[ ! -e "$TEST_HOME/.codex" ]]; then
   ok "--claude installs Claude only"
@@ -48,7 +48,7 @@ else
   bad "--claude installs Claude only"
 fi
 
-if [[ "$(rg -l '^disable-model-invocation: false$' "$ROOT"/skills/*/SKILL.md | wc -l | tr -d ' ')" -eq 18 ]]; then
+if [[ "$(rg -l '^disable-model-invocation: false$' "$ROOT"/skills/*/SKILL.md | wc -l | tr -d ' ')" -eq 19 ]]; then
   ok "all source skills permit model invocation"
 else
   bad "all source skills permit model invocation"
@@ -56,11 +56,11 @@ fi
 
 new_home
 if run_install --host cursor &&
-   [[ -L "$TEST_HOME/.cursor/skills/dev-workflow-audit" ]] &&
-   [[ "$(find "$TEST_HOME/.cursor/skills" -maxdepth 1 -type l -name 'dev-workflow-*' | wc -l | tr -d ' ')" -eq 18 ]] &&
-   [[ -f "$TEST_HOME/.cursor/commands/dev-workflow:audit.md" ]] &&
+   [[ -L "$TEST_HOME/.cursor/skills/ak-audit" ]] &&
+   [[ "$(find "$TEST_HOME/.cursor/skills" -maxdepth 1 -type l -name 'ak-*' | wc -l | tr -d ' ')" -eq 19 ]] &&
+   [[ -f "$TEST_HOME/.cursor/commands/ak:audit.md" ]] &&
    [[ ! -e "$TEST_HOME/.claude" ]] &&
-   cmp -s "$ROOT/skills/audit/SKILL.md" "$TEST_HOME/.cursor/skills/dev-workflow-audit/SKILL.md"; then
+   cmp -s "$ROOT/skills/audit/SKILL.md" "$TEST_HOME/.cursor/skills/ak-audit/SKILL.md"; then
   ok "Cursor receives full live stage skills"
 else
   bad "Cursor receives full live stage skills"
@@ -68,7 +68,7 @@ fi
 
 new_home
 if run_install --cursor &&
-   [[ -L "$TEST_HOME/.cursor/skills/dev-workflow-audit" ]] &&
+   [[ -L "$TEST_HOME/.cursor/skills/ak-audit" ]] &&
    [[ ! -e "$TEST_HOME/.claude" ]]; then
   ok "--cursor aliases Cursor-only install"
 else
@@ -77,11 +77,11 @@ fi
 
 new_home
 if run_install --host codex &&
-   [[ -L "$TEST_HOME/.codex/skills/dev-workflow-audit" ]] &&
-   [[ "$(find "$TEST_HOME/.codex/skills" -maxdepth 1 -type l -name 'dev-workflow-*' | wc -l | tr -d ' ')" -eq 18 ]] &&
-   [[ -L "$TEST_HOME/.codex/plugins/dev-workflow" ]] &&
-   [[ -L "$TEST_HOME/.agents/plugins/plugins/dev-workflow" ]] &&
-   grep -q '"path": "./plugins/dev-workflow"' "$TEST_HOME/.agents/plugins/marketplace.json" &&
+   [[ -L "$TEST_HOME/.codex/skills/ak-audit" ]] &&
+   [[ "$(find "$TEST_HOME/.codex/skills" -maxdepth 1 -type l -name 'ak-*' | wc -l | tr -d ' ')" -eq 19 ]] &&
+   [[ -L "$TEST_HOME/.codex/plugins/ak" ]] &&
+   [[ -L "$TEST_HOME/.agents/plugins/plugins/ak" ]] &&
+   grep -q '"path": "./plugins/ak"' "$TEST_HOME/.agents/plugins/marketplace.json" &&
    [[ ! -e "$TEST_HOME/.claude" ]]; then
   ok "Codex receives full live skills and canonical marketplace source"
 else
@@ -90,7 +90,7 @@ fi
 
 new_home
 if run_install --codex &&
-   [[ -L "$TEST_HOME/.codex/skills/dev-workflow-audit" ]] &&
+   [[ -L "$TEST_HOME/.codex/skills/ak-audit" ]] &&
    [[ ! -e "$TEST_HOME/.claude" ]]; then
   ok "--codex aliases Codex-only install"
 else
@@ -117,9 +117,9 @@ fi
 
 new_home
 if run_install --host all &&
-   [[ -L "$TEST_HOME/.claude/plugins/dev-workflow" ]] &&
-   [[ -L "$TEST_HOME/.cursor/skills/dev-workflow-audit" ]] &&
-   [[ -L "$TEST_HOME/.codex/skills/dev-workflow-audit" ]] &&
+   [[ -L "$TEST_HOME/.claude/plugins/ak" ]] &&
+   [[ -L "$TEST_HOME/.cursor/skills/ak-audit" ]] &&
+   [[ -L "$TEST_HOME/.codex/skills/ak-audit" ]] &&
    grep -q 'plugin install' "$TEST_HOME/agy.calls"; then
   ok "all installs every supported host"
 else
@@ -128,9 +128,9 @@ fi
 
 new_home
 if run_install --all &&
-   [[ -L "$TEST_HOME/.claude/plugins/dev-workflow" ]] &&
-   [[ -L "$TEST_HOME/.cursor/skills/dev-workflow-audit" ]] &&
-   [[ -L "$TEST_HOME/.codex/skills/dev-workflow-audit" ]] &&
+   [[ -L "$TEST_HOME/.claude/plugins/ak" ]] &&
+   [[ -L "$TEST_HOME/.cursor/skills/ak-audit" ]] &&
+   [[ -L "$TEST_HOME/.codex/skills/ak-audit" ]] &&
    grep -q 'plugin install' "$TEST_HOME/agy.calls"; then
   ok "--all installs every supported host"
 else

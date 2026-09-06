@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Uninstall dev-workflow from one coding agent, or all supported agents.
+# Uninstall ak from one coding agent, or all supported agents.
 set -euo pipefail
 
-STAGES=(decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback)
+STAGES=(decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback flow-diagram)
 TARGET_HOST="claude"
 TARGET_EXPLICIT=0
-PROJECT_CLAUDE_CMDS="${DEV_WORKFLOW_PROJECT_CLAUDE_COMMANDS:-}"
+PROJECT_CLAUDE_CMDS="${AK_PROJECT_CLAUDE_COMMANDS:-}"
 
 usage() {
   cat <<'EOF'
@@ -100,7 +100,8 @@ remove_colon_commands() {
   local dest="$1" label="$2" f
   [[ -d "$dest" ]] || return 0
   shopt -s nullglob
-  for f in "$dest"/dev-workflow.md "$dest"/dev-workflow:*.md "$dest"/dev-workflow-*.md; do
+  for f in "$dest"/ak.md "$dest"/ak:*.md "$dest"/ak-*.md \
+           "$dest"/dev-workflow.md "$dest"/dev-workflow:*.md "$dest"/dev-workflow-*.md; do
     remove_owned_path "$f" "$label"
   done
   shopt -u nullglob
@@ -109,8 +110,11 @@ remove_colon_commands() {
 remove_stage_entries() {
   local dest_root="$1" label="$2" s
   for s in "${STAGES[@]}"; do
+    remove_owned_path "$dest_root/ak-$s" "$label"
     remove_owned_path "$dest_root/dev-workflow-$s" "$label"
   done
+  remove_owned_path "$dest_root/ak" "$label"
+  remove_owned_path "$dest_root/ak-qa" "$label"
   remove_owned_path "$dest_root/dev-workflow" "$label"
   remove_owned_path "$dest_root/dev-workflow-qa" "$label"
 }
@@ -122,8 +126,8 @@ codex_marketplace_seed() {
   "interface": { "displayName": "Personal" },
   "plugins": [
     {
-      "name": "dev-workflow",
-      "source": { "source": "local", "path": "./plugins/dev-workflow" },
+      "name": "ak",
+      "source": { "source": "local", "path": "./plugins/ak" },
       "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     }
@@ -134,6 +138,8 @@ EOF
 
 uninstall_claude() {
   echo "==> Claude Code"
+  remove_owned_path "$HOME/.claude/skills/ak-plugin" "claude-skill"
+  remove_owned_path "$HOME/.claude/plugins/ak" "claude-plugin"
   remove_owned_path "$HOME/.claude/skills/dev-workflow-plugin" "claude-skill"
   remove_owned_path "$HOME/.claude/plugins/dev-workflow" "claude-plugin"
   remove_colon_commands "$HOME/.claude/commands" "claude-command"
@@ -152,6 +158,8 @@ uninstall_codex() {
   local marketplace="$HOME/.agents/plugins/marketplace.json"
   echo "==> Codex"
   remove_stage_entries "$HOME/.codex/skills" "codex-skill"
+  remove_owned_path "$HOME/.codex/plugins/ak" "codex-plugin"
+  remove_owned_path "$HOME/.agents/plugins/plugins/ak" "codex-marketplace-link"
   remove_owned_path "$HOME/.codex/plugins/dev-workflow" "codex-plugin"
   remove_owned_path "$HOME/.agents/plugins/plugins/dev-workflow" "codex-marketplace-link"
   if [[ -f "$marketplace" ]]; then
@@ -165,7 +173,7 @@ uninstall_codex() {
 
 uninstall_antigravity() {
   echo "==> Antigravity"
-  agy plugin uninstall dev-workflow
+  agy plugin uninstall ak
 }
 
 echo "==> Target: $TARGET_HOST"

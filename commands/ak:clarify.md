@@ -6,3 +6,4 @@ arguments: [ticket_id, confirm_text]
 
 Clarify open questions.
 Invoke `skills/clarify`.
+Next: `/ak:confirm`.

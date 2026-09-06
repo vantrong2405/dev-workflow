@@ -6,8 +6,8 @@ it. Update this file first, then run `tests/regression.sh` to detect contract dr
 
 `Requires` marked **(preferred)** means the stage runs standalone and self-analyzes the ticket
 directly when that artifact is absent — it does not hard-block. Everything else in `Requires` is a
-genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-report.md`,
-`03-clarify-README.md` (formerly `03-conflict-*`).
+genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-report.md`
+(formerly `03-conflict-*`).
 
 | Stage | Requires | Owns/produces | Blocks on | Next |
 |---|---|---|---|---|
@@ -53,7 +53,7 @@ stage exists and does not need to. `decompose` runs before any child's
 `spec`/`start`. `start` is the default way to walk `spec`→`check` (and hand
 off to `ship`/`audit`) with as few user-visible stops as the ticket's Risk
 allows — never a shortcut around what a stage requires. Calling a named
-`/dev-workflow:<stage>` command directly instead of `start` remains valid for
+`/ak:<stage>` command directly instead of `start` remains valid for
 manual, step-by-step control of one specific step. `references/risk.md`'s
 P0/P1/P2 lanes govern `start`'s stop count exactly as they govern the manual
 path; `start` does not introduce a fourth lane.

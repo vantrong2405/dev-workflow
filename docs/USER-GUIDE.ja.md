@@ -1,4 +1,4 @@
-# ユーザーガイド — dev-workflow v0.4
+# ユーザーガイド — ak v0.4
 
 [English](USER-GUIDE.md) · [Tiếng Việt](USER-GUIDE.vi.md) · **[日本語](USER-GUIDE.ja.md)**
 
@@ -34,7 +34,7 @@ AIはPASSを自称してはならない。`bin/check-gates.sh`は構造の判定
 
 **チケット単位:** ビルド/エビデンスは`worklogs/<Ticket_ID>/`内にのみ存在する — チケット間でworklogを共有しない。
 
-**完了後:** `/dev-workflow:clean TICKET-123`でそのworklogをアーカイブする（ドメイン知識は保持）。
+**完了後:** `/ak:clean TICKET-123`でそのworklogをアーカイブする（ドメイン知識は保持）。
 
 ### 名前の紛らわしさに注意
 
@@ -57,8 +57,8 @@ AIはPASSを自称してはならない。`bin/check-gates.sh`は構造の判定
 トラブルシューティングは [INSTALL.md](./INSTALL.md) を参照。
 
 ```bash
-git clone https://github.com/ninhlee99/dev-workflow.git
-cd dev-workflow
+git clone https://github.com/trongdn2405/ak.git
+cd ak
 bash install.sh             # Claude Codeのみ（デフォルト）
 bash install.sh --cursor    # Cursorのみ
 bash install.sh --codex     # Codexのみ
@@ -79,24 +79,24 @@ cloneをfast-forwardし、ローカルのリポジトリ変更に触れずにそ
 
 その後、**製品**リポジトリで（推奨）:
 
-1. `templates/ci/github-actions-dev-workflow.yml` → `.github/workflows/dev-workflow-gates.yml` にコピー
-2. ブランチ保護 → ステータスチェック`dev-workflow-gates`を必須にする
+1. `templates/ci/github-actions-ak.yml` → `.github/workflows/ak-gates.yml` にコピー
+2. ブランチ保護 → ステータスチェック`ak-gates`を必須にする
 3. プロジェクトルートに任意のマーカー:
 
 ```json
 { "projectSlug": "my-app" }
 ```
 
-`.dev-workflow.json`として保存（`templates/workspaces/_project/dev-workflow.json.example`参照）。
+`.ak.json`として保存（`templates/workspaces/_project/ak.json.example`参照）。
 
 Smoke test:
 
 ```bash
-export DEV_WORKFLOW_WORKSPACES_ROOT=/path/to/dev-workflow/fixtures
-export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-workspace.sh" demo
+export AK_WORKSPACES_ROOT=/path/to/ak/fixtures
+export AK_PLUGIN=/path/to/ak
+"$AK_PLUGIN/bin/check-workspace.sh" demo
 # expect RESULT: PASS
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" PASS-G9 --project demo --min G9 --strict
+"$AK_PLUGIN/bin/check-gates.sh" PASS-G9 --project demo --min G9 --strict
 # expect RESULT: PASS
 ```
 
@@ -146,17 +146,17 @@ flowchart TD
 ### 3.1 プロジェクトで初めて使うとき
 
 ```
-/dev-workflow:learning
+/ak:learning
 ```
 
 短いbriefを貼り付ける: プロジェクト名、リポジトリ、ドメイン。
 AIは`~/.workspaces/<slug>/`を作成し、ビジネスルールが不明な場合は質問する。
-AIが間違っている、またはspecが変わった場合は`/dev-workflow:coaching`で答える。
+AIが間違っている、またはspecが変わった場合は`/ak:coaching`で答える。
 
 ### 3.2 チケットを開始する
 
 ```
-/dev-workflow TICKET-123 https://your-tracker/TICKET-123
+/ak TICKET-123 https://your-tracker/TICKET-123
 ```
 
 AIは一度だけ分析し、一度だけ質問し、**最初の本当の停止点**まで実行する。各stageを手動で実行することもできる
@@ -168,7 +168,7 @@ AIは一度だけ分析し、一度だけ質問し、**最初の本当の停止�
 それを取り消してフルセレモニーでやり直してほしい場合は後で「full pipeline」と言えばよい。
 このno-ask自動実行はduplicate-scanがクリーンな場合にのみ発火する; 別の出現箇所が見つかった場合、
 `:start`は通常のP2の提案して待つに戻る。**このno-ask自動実行は`:start`専用**だ —
-`/dev-workflow:build TICKET-123`を直接呼ぶと、Trivial形のチケットでも自己分析はするが、
+`/ak:build TICKET-123`を直接呼ぶと、Trivial形のチケットでも自己分析はするが、
 事前報告をスキップしない。no-ask動作は`:start`のステップ1のオファーに宿っているからだ。
 `references/risk.md`の"Trivial"を参照 — `≤5行`という閾値はepic-signalのclaim-countバックストップと
 同様に扱われる、未検証の初期的な推測値である。
@@ -176,7 +176,7 @@ AIは一度だけ分析し、一度だけ質問し、**最初の本当の停止�
 ### 3.3 Spec（G1）
 
 ```
-/dev-workflow:spec TICKET-123
+/ak:spec TICKET-123
 ```
 
 `02-spec.md`に以下を含めて作成する必要がある:
@@ -205,7 +205,7 @@ AIは一度だけ分析し、一度だけ質問し、**最初の本当の停止�
 ### 3.4 Clarify（G2）
 
 ```
-/dev-workflow:clarify TICKET-123
+/ak:clarify TICKET-123
 ```
 
 `03-clarify-report.md` + `03-qa-log.md`を記入する。
@@ -227,7 +227,7 @@ rule、calculation、permission check）をgrepする。複数の出現箇所が
 ### 3.5 Confirm（G3） — **あなたがこれを送り返す**
 
 ```
-/dev-workflow:confirm TICKET-123
+/ak:confirm TICKET-123
 ```
 
 AIは決定事項を要約し、チケットと日付がすでに記入済みの送信準備完了の行を渡す — あなたは名前を編集して
@@ -258,11 +258,11 @@ CONFIRM G3-PM: TICKET-123 PM Name 2026-08-11
 ### 3.6 Plan → Build → Review → Fix → Test
 
 ```
-/dev-workflow:plan   TICKET-123
-/dev-workflow:build  TICKET-123
-/dev-workflow:review TICKET-123
-/dev-workflow:fix    TICKET-123   # P0/P1の指摘がOPENの場合のみ
-/dev-workflow:test   TICKET-123
+/ak:plan   TICKET-123
+/ak:build  TICKET-123
+/ak:review TICKET-123
+/ak:fix    TICKET-123   # P0/P1の指摘がOPENの場合のみ
+/ak:test   TICKET-123
 ```
 
 | Stage | アーティファクト | 含めるべき内容 |
@@ -281,15 +281,15 @@ SKIPしない。
 ### 3.7 Check + Ship（mergeゲート）
 
 ```
-/dev-workflow:check TICKET-123
-/dev-workflow:ship  TICKET-123
+/ak:check TICKET-123
+/ak:ship  TICKET-123
 ```
 
 mergeの前に、ターミナル（またはCI）から:
 
 ```bash
-export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min G9 --strict
+export AK_PLUGIN=/path/to/ak
+"$AK_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min G9 --strict
 ```
 
 `--strict`はCIネイティブなチェック（SHA vs git HEAD、junit parse）を有効にし、`--verify-net`を含意する。
@@ -302,7 +302,7 @@ Canary `N/A`には10文字以上の理由が必要（「abc abc abc」のよう�
 ### 3.7.5 Audit（意味論的整合性、shipが最終確定する前）
 
 ```
-/dev-workflow:audit TICKET-123
+/ak:audit TICKET-123
 ```
 
 G9の構造的PASSはフィールドが埋まっていてplaceholderでないことを証明するだけであり、内容が
@@ -320,13 +320,13 @@ AUDIT CONFIRM: TICKET-123 <your name> <YYYY-MM-DD>
 確定したCOHERENT/N/A判定を要求する。欠落、UNCLEAR、またはINCOHERENTなペアがあればPASSをブロックする。
 
 ```bash
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min AUDIT --strict
+"$AK_PLUGIN/bin/check-gates.sh" TICKET-123 --project <slug> --min AUDIT --strict
 ```
 
 ### 3.8 Clean（チケット後にメモリを解放）
 
 ```
-/dev-workflow:clean TICKET-123
+/ak:clean TICKET-123
 ```
 
 - デフォルト: **アーカイブ** `worklogs/TICKET-123/` → `worklogs/.archive/TICKET-123-<UTC>/`
@@ -339,21 +339,21 @@ AUDIT CONFIRM: TICKET-123 <your name> <YYYY-MM-DD>
 CLI:
 
 ```bash
-"$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug>
-"$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug> --force --purge
+"$AK_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug>
+"$AK_PLUGIN/bin/clean-worklog.sh" TICKET-123 --project <slug> --force --purge
 ```
 
-### 3.9 Feedback（dev-workflowのバグを報告する）
+### 3.9 Feedback（akのバグを報告する）
 
 ```
-/dev-workflow:feedback [what went wrong]
+/ak:feedback [what went wrong]
 ```
 
-- **dev-workflow自体**が誤動作したとき使う — skillの出力、gate、生成されたアーティファクトなど —
+- **ak自体**が誤動作したとき使う — skillの出力、gate、生成されたアーティファクトなど —
   あなたが構築している製品/チケットのバグではない。
 - このセッションで説明したことをすべて集約し、`gh issue list`で既存の重複がないか確認してから、
   各title/bodyの確認を求める。
-- `gh issue create --repo ninhlee99/dev-workflow`経由でファイルする; issueのURLを報告する。または
+- `gh issue create --repo trongdn2405/ak`経由でファイルする; issueのURLを報告する。または
   項目がスキップされた理由（重複、却下）を報告する。
 - `gh`のインストールと認証が必要（`gh auth status`）。認証済みの任意のGitHubアカウントは公開リポジトリで
   issueを開ける — write accessは不要。
@@ -380,7 +380,7 @@ CLI:
 | `:audit` | 意味論的整合性 + 人によるサインオフ | Ticket ID（G9 PASS後） |
 | `:clean` | チケットworklogをアーカイブ/削除 | Ticket ID; 任意で`--force` / `--purge` |
 | `:status` | 今どこにいるか？ | Ticket ID（任意） |
-| `:feedback` | dev-workflowのバグ/不満点を報告 | 自由記述 |
+| `:feedback` | akのバグ/不満点を報告 | 自由記述 |
 
 Ticket IDがない？`:start`/`:spec`/`:clarify`/`:plan`/`:build`はそれでも実行される — 何も拒否されない。
 作業に記録すべき決定が必要な場合、AIはタスク自体から短い`adhoc-<slug>`名を導出し、一度だけ知らせる。
@@ -396,8 +396,7 @@ Ticket IDがない？`:start`/`:spec`/`:clarify`/`:plan`/`:build`はそれでも
 | ファイル | 役割 | Gate |
 |------|------|------|
 | `INDEX.md` | Status、Type、Risk、Pilot、waiver、CONFIRM行 | すべて |
-| `01-intent.md` | Intent、Type、要件のprovenance | — |
-| `02-spec.md` | Type/Risk、provenance、AC/NEG/PERM/EDGE、UI oracle | G1 |
+| `02-spec.md` | Intent、Type/Risk、provenance、AC/NEG/PERM/EDGE、UI oracle | G1 |
 | `02b-security.md` | Threat / secrets / contract（**P0のみ**） | G1 |
 | `03-clarify-report.md` | Claims MATCH/NO/UNCLEAR | G2 |
 | `03-qa-log.md` | Open questions | G5 |
@@ -471,7 +470,7 @@ INDEXでのWAIVE行フォーマット:
 
 | 症状 | 修正方法 |
 |---------|-----|
-| `worklog not found` | 製品プロジェクトに`cd`する、または`DEV_WORKFLOW_WORKSPACES_ROOT` / `--project <slug>`を設定する |
+| `worklog not found` | 製品プロジェクトに`cd`する、または`AK_WORKSPACES_ROOT` / `--project <slug>`を設定する |
 | G3 FAIL CONFIRM欠落 | 正確なフレーズを入力する; INDEXと`03b-human-confirm.md`の両方に存在することを確認する |
 | G3 FAIL AI名 | Claude/Cursor/…ではなく実際の人間の名前を使う |
 | G8 FAIL SHA | 実際の`git rev-parse HEAD`を機械エビデンステーブルに入れる |

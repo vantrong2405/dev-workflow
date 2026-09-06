@@ -9,11 +9,11 @@ arguments: [ticket_id, url_or_path, spec_path]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:spec
+# /ak:spec
 
 Apply `references/skill-quality.md` and the authoritative `references/stage-contract.md`.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 No Ticket ID given → follow `references/task-isolation.md` "No Ticket ID given": proceed with
@@ -28,21 +28,26 @@ loud symptom). Apply it now, not just when something already looks broken.
 
 **First, classify the ticket** — Bug / New feature / Spec change / Requirement change / Refactor —
 per `references/ba-integrity.md`'s "Classify the ticket first" section, and record it as `Type: …`
-in **both** `01-intent.md` and the worklog `INDEX.md` (`Type:` field, next to `Risk:`) —
+in **both** `02-spec.md` and the worklog `INDEX.md` (`Type:` field, next to `Risk:`) —
 `INDEX.md` is what downstream stages (`:clarify` especially) actually check, so a classification
-that only lives in `01-intent.md` will get missed. Each type has its own investigation strategy in
-that file; use the matching one, not the bug procedure by default. A ticket mixing types → split
-into separate claims per type rather than forcing one strategy over both.
+that only lives in `02-spec.md` will get missed. Each type has its own investigation strategy in
+`ba-integrity.md`; use the matching one, not the bug procedure by default. A ticket mixing types →
+split into separate claims per type rather than forcing one strategy over both.
 
 **Type: Refactor short-circuits this stage's content, not its artifacts.** Per
 `references/ba-integrity.md`'s "Refactor" section, state the no-behavior-change claim and confirm
-test coverage in `01-intent.md`. Still write `02-spec.md` (G1 checks for it) with `Type: Refactor`
+test coverage in `02-spec.md`'s Intent section. Still write `02-spec.md` (G1 checks for it) with
+`Type: Refactor`
 selected, Risk set per `references/risk.md`, and the no-behavior-change claim + coverage
 confirmation in place of Scenario AC/NEG/PERM/EDGE — there is no new AC to normalize, so the AC
 section states that plainly instead of being left blank. Then hand off straight to `:build`,
 skipping `:clarify`/`:confirm` (stage-contract.md's entry-point routing) — no spec delta exists
 for `:clarify` to diff. If any claim in the ticket isn't provably behavior-preserving, that claim
 is not Refactor — reclassify it and run this stage's full process for it.
+
+If the ticket URL argument is a Redmine link, resolve it per `references/tracker-fetch.md` before
+treating it as opaque text — read the real ticket (and its comment thread), don't ask the user to
+re-paste what the tracker already has.
 
 Normalize requirements into worklog. Attach a source/truth label to each decision-driving
 requirement. Reporter wording is `DOCUMENTED`, not independently verified, unless corroborated;
@@ -75,7 +80,7 @@ explicit `UNVERIFIED`, and every UI oracle is observable without asking the impl
 above is met, check whether any claim is ambiguous or contradicts observed running behavior. If
 so, say so before continuing — e.g. `"N claim(s) need clarification — running :clarify now. Say
 'stop' to hold here instead."` — then **invoke `:clarify` yourself**, so a bare
-`/dev-workflow:spec <Ticket>` call leaves the ticket with both a normalized spec and its open
+`/ak:spec <Ticket>` call leaves the ticket with both a normalized spec and its open
 questions surfaced/decided, not just a spec that silently defers questions to a stage the user may
 never call. This is a heads-up, not a blocking question — proceed unless the user's next message
 says to stop. Skip this internal call when there is nothing ambiguous to raise — an empty claim

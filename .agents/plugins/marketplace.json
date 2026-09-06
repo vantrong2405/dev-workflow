@@ -1,11 +1,11 @@
 {
-  "name": "dev-workflow-marketplace",
+  "name": "ak-marketplace",
   "interface": {
-    "displayName": "Dev Workflow"
+    "displayName": "ak"
   },
   "plugins": [
     {
-      "name": "dev-workflow",
+      "name": "ak",
       "source": {
         "source": "local",
         "path": "./"
@@ -16,7 +16,7 @@
       },
       "category": "Productivity",
       "interface": {
-        "displayName": "Dev Workflow"
+        "displayName": "ak"
       }
     }
   ]

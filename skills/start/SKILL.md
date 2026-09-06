@@ -4,20 +4,20 @@ description: >-
   Default entry point. One deep analysis pass, one collapsed confirm, then
   continuous dispatch through the pipeline to the first genuine stop (a
   P0/P1 finding, an unresolved clarify claim, or ship/audit — always manual).
-  Use /dev-workflow.
+  Use /ak.
 argument-hint: "[Ticket ID] [ticket URL] [spec path or paste] — analyze once, ask once, then run to the first real stop; Ticket ID optional, derived if omitted"
 arguments: [ticket_id, url_or_path, extra]
 disable-model-invocation: false
 ---
 
-# /dev-workflow
+# /ak
 
 Apply `references/skill-quality.md` and dispatch exclusively from `references/stage-contract.md`.
 
 ## What this is, in one line
 
 Same pipeline, same gates, same evidence bar as calling every
-`/dev-workflow:<stage>` command by hand in order — the only thing this stage
+`/ak:<stage>` command by hand in order — the only thing this stage
 optimizes is **how many times the user is interrupted**, not what gets
 verified or skipped. Nothing here weakens G0–G9/AUDIT; each stage it dispatches
 still owns its own real PASS/FAIL. Prefer this over calling stages one at a
@@ -29,7 +29,7 @@ of one specific step.
 Read `references/workflow.md`, `references/project-root.md`,
 `references/locale.md`, `references/task-isolation.md`,
 `references/epic-signal.md`.
-If this is the first `/dev-workflow:*` command in this workspace, ask
+If this is the first `/ak:*` command in this workspace, ask
 `[LOCALE]` per `references/locale.md` before anything else — do not guess
 from message language. Otherwise read the already-set `Chat locale` from
 `domain-knowledge/INDEX.md` and use it silently.
@@ -152,7 +152,7 @@ Once step 2's questions are resolved, dispatch `skills/confirm/SKILL.md`
 directly — its simplified reply path (a name, "ok <name>", "đồng ý, <name>"
 is enough; it composes and shows back the exact line, no verbatim retype
 required) applies the same way here as it does when the user calls
-`/dev-workflow:confirm` by hand. Nothing to duplicate here.
+`/ak:confirm` by hand. Nothing to duplicate here.
 
 Risk=P2: still offer the existing skip (`skills/confirm/SKILL.md`'s P2 fast
 path) in the same message as the line, so the user picks once: send the name,
@@ -189,7 +189,7 @@ Stop immediately, mid-sequence, on any of:
 `:ship` (G9) and `:audit` (AUDIT) are never auto-dispatched, even after
 check PASS. Both require a human decision this stage cannot supply on the
 user's behalf — G9 rollout/rollback judgment, AUDIT sign-off. Report check
-PASS and hand back exactly `/dev-workflow:ship <Ticket>` as the next
+PASS and hand back exactly `/ak:ship <Ticket>` as the next
 command.
 
 ## Forbid

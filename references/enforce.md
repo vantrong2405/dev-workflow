@@ -3,8 +3,8 @@
 ## Pre-merge (required)
 
 ```bash
-export DEV_WORKFLOW_PLUGIN=/path/to/dev-workflow
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" <Ticket> \
+export AK_PLUGIN=/path/to/ak
+"$AK_PLUGIN/bin/check-gates.sh" <Ticket> \
   --project <slug> --min G9 --strict
 ```
 
@@ -21,7 +21,7 @@ For P0/P1, G9 is only the structural floor. After `:audit` and human `AUDIT CONF
 final check:
 
 ```bash
-"$DEV_WORKFLOW_PLUGIN/bin/check-gates.sh" <Ticket> \
+"$AK_PLUGIN/bin/check-gates.sh" <Ticket> \
   --project <slug> --min AUDIT --strict
 ```
 
@@ -36,8 +36,8 @@ PASS only if:
 
 ## Org binding
 
-1. Copy `templates/ci/github-actions-dev-workflow.yml` → product `.github/workflows/`  
-2. Require check name `dev-workflow-gates`  
+1. Copy `templates/ci/github-actions-ak.yml` → product `.github/workflows/`  
+2. Require check name `ak-gates`  
 3. After pilot: `bin/pilot-score.sh workspaces/<slug>/pilot/PILOT-v0.4.md`  
 
 See [docs/USER-GUIDE.md](../docs/USER-GUIDE.md) and [maturity.md](./maturity.md).

@@ -6,3 +6,4 @@ arguments: [topic]
 
 Coach changed business rules.
 Invoke `skills/coaching`.
+Next: `/ak:spec` or `/ak:clarify` on the affected ticket(s).

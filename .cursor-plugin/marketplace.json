@@ -1,15 +1,15 @@
 {
-  "name": "dev-workflow-marketplace",
+  "name": "ak-marketplace",
   "owner": {
-    "name": "Ninh Lee",
-    "email": "levanninh2101@gmail.com"
+    "name": "trongdn2405",
+    "email": "trongdn2405@gmail.com"
   },
   "metadata": {
-    "description": "Cursor marketplace catalog for dev-workflow plugin"
+    "description": "Cursor marketplace catalog for ak plugin"
   },
   "plugins": [
     {
-      "name": "dev-workflow",
+      "name": "ak",
       "source": "./",
       "description": "Typed requirements, evidence provenance, TDD, G0-G9 gates, and C1-C8 semantic audit.",
       "version": "0.4.0",

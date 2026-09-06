@@ -1,4 +1,4 @@
-# Structure — dev-workflow v0.4
+# Structure — ak v0.4
 
 Annotated repository layout. Edit the owning source (`skills/`, `references/`, `templates/`,
 `commands/`, or `bin/`), then rerun `bash install.sh` with the original target flag whenever
@@ -9,7 +9,7 @@ host-installed copies or links need refreshing.
 ## Tree
 
 ```
-dev-workflow/
+ak/
 ├── bin/
 │   ├── check-gates.sh              # G0–G9 + AUDIT structural enforcer
 │   ├── check-workspace.sh          # Workspace layout health (W0–W6)
@@ -18,14 +18,15 @@ dev-workflow/
 │   └── lib/resolve-paths.sh        # Project/workspace/slug resolution
 │
 ├── commands/                       # Slash commands (Cursor / Claude)
-│   ├── dev-workflow.md             # alias → :start
-│   └── dev-workflow:<stage>.md     # one file per stage
+│   ├── ak.md             # alias → :start
+│   └── ak:<stage>.md     # one file per stage
 │
 ├── skills/<stage>/SKILL.md         # Stage instructions (AI)
 │   ├── references/ → ../../references
 │   └── templates/  → ../../templates
 │
 ├── references/                     # Shared rules (load on demand)
+│   ├── vocabulary.md                # Command vs Skill vs Reference vs Template, defined
 │   ├── workflow.md                 # Gate table + stage order
 │   ├── stage-contract.md           # Authoritative stage inputs/outputs/routing
 │   ├── skill-quality.md            # Evidence, truth labels, 9/10 quality contract
@@ -38,20 +39,22 @@ dev-workflow/
 │   ├── learning.md / coaching.md
 │   ├── clarify-check.md
 │   ├── code-review.md              # Neutral diff review + :fix triage
+│   ├── ui-evidence.md              # Highlight-box + before/after screenshot technique
+│   ├── tracker-fetch.md            # Redmine link → real ticket content (MCP or API key)
 │   ├── locale.md                   # Chat/setup in user language
 │   ├── workspace-health.md         # check-workspace.sh rules
 │   └── task-isolation.md           # One worklog per ticket
 │
 ├── templates/                      # Filled per ticket / project
 │   ├── INDEX.md
-│   ├── 01-intent.md … 07-ship.md
+│   ├── 02-spec.md … 07-ship.md
 │   ├── 02b-security.md             # P0
 │   ├── 03b-human-confirm.md        # G3 anti-forge
 │   ├── 06b-test-evidence.md        # G8
 │   ├── 06c-fix-log.md              # Review finding triage / fixes
 │   ├── pilot-metrics.md
-│   ├── gate-checklist.md / pr-checklist.md
-│   ├── ci/github-actions-dev-workflow.yml
+│   ├── CLAUDE.md                    # Seeded/updated by :learning into each product repo's own CLAUDE.md
+│   ├── ci/github-actions-ak.yml
 │   ├── domain-knowledge/
 │   └── workspaces/_project|/_repo/
 │
@@ -71,13 +74,13 @@ dev-workflow/
 ```
 
 **Stages in `install.sh`:**
-`decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback`
+`decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback flow-diagram`
 
 **Host selection:** default is `claude`; shorthand flags are `--claude`, `--cursor`, `--codex`,
 `--agy`, `--all` (the long-form `--host`/`--agent` is also supported). Cursor and Codex receive live
 per-stage links; Antigravity is rebuilt, validated, and installed through `agy`. `update.sh` requires
 a clean worktree, fast-forwards the source, then refreshes the selected target. `uninstall.sh`
-mirrors these targets and removes only dev-workflow-owned host entries — it preserves the repository
+mirrors these targets and removes only ak-owned host entries — it preserves the repository
 clone, worklogs, unrelated files, and any modified Codex marketplace configuration.
 
 ---

@@ -42,4 +42,13 @@ Steps:
    only the end state. `:confirm` (`CONFIRM G3:`) locks the resulting decisions in afterward.
 
 Any unresolved claim or OPEN row means G2/G5 FAIL; block `:plan` and `:build`.
-P2 may WAIVE G2 only with INDEX five-field row + reason.
+P2 may WAIVE G2 only with INDEX five-field row + reason (reason | owner | expiry | PM note) — never
+on a claim touching money/permission/a legacy rule unless the PM note says so explicitly. A claim
+missing its current `file:line` isn't ready for Dev confirm either way.
+
+**G2 PASS when:** every non-`MATCH` claim has explicit `Decision` + `Owner` + `Date`, or it's a
+valid greenfield case (no legacy code touched) with an INDEX note saying so. A partial confirm is
+G2 FAIL — keep the claim `ASK`, don't let Plan/Build start on it.
+
+Store `03-clarify-report.md` and `03-qa-log.md` under the parent project worklog only — never under
+`docs/clarify-reports/` or `spec/clarify-reports/` inside a child app repo.

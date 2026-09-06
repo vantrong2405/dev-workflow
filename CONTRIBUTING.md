@@ -1,4 +1,4 @@
-# Contributing to dev-workflow
+# Contributing to ak
 
 Thanks for improving this plugin. This document explains how to contribute changes, add stages, or
 fix bugs.
@@ -27,8 +27,8 @@ See [STRUCTURE.md](./STRUCTURE.md) for a full annotated layout. The key principl
 ## Development workflow
 
 ```bash
-git clone git@github.com:ninhlee99/dev-workflow.git
-cd dev-workflow
+git clone git@github.com:trongdn2405/ak.git
+cd ak
 bash install.sh --claude  # choose one host; use --all only when intended
 ```
 
@@ -39,7 +39,7 @@ Edit files, then rerun the installer for the specific host being tested.
 ## Adding a new stage
 
 1. Create `skills/<stage>/SKILL.md` (see existing stages for structure).
-2. Create `commands/dev-workflow:<stage>.md` with `description` and `argument-hint` frontmatter.
+2. Create `commands/ak:<stage>.md` with `description` and `argument-hint` frontmatter.
 3. Add `<stage>` to the `STAGES` array in `install.sh`.
 4. If the stage produces an artifact, add a template under `templates/`.
 5. Document the gate (if any) in `references/workflow.md` and `bin/check-gates.sh`.
@@ -59,19 +59,19 @@ cannot be validated safely with a small grep/awk rule.
 Always test with the `fixtures/workspaces/demo` fixture:
 
 ```bash
-DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
+AK_WORKSPACES_ROOT=./fixtures \
   ./bin/check-gates.sh FIX-FAIL --project demo --min G1
 # expect exit 1
 
-DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
+AK_WORKSPACES_ROOT=./fixtures \
   ./bin/check-gates.sh PASS-G8 --project demo --min G8
 # expect exit 0
 
-DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
+AK_WORKSPACES_ROOT=./fixtures \
   ./bin/check-gates.sh PASS-G9 --project demo --min G9 --strict
 # expect exit 0
 
-DEV_WORKFLOW_WORKSPACES_ROOT=./fixtures \
+AK_WORKSPACES_ROOT=./fixtures \
   ./bin/check-gates.sh FAIL-G8-missing --project demo --min G8
 # expect exit 1
 

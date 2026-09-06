@@ -17,6 +17,6 @@ one weak dimension cannot be hidden by averaging. Apply `references/skill-qualit
 
 ## Org binding (required for score to hold)
 
-1. Copy `templates/ci/github-actions-dev-workflow.yml` → product repo `.github/workflows/`.
-2. Branch protection: require `dev-workflow-gates` status check.
+1. Copy `templates/ci/github-actions-ak.yml` → product repo `.github/workflows/`.
+2. Branch protection: require `ak-gates` status check.
 3. Run 10-ticket pilot; `bin/pilot-score.sh` must exit 0.

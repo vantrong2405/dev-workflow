@@ -2,17 +2,17 @@
 name: clean
 description: >-
   After ticket done: archive or purge that ticket worklog only to free memory.
-  Never deletes domain-knowledge or other tickets. Use /dev-workflow:clean.
+  Never deletes domain-knowledge or other tickets. Use /ak:clean.
 argument-hint: "<Ticket ID> [--force] [--purge] — archive worklog after ship; --force if G9 incomplete; --purge hard-delete"
 arguments: [ticket_id, flags]
 disable-model-invocation: false
 ---
 
-# /dev-workflow:clean
+# /ak:clean
 
 Apply `references/skill-quality.md`; resolve and print the exact canonical target before mutation.
 
-If first `/dev-workflow:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
+If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
 before anything else.
 
 Free memory after a finished ticket by removing **that ticket’s worklog only**.
@@ -24,7 +24,7 @@ Free memory after a finished ticket by removing **that ticket’s worklog only**
 3. Run real cleaner (do not invent delete):
 
 ```bash
-"$DEV_WORKFLOW_PLUGIN/bin/clean-worklog.sh" <Ticket_ID> [--project slug] [--force] [--purge]
+"$AK_PLUGIN/bin/clean-worklog.sh" <Ticket_ID> [--project slug] [--force] [--purge]
 ```
 
 4. Default = **archive** → `worklogs/.archive/<Ticket>-<UTC>/` (active worklog gone; recoverable).

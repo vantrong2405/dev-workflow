@@ -147,7 +147,7 @@ unrelated architecture instead of chasing the one broken path.
 | **Requirement change** | Business rule itself changed (policy, pricing, compliance, workflow) independent of any one feature's implementation | Every place the old rule is encoded — often more than one file/repo — plus who signs off on the new rule |
 | **Refactor** | Ticket explicitly claims no observable behavior change — internal structure, naming, dependency, or file organization only; existing tests are the spec | Every existing test/consumer still passes unmodified after the change — see the refactor procedure below |
 
-State the classification explicitly at the top of the intent/spec doc (`01-intent.md`), one line:
+State the classification explicitly at the top of `02-spec.md`, one line:
 `Type: Bug | New feature | Spec change | Requirement change | Refactor`. If a ticket is a mix (e.g.
 "fix this bug and also change the behavior while we're in here"), split it into separate claims per
 type rather than forcing one strategy to cover both — a bug claim needs a repro + root cause, a

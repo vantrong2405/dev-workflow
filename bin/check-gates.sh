@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# check-gates.sh — gate checker for dev-workflow (v0.4.0).
+# check-gates.sh — gate checker for ak (v0.4.0).
 # Exit 0 = PASS. Exit 1 = FAIL. Exit 2 = usage/path error.
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=lib/resolve-paths.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/resolve-paths.sh"
-resolve_plugin_dir || DEV_WORKFLOW_PLUGIN_DIR="$PLUGIN_DIR"
-PLUGIN_DIR="${DEV_WORKFLOW_PLUGIN_DIR:-$PLUGIN_DIR}"
+resolve_plugin_dir || AK_PLUGIN_DIR="$PLUGIN_DIR"
+PLUGIN_DIR="${AK_PLUGIN_DIR:-$PLUGIN_DIR}"
 
 TICKET=""
 PROJECT_SLUG=""
@@ -22,13 +22,15 @@ RISK="P1"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") <Ticket_ID> [--project <slug>] [--min G0|…|G9|AUDIT] [--strict] [--verify-net] [--json]
+Usage: $(basename "$0") <Ticket_ID> [--project <slug>] [--min G0|…|G9|AUDIT|tests|ready|final] [--strict] [--verify-net] [--json]
 
+--min also accepts plain-word aliases: tests=G8, ready=G9, final=AUDIT.
 Default --min G8. Merge: --min G9 --strict (implies --verify-net).
 Ship final: --min AUDIT (requires G9 PASS + 08-semantic-audit.md human sign-off).
---strict: CI-native verify; no P2 soft; no G8 WAIVE; enable --verify-net.
-G3 requires INDEX phrase + 03b-human-confirm.md (no AI names). P2 without --strict: G3 soft (warn).
-P0: 02b-security.md. Pilot:yes on INDEX requires pilot log row at G9.
+--strict: CI-native verify; no P1/P2 soft; no G8 WAIVE; enable --verify-net.
+G3 requires INDEX phrase + 03b-human-confirm.md (no AI names). P1/P2 without --strict: G3 soft (warn).
+P0: 02b-security.md, always hard — --strict has no effect on P0's own gates, it only removes the
+P1/P2 softening and other CI-native checks. Pilot:yes on INDEX requires pilot log row at G9.
 
 Exit: 0 PASS · 1 FAIL · 2 usage/path error
 EOF
@@ -50,7 +52,7 @@ need_gate() {
 
 p2_soft_gate() {
   local g="$1"
-  [[ "$RISK" == "P2" && "$STRICT" -eq 0 && ( "$g" == "G2" || "$g" == "G3" || "$g" == "G4" || "$g" == "G5" || "$g" == "G7" ) ]]
+  [[ ( "$RISK" == "P2" || "$RISK" == "P1" ) && "$STRICT" -eq 0 && ( "$g" == "G2" || "$g" == "G3" || "$g" == "G4" || "$g" == "G5" || "$g" == "G7" ) ]]
 }
 
 fail() { FAILS+=("$1"); }
@@ -79,26 +81,33 @@ done
 
 [[ -n "$TICKET" ]] || { usage; exit 2; }
 
+# Plain-word aliases for --min, so callers never have to type a G-code.
+case "$MIN_GATE" in
+  tests) MIN_GATE="G8" ;;
+  ready) MIN_GATE="G9" ;;
+  final) MIN_GATE="AUDIT" ;;
+esac
+
 # --strict implies network verify when CI URLs are checked
 if [[ "$STRICT" -eq 1 ]]; then
   VERIFY_NET=1
 fi
 
 if [[ -n "$PROJECT_SLUG" ]]; then
-  export DEV_WORKFLOW_PROJECT_SLUG="$PROJECT_SLUG"
+  export AK_PROJECT_SLUG="$PROJECT_SLUG"
 fi
 WORKLOG="$(resolve_worklog_dir "$TICKET" "${PROJECT_SLUG:-}" || true)"
 if [[ -z "${WORKLOG:-}" ]]; then
   resolve_project_slug "${PROJECT_SLUG:-}" || true
-  WORKLOG="$(resolve_worklog_dir "$TICKET" "${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-}" || true)"
+  WORKLOG="$(resolve_worklog_dir "$TICKET" "${AK_PROJECT_SLUG_RESOLVED:-}" || true)"
 fi
 if [[ -z "${WORKLOG:-}" ]]; then
   echo "ERROR: worklog not found for ticket=$TICKET" >&2
   exit 2
 fi
 
-PROJECT_HOME="${DEV_WORKFLOW_PROJECT_HOME:-$(cd "$WORKLOG/../.." && pwd)}"
-PROJECT_SLUG="${DEV_WORKFLOW_PROJECT_SLUG_RESOLVED:-$(basename "$PROJECT_HOME")}"
+PROJECT_HOME="${AK_PROJECT_HOME:-$(cd "$WORKLOG/../.." && pwd)}"
+PROJECT_SLUG="${AK_PROJECT_SLUG_RESOLVED:-$(basename "$PROJECT_HOME")}"
 echo "resolved: project=$PROJECT_SLUG home=$PROJECT_HOME worklog=$WORKLOG" >&2
 
 INDEX="$WORKLOG/INDEX.md"
@@ -212,7 +221,7 @@ maybe_fail() {
     return
   fi
   if p2_soft_gate "$gate"; then
-    warn "$gate SOFT(P2): $msg"
+    warn "$gate SOFT($RISK): $msg"
     return
   fi
   fail "$gate FAIL: $msg"
@@ -400,14 +409,14 @@ if need_gate G0; then
     if [[ "$present_ticked" -eq 0 && "$dk_lines" -gt 8 ]]; then
       maybe_fail G0 "domain-knowledge/INDEX Present/Coverage table has no area marked done (all ☐)"
     fi
-    # references/locale.md: the first /dev-workflow:* command in a workspace
+    # references/locale.md: the first /ak:* command in a workspace
     # must ask the user's preferred chat language once and store it here —
     # not re-derive it by guessing from message text on every turn. Soft
     # warn (not hard fail): this field is additive to worklogs created
     # before locale-ask existed, and a missing value degrades to English
     # fallback per locale.md rather than blocking the pipeline.
     if ! grep -qE 'Chat locale:\*{0,2}[[:space:]]*(vi|en|ja|[a-z]{2})\b' "$DK_INDEX" 2>/dev/null; then
-      warn "G0: domain-knowledge/INDEX Chat locale not set — should have been asked on first /dev-workflow:* command (see references/locale.md)"
+      warn "G0: domain-knowledge/INDEX Chat locale not set — should have been asked on first /ak:* command (see references/locale.md)"
     fi
     # DoD line 5 of the template: "Last learning or Last coaching within 90
     # days if touching that domain". A ticked Present area from a session 2
@@ -900,7 +909,7 @@ if need_gate G7; then
     open_p0p1_count="$(printf '%s\n' "$open_p0p1" | grep -cE '.' || true)"
     open_p0p1_count="${open_p0p1_count:-0}"
     if [[ -n "$open_p0p1" && "$open_p0p1_count" -gt 0 ]]; then
-      maybe_fail G7 "$open_p0p1_count P0/P1 finding(s) still OPEN — run /dev-workflow:fix before G7 can PASS"
+      maybe_fail G7 "$open_p0p1_count P0/P1 finding(s) still OPEN — run /ak:fix before G7 can PASS"
     fi
     grep -qE 'AC evidence|How verified' "$REVIEW" || maybe_fail G7 "06-review-qa missing AC evidence / How verified"
     empty_how="$(grep -E '\|[[:space:]]*(AC|NEG|PERM|EDGE)-[0-9]+[[:space:]]*\|[[:space:]]*\|' "$REVIEW" 2>/dev/null | wc -l | tr -d ' ' || true)"
@@ -963,7 +972,7 @@ if need_gate G7; then
     triaged_count="${triaged_count:-0}"
     if [[ "$triaged_count" -gt 0 ]]; then
       if ! file_ok "$FIXLOG"; then
-        maybe_fail G7 "$triaged_count finding(s) marked FIXED/SKIPPED/DEFERRED but 06c-fix-log.md missing — run /dev-workflow:fix"
+        maybe_fail G7 "$triaged_count finding(s) marked FIXED/SKIPPED/DEFERRED but 06c-fix-log.md missing — run /ak:fix"
       else
         missing_in_fixlog=0
         while IFS= read -r fid; do
@@ -1135,7 +1144,7 @@ fi
 # verdicts themselves are honest; that trust boundary is inherent to any
 # semantic check and is why the human sign-off step exists at all.
 if need_gate AUDIT; then
-  file_ok "$AUDIT" || maybe_fail AUDIT "missing 08-semantic-audit.md — run /dev-workflow:audit"
+  file_ok "$AUDIT" || maybe_fail AUDIT "missing 08-semantic-audit.md — run /ak:audit"
   if file_ok "$AUDIT"; then
     for pair in 1 2 3 4 5 6 7 8; do
       if ! grep -qE "^#{2,3}[[:space:]]+C${pair}([[:space:]]|[[:punct:]])" "$AUDIT"; then

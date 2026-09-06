@@ -1,6 +1,6 @@
 # Feedback
 
-Use when user reports a bug/complaint/pain point about using dev-workflow itself (a skill's
+Use when user reports a bug/complaint/pain point about using ak itself (a skill's
 behavior, gate output, or generated artifact) — not the target product under test/build.
 
 Do:
@@ -9,7 +9,7 @@ Do:
    skill/stage, what happened, what was expected.
 3) deduplicate against existing OPEN GitHub issues (`gh issue list`) before filing new ones.
 4) ask `[FEEDBACK]` to confirm scope/title before creating each issue.
-5) file via `gh issue create` on the dev-workflow plugin repo, label `feedback`.
+5) file via `gh issue create` on the ak plugin repo, label `feedback`.
 6) report back: issue URL(s), title(s), and any item that was skipped (duplicate/declined) with
    reason.
 

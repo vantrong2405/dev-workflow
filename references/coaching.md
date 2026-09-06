@@ -7,7 +7,7 @@ Two entry paths — dispatch on the argument:
 
 ## Path A — answering a coaching ticket
 
-`/dev-workflow:coaching <ticket-id> <answer text>` where `<ticket-id>` resolves to an existing
+`/ak:coaching <ticket-id> <answer text>` where `<ticket-id>` resolves to an existing
 `domain-knowledge/coaching-tickets/<NNN>-*.md` with `Status: OPEN`.
 
 1. Append the answer to the ticket's Thread as the next `A<n>`.

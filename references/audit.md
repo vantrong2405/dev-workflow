@@ -1,6 +1,6 @@
 # Semantic audit (post-structural)
 
-Use with `/dev-workflow:audit`. Runs **after** `check-gates.sh --min G9 --strict` exits 0.
+Use with `/ak:audit`. Runs **after** `check-gates.sh --min G9 --strict` exits 0.
 
 ## Why this exists
 

@@ -6,3 +6,4 @@ arguments: [ticket_id]
 
 Prepare ship output.
 Invoke `skills/ship`.
+Next: `/ak:audit` — the final sign-off before this actually goes out.

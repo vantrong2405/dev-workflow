@@ -1,6 +1,6 @@
 # Code review (neutral)
 
-Use with `/dev-workflow:review` and `/dev-workflow:fix`.
+Use with `/ak:review` and `/ak:fix`.
 Goal: find **real defects in the diff**, not invent bugs from imagined framework behavior.
 
 ## Stance (required)
@@ -94,6 +94,6 @@ Each finding row:
 
 ## After review
 
-- If any P0/P1 `OPEN` → G7 Result = FAIL; next = `/dev-workflow:fix <Ticket>`
+- If any P0/P1 `OPEN` → G7 Result = FAIL; next = `/ak:fix <Ticket>`
 - If only P2 or none → fill AC evidence / UI checklist; then `:test`
 - Never invent G7 PASS when evidence rows lack How/By

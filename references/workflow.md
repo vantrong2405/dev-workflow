@@ -1,7 +1,7 @@
-# Dev Workflow rules
+# ak rules
 
 Goal: clear requirements before code. Use `workspaces/<project-slug>/` from `project-root.md`.
-Risk tiers: see `references/risk.md` (P0 hard / P1 hard / P2 fast).
+Risk tiers: see `references/risk.md` (P0 hard / P1 fast / P2 fast — P0 is the only hard-gated tier).
 
 ## Output contract
 - Read `references/locale.md`: **chat/setup in user language**; gate keywords stay English.
@@ -65,7 +65,7 @@ schedule, entirely outside `:start`.
 — never past it. If G0 fails (domain-knowledge missing or contradicted), `:start` stops and tells
 the user to run `:learning`/`:coaching` themselves, then call `:start` again — it does not invoke
 either on their behalf. Delivery then follows `:spec` → `:clarify` → `:confirm` → `:plan` →
-`:build` → `:review` → (`:fix` if P0/P1 OPEN) → `:test` → `/dev-workflow:check` → `:ship` →
+`:build` → `:review` → (`:fix` if P0/P1 OPEN) → `:test` → `/ak:check` → `:ship` →
 `:audit` → `:status` → (`:clean` when ticket done), stopping only at a genuine blocker or at
 `:ship`/`:audit` (always manual). See `skills/start/SKILL.md` for the full one-stop mechanics.
 `references/stage-contract.md` is authoritative.
@@ -85,11 +85,11 @@ sign-off requirement is never satisfied by self-analysis. See `references/stage-
 
 ## Entry points: `:start` and `:decompose`
 
-`:start` (and the bare `/dev-workflow` alias) is the default way to run a single ticket
-start-to-`:check` — same gates, same evidence bar as calling every `/dev-workflow:<stage>` command
+`:start` (and the bare `/ak` alias) is the default way to run a single ticket
+start-to-`:check` — same gates, same evidence bar as calling every `/ak:<stage>` command
 by hand, just fewer stops: one deep analysis pass up front, one collapsed confirm, then continuous
 dispatch until a genuine stop (P0/P1 finding, an upstream OPEN clarify claim, or `:ship`/`:audit`,
-which stay manual on purpose). The named `/dev-workflow:<stage>` commands remain the manual,
+which stay manual on purpose). The named `/ak:<stage>` commands remain the manual,
 step-by-step path for controlling one specific step — `:start` does not replace them, and either is
 a valid way to work a ticket. See `skills/start/SKILL.md`.
 

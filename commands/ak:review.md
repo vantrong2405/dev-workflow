@@ -7,4 +7,4 @@ arguments: [ticket_id]
 Review code change and fill acceptance evidence.
 Invoke `skills/review`.
 Read `references/code-review.md`.
-If P0/P1 findings stay OPEN → next `/dev-workflow:fix`.
+Next: if any serious finding is still open, `/ak:fix`; otherwise `/ak:test`.

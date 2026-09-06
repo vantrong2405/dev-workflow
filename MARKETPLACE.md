@@ -19,16 +19,16 @@ For prerequisites, files changed, update steps, and troubleshooting, see
 ### Claude Code
 
 ```text
-/plugin marketplace add https://github.com/ninhlee99/dev-workflow
-/plugin install dev-workflow@dev-workflow-marketplace
+/plugin marketplace add https://github.com/trongdn2405/ak
+/plugin install ak@ak-marketplace
 /reload-plugins
 ```
 
 ### Local installer
 
 ```bash
-git clone https://github.com/ninhlee99/dev-workflow.git
-cd dev-workflow
+git clone https://github.com/trongdn2405/ak.git
+cd ak
 bash install.sh                         # Claude only (default)
 bash install.sh --cursor
 bash install.sh --codex
@@ -83,7 +83,7 @@ are preserved. Full removal behavior: **[docs/INSTALL.md](./docs/INSTALL.md#unin
 
 ```bash
 chmod +x bin/check-gates.sh bin/pilot-score.sh
-export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
+export AK_WORKSPACES_ROOT="$(pwd)/fixtures"
 
 ./tests/regression.sh                                                # expect 10 PASS
 ./tests/install.sh                                                   # expect 14 PASS
@@ -95,8 +95,8 @@ export DEV_WORKFLOW_WORKSPACES_ROOT="$(pwd)/fixtures"
 ./bin/pilot-score.sh fixtures/workspaces/demo/pilot/PILOT-v0.4.md  # expect PASS
 ```
 
-In the AI host, restart/reload it if required, then confirm `/dev-workflow:status` and
-`/dev-workflow:audit` appear.
+In the AI host, restart/reload it if required, then confirm `/ak:status` and
+`/ak:audit` appear.
 
 ---
 

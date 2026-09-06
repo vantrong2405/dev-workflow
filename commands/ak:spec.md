@@ -6,3 +6,4 @@ arguments: [ticket_id, url_or_path, spec_path]
 
 Normalize requirements.
 Invoke `skills/spec`.
+Next: `/ak:clarify`.

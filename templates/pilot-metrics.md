@@ -7,7 +7,7 @@ Success bar: miss-spec / reopen / escape each â‰¤ 50% of baseline; gate_blocks â
 ## Setup
 
 1. Baseline = last 10 tickets before workflow.
-2. Pilot = next 10 tickets with dev-workflow.
+2. Pilot = next 10 tickets with ak.
 3. After each ship: add one log row; keep Scores block updated.
 
 ## Metrics
