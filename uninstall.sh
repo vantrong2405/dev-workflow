@@ -100,7 +100,8 @@ remove_colon_commands() {
   local dest="$1" label="$2" f
   [[ -d "$dest" ]] || return 0
   shopt -s nullglob
-  for f in "$dest"/ak.md "$dest"/ak:*.md "$dest"/ak-*.md; do
+  for f in "$dest"/ak.md "$dest"/ak:*.md "$dest"/ak-*.md \
+           "$dest"/dev-workflow.md "$dest"/dev-workflow:*.md "$dest"/dev-workflow-*.md; do
     remove_owned_path "$f" "$label"
   done
   shopt -u nullglob
@@ -110,9 +111,12 @@ remove_stage_entries() {
   local dest_root="$1" label="$2" s
   for s in "${STAGES[@]}"; do
     remove_owned_path "$dest_root/ak-$s" "$label"
+    remove_owned_path "$dest_root/dev-workflow-$s" "$label"
   done
   remove_owned_path "$dest_root/ak" "$label"
   remove_owned_path "$dest_root/ak-qa" "$label"
+  remove_owned_path "$dest_root/dev-workflow" "$label"
+  remove_owned_path "$dest_root/dev-workflow-qa" "$label"
 }
 
 codex_marketplace_seed() {
@@ -136,6 +140,8 @@ uninstall_claude() {
   echo "==> Claude Code"
   remove_owned_path "$HOME/.claude/skills/ak-plugin" "claude-skill"
   remove_owned_path "$HOME/.claude/plugins/ak" "claude-plugin"
+  remove_owned_path "$HOME/.claude/skills/dev-workflow-plugin" "claude-skill"
+  remove_owned_path "$HOME/.claude/plugins/dev-workflow" "claude-plugin"
   remove_colon_commands "$HOME/.claude/commands" "claude-command"
   if [[ -n "$PROJECT_CLAUDE_CMDS" ]]; then
     remove_colon_commands "$PROJECT_CLAUDE_CMDS" "project-claude-command"
@@ -154,6 +160,8 @@ uninstall_codex() {
   remove_stage_entries "$HOME/.codex/skills" "codex-skill"
   remove_owned_path "$HOME/.codex/plugins/ak" "codex-plugin"
   remove_owned_path "$HOME/.agents/plugins/plugins/ak" "codex-marketplace-link"
+  remove_owned_path "$HOME/.codex/plugins/dev-workflow" "codex-plugin"
+  remove_owned_path "$HOME/.agents/plugins/plugins/dev-workflow" "codex-marketplace-link"
   if [[ -f "$marketplace" ]]; then
     if cmp -s "$marketplace" <(codex_marketplace_seed); then
       remove_owned_path "$marketplace" "codex-marketplace"

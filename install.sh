@@ -171,14 +171,19 @@ prepare_source() {
 install_stage_links() {
   local dest_root="$1" label="$2" s src dest
   mkdir -p "$dest_root"
+  # Remove every possible stage link first (both current names and the pre-rebrand
+  # dev-workflow-* names) so a stage deselected via --only, or a leftover from the
+  # old plugin name, doesn't linger as an orphaned symlink.
+  for s in "${ALL_STAGES[@]}"; do
+    rm -rf "$dest_root/ak-$s" "$dest_root/dev-workflow-$s"
+  done
+  rm -rf "$dest_root/ak-qa" "$dest_root/dev-workflow-qa" "$dest_root/dev-workflow"
   for s in "${STAGES[@]}"; do
     src="$PLUGIN_DIR/skills/$s"
     dest="$dest_root/ak-$s"
-    rm -rf "$dest"
     ln -sfn "$src" "$dest"
     echo "  [$label] ak-$s -> $src"
   done
-  rm -rf "$dest_root/ak-qa"
 }
 
 stage_selected() {
@@ -193,6 +198,14 @@ install_colon_commands() {
   local dest="$1" label="$2" src f base stage
   mkdir -p "$dest"
   shopt -s nullglob
+  # Clear every possible command file first — both current names and pre-rebrand
+  # dev-workflow names — so a stage deselected via --only, or a leftover from the
+  # old plugin name, doesn't linger once this runs.
+  for f in "$dest"/ak.md "$dest"/ak:*.md "$dest"/ak-*.md \
+           "$dest"/dev-workflow.md "$dest"/dev-workflow:*.md "$dest"/dev-workflow-*.md; do
+    [[ -e "$f" ]] || continue
+    rm -f "$f"
+  done
   for src in "$PLUGIN_DIR"/commands/ak.md "$PLUGIN_DIR"/commands/ak:*.md; do
     [[ -f "$src" ]] || continue
     base="$(basename "$src")"
@@ -204,10 +217,6 @@ install_colon_commands() {
     stage_selected "$stage" || continue
     cp "$src" "$dest/$base"
     echo "  [$label] $base"
-  done
-  for f in "$dest"/ak-*.md; do
-    [[ -e "$f" ]] || continue
-    rm -f "$f"
   done
   shopt -u nullglob
 }
@@ -238,6 +247,7 @@ install_vendored_skills_if_missing() {
 install_claude() {
   echo "==> Claude Code"
   mkdir -p "$HOME/.claude/skills" "$HOME/.claude/plugins" "$HOME/.claude/commands"
+  rm -rf "$HOME/.claude/skills/dev-workflow-plugin" "$HOME/.claude/plugins/dev-workflow"
   ln -sfn "$PLUGIN_DIR" "$HOME/.claude/skills/ak-plugin"
   ln -sfn "$PLUGIN_DIR" "$HOME/.claude/plugins/ak"
   install_colon_commands "$HOME/.claude/commands" "claude-command"
@@ -252,7 +262,7 @@ install_cursor() {
   echo "==> Cursor"
   mkdir -p "$HOME/.cursor/commands" "$HOME/.cursor/skills"
   install_colon_commands "$HOME/.cursor/commands" "cursor-command"
-  rm -rf "$HOME/.cursor/skills/ak"
+  rm -rf "$HOME/.cursor/skills/ak" "$HOME/.cursor/skills/dev-workflow"
   install_stage_links "$HOME/.cursor/skills" "cursor-skill"
   install_vendored_skills_if_missing "$HOME/.cursor/skills" "cursor-skill"
   echo "  Restart/reload Cursor, then run /ak:status"
@@ -289,6 +299,7 @@ install_codex() {
   mkdir -p "$HOME/.codex/skills" "$HOME/.codex/plugins"
   install_stage_links "$HOME/.codex/skills" "codex-skill"
   install_vendored_skills_if_missing "$HOME/.codex/skills" "codex-skill"
+  rm -rf "$HOME/.codex/plugins/dev-workflow" "$HOME/.agents/plugins/plugins/dev-workflow"
   ln -sfn "$PLUGIN_DIR" "$HOME/.codex/plugins/ak"
   install_codex_marketplace_seed
   echo "  Start a new Codex task so the refreshed skills are discovered"
@@ -319,8 +330,12 @@ install_path() {
   cp -R "$PLUGIN_DIR/references" "$dest/shared/references"
   cp -R "$PLUGIN_DIR/templates" "$dest/shared/templates"
 
-  for s in "${STAGES[@]}"; do
+  # Clear every possible stage dir first so a stage deselected via --only on a
+  # rerun doesn't linger as a stale copy.
+  for s in "${ALL_STAGES[@]}"; do
     rm -rf "$dest/skills/ak-$s"
+  done
+  for s in "${STAGES[@]}"; do
     cp -R "$PLUGIN_DIR/skills/$s" "$dest/skills/ak-$s"
     rm -rf "$dest/skills/ak-$s/references" "$dest/skills/ak-$s/templates"
     ln -sfn ../../shared/references "$dest/skills/ak-$s/references"

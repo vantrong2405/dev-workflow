@@ -48,7 +48,7 @@ else
   bad "--claude installs Claude only"
 fi
 
-if [[ "$(rg -l '^disable-model-invocation: false$' "$ROOT"/skills/*/SKILL.md | wc -l | tr -d ' ')" -eq 18 ]]; then
+if [[ "$(rg -l '^disable-model-invocation: false$' "$ROOT"/skills/*/SKILL.md | wc -l | tr -d ' ')" -eq 19 ]]; then
   ok "all source skills permit model invocation"
 else
   bad "all source skills permit model invocation"
@@ -57,7 +57,7 @@ fi
 new_home
 if run_install --host cursor &&
    [[ -L "$TEST_HOME/.cursor/skills/ak-audit" ]] &&
-   [[ "$(find "$TEST_HOME/.cursor/skills" -maxdepth 1 -type l -name 'ak-*' | wc -l | tr -d ' ')" -eq 18 ]] &&
+   [[ "$(find "$TEST_HOME/.cursor/skills" -maxdepth 1 -type l -name 'ak-*' | wc -l | tr -d ' ')" -eq 19 ]] &&
    [[ -f "$TEST_HOME/.cursor/commands/ak:audit.md" ]] &&
    [[ ! -e "$TEST_HOME/.claude" ]] &&
    cmp -s "$ROOT/skills/audit/SKILL.md" "$TEST_HOME/.cursor/skills/ak-audit/SKILL.md"; then
@@ -78,7 +78,7 @@ fi
 new_home
 if run_install --host codex &&
    [[ -L "$TEST_HOME/.codex/skills/ak-audit" ]] &&
-   [[ "$(find "$TEST_HOME/.codex/skills" -maxdepth 1 -type l -name 'ak-*' | wc -l | tr -d ' ')" -eq 18 ]] &&
+   [[ "$(find "$TEST_HOME/.codex/skills" -maxdepth 1 -type l -name 'ak-*' | wc -l | tr -d ' ')" -eq 19 ]] &&
    [[ -L "$TEST_HOME/.codex/plugins/ak" ]] &&
    [[ -L "$TEST_HOME/.agents/plugins/plugins/ak" ]] &&
    grep -q '"path": "./plugins/ak"' "$TEST_HOME/.agents/plugins/marketplace.json" &&

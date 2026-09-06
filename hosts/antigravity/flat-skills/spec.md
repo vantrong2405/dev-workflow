@@ -1,1 +1,1 @@
-/Users/ninh.le/Documents/daijob/project/plugins/dev-workflow/skills/spec/SKILL.md
+/Users/trong.doan/Documents/agen-kit-skills/skills/spec/SKILL.md
