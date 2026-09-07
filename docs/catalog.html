@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ak Pipeline</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f2;
+  --surface:#ffffff;
+  --surface-2:#e3eaea;
+  --border:#d1dbdb;
+  --border-strong:#b3c1c1;
+  --text:#101817;
+  --text-muted:#4c5b5a;
+  --text-faint:#7c8d8c;
+  --accent:#1f6f6a;
+  --accent-strong:#134f4b;
+  --accent-tint:#dbeeec;
+  --accent2:#6a5b96;
+  --accent2-tint:#eae5f5;
+  --warn:#a8631f;
+  --warn-tint:#f6e8d8;
+  --term-bg:#0e1716;
+  --term-line:#1c2b29;
+  --term-text:#bff2e3;
+  --term-dim:#5f8c81;
+  --term-prompt:#59c9b0;
+  --shadow:0 1px 2px rgba(10,20,20,.05), 0 10px 28px -14px rgba(10,20,20,.16);
+  --radius:12px;
+  --font-display:'Sora',system-ui,sans-serif;
+  --font-body:'Source Sans 3',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1414;
+    --surface:#161d1d;
+    --surface-2:#1c2424;
+    --border:#293333;
+    --border-strong:#3c4949;
+    --text:#e7efee;
+    --text-muted:#9db0af;
+    --text-faint:#647675;
+    --accent:#5fc4bd;
+    --accent-strong:#8fdcd4;
+    --accent-tint:#173230;
+    --accent2:#b6a7db;
+    --accent2-tint:#251f38;
+    --warn:#e3a866;
+    --warn-tint:#33260f;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 32px -16px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1414;
+  --surface:#161d1d;
+  --surface-2:#1c2424;
+  --border:#293333;
+  --border-strong:#3c4949;
+  --text:#e7efee;
+  --text-muted:#9db0af;
+  --text-faint:#647675;
+  --accent:#5fc4bd;
+  --accent-strong:#8fdcd4;
+  --accent-tint:#173230;
+  --accent2:#b6a7db;
+  --accent2-tint:#251f38;
+  --warn:#e3a866;
+  --warn-tint:#33260f;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 32px -16px rgba(0,0,0,.55);
+}
+
+*{box-sizing:border-box;}
+html{color-scheme:light dark;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  margin:0;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent-tint);color:var(--accent-strong);}
+code{font-family:var(--font-mono);}
+img{max-width:100%;}
+
+.wrap{max-width:1040px;margin:0 auto;padding:48px 24px 110px;}
+
+/* ---------- hero ---------- */
+header.hero{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  padding-bottom:36px;
+  margin-bottom:40px;
+  border-bottom:1px solid var(--border);
+}
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:.06em;
+  color:var(--term-prompt);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--term-bg);
+  width:fit-content;
+  padding:6px 12px 6px 10px;
+  border-radius:100px;
+}
+.eyebrow .caret{display:inline-block;width:7px;height:14px;background:var(--term-prompt);animation:blink 1.1s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+h1{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:clamp(28px,4vw,40px);
+  margin:0;
+  text-wrap:balance;
+  letter-spacing:-.015em;
+  max-width:20ch;
+}
+.hero p{
+  max-width:64ch;
+  color:var(--text-muted);
+  font-size:16px;
+  margin:0;
+}
+.hero p b{color:var(--text);font-weight:600;}
+.hero-facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;}
+.fact{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  color:var(--text-muted);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:100px;
+  padding:6px 13px;
+}
+.fact b{color:var(--accent-strong);font-weight:600;}
+
+/* ---------- sections ---------- */
+section{margin-bottom:48px;}
+.section-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:6px;
+  flex-wrap:wrap;
+}
+.section-head h2{
+  font-family:var(--font-display);
+  font-size:19px;
+  font-weight:600;
+  margin:0;
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  letter-spacing:-.005em;
+}
+.section-head .count{
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--text-faint);
+  font-weight:400;
+}
+.section-note{font-size:13.5px;color:var(--text-muted);max-width:56ch;margin:8px 0 16px;}
+.section-note code{font-size:.95em;background:var(--surface-2);padding:1px 5px;border-radius:4px;}
+
+/* ---------- row list (entry / utility groups) ---------- */
+.rows{position:relative;display:flex;flex-direction:column;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface);}
+.row-item{
+  position:relative;
+  display:grid;
+  grid-template-columns:38px 1fr;
+  gap:16px;
+  align-items:flex-start;
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+.row-item:last-child{border-bottom:none;}
+.row-item:hover{background:var(--surface-2);}
+.row-marker{
+  width:34px;height:34px;
+  border-radius:50%;
+  background:var(--accent-tint);
+  color:var(--accent-strong);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);
+  font-weight:600;
+  font-size:15px;
+  flex-shrink:0;
+}
+.row-body{min-width:0;padding-top:2px;}
+.row-name{font-family:var(--font-mono);font-weight:600;font-size:14.5px;color:var(--text);}
+.row-desc{font-size:13.5px;color:var(--text-muted);margin-top:3px;}
+.row-example{font-family:var(--font-mono);font-size:11.5px;color:var(--text-faint);margin-top:5px;}
+.tag{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  letter-spacing:.02em;
+  padding:3px 8px;
+  border-radius:5px;
+  background:var(--surface-2);
+  color:var(--text-faint);
+  white-space:nowrap;
+}
+.tag.human{color:var(--accent-strong);background:var(--accent-tint);}
+.tag.conditional{color:var(--warn);background:var(--warn-tint);}
+
+/* ---------- pipeline = horizontal flow, wraps on narrow screens ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;row-gap:22px;}
+.flow-arrow{
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  width:26px;color:var(--border-strong);font-size:16px;
+  align-self:center;
+}
+.node{
+  flex:0 0 178px;width:178px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+  display:flex;flex-direction:column;
+  gap:8px;
+  transition:border-color .15s,box-shadow .15s;
+}
+.node:hover{border-color:var(--border-strong);box-shadow:var(--shadow);}
+.node-top{display:flex;align-items:center;gap:8px;}
+.node-num{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--accent);color:#fff;
+  font-family:var(--font-mono);font-weight:700;font-size:12px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.node-name{font-family:var(--font-mono);font-weight:600;font-size:13.5px;color:var(--text);}
+.node-desc{font-size:12.5px;color:var(--text-muted);line-height:1.45;}
+.node-files{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);word-break:break-word;}
+.node-tags{display:flex;flex-wrap:wrap;gap:5px;}
+
+/* ---------- flat reference/template lists ---------- */
+details.disclosure{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);overflow:hidden;}
+details.disclosure summary{
+  list-style:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:13px 16px;font-family:var(--font-mono);font-size:13px;color:var(--text-muted);
+  background:var(--surface-2);
+}
+details.disclosure summary::-webkit-details-marker{display:none;}
+details.disclosure summary::after{content:"▾";color:var(--text-faint);transition:transform .15s;}
+details.disclosure[open] summary::after{transform:rotate(180deg);}
+details.disclosure summary b{color:var(--text);}
+.flat-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:var(--border);}
+.flat-row{background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:4px;}
+.flat-file{font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--accent-strong);word-break:break-word;}
+.flat-desc{font-size:12.5px;color:var(--text-muted);line-height:1.4;}
+@media (max-width:640px){
+  .node{flex-basis:100%;width:100%;}
+  .flow-arrow{display:none;}
+}
+
+/* ---------- builder ---------- */
+.builder{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 26px 26px;box-shadow:var(--shadow);}
+.builder-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px;margin-bottom:20px;}
+@media (max-width:640px){.builder-grid{grid-template-columns:1fr;}}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:9px;text-transform:uppercase;letter-spacing:.06em;}
+.mode-toggle{display:flex;background:var(--surface-2);border-radius:9px;padding:3px;width:fit-content;gap:2px;}
+.mode-toggle button{font-family:var(--font-body);font-size:13px;font-weight:600;padding:7px 14px;background:none;color:var(--text-muted);border:none;border-radius:7px;cursor:pointer;transition:background .15s,color .15s;}
+.mode-toggle button.active{background:var(--surface);color:var(--accent-strong);box-shadow:var(--shadow);}
+.path-input,.host-select{width:100%;font-family:var(--font-mono);font-size:13.5px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);}
+.host-select{font-family:var(--font-body);}
+.path-input:focus,.host-select:focus{outline:2px solid var(--accent);outline-offset:1px;}
+
+/* terminal-styled command output — this tool IS a CLI, so the output looks like one */
+.terminal{background:var(--term-bg);border-radius:10px;overflow:hidden;border:1px solid #06110f;}
+.term-bar{display:flex;align-items:center;gap:6px;padding:9px 12px;background:var(--term-line);}
+.term-dot{width:9px;height:9px;border-radius:50%;background:#3a4846;}
+.term-title{margin-left:8px;font-family:var(--font-mono);font-size:11px;color:var(--term-dim);}
+.term-body{padding:16px 18px;font-family:var(--font-mono);font-size:13px;line-height:1.8;overflow-x:auto;white-space:pre;color:var(--term-text);}
+.term-body .prompt{color:var(--term-prompt);}
+.copy-btn{
+  font-family:var(--font-body);font-size:12.5px;font-weight:600;
+  color:var(--accent-strong);background:var(--accent-tint);
+  border:none;border-radius:8px;padding:9px 16px;cursor:pointer;
+  transition:background .15s;margin-top:14px;
+}
+.copy-btn:hover{background:var(--accent);color:#fff;}
+.copy-btn.copied{background:var(--accent);color:#fff;}
+.summary-line{font-size:12.5px;color:var(--text-faint);margin-top:12px;font-family:var(--font-mono);}
+.summary-line b{color:var(--text-muted);font-weight:600;}
+
+.claudemd{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;display:grid;grid-template-columns:1.1fr 1fr;gap:22px;}
+@media (max-width:720px){.claudemd{grid-template-columns:1fr;}}
+.claudemd h3{font-family:var(--font-display);font-size:15px;font-weight:600;margin:0 0 8px;}
+.claudemd ol{margin:0;padding-left:18px;font-size:13.5px;color:var(--text-muted);display:flex;flex-direction:column;gap:8px;}
+.claudemd ol b{color:var(--text);}
+.claudemd-code{
+  background:var(--surface-2);border:1px solid var(--border);border-radius:9px;
+  padding:12px 14px;font-family:var(--font-mono);font-size:11px;line-height:1.65;color:var(--text-muted);
+  overflow-x:auto;white-space:pre;
+}
+.claudemd-code .m{color:var(--accent-strong);}
+
+footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text-faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+footer code{background:var(--surface-2);padding:1px 5px;border-radius:4px;}
+footer a{color:var(--accent);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow"><span>ak · requirement-first delivery pipeline</span><span class="caret"></span></div>
+    <h1>Chọn Skill nào cần, tự sinh lệnh cài</h1>
+    <p>19 <b>Command</b> (<code>/ak:*</code> — cái bạn gõ), mỗi cái đi kèm đúng 1 <b>Skill</b> (chỉ dẫn AI làm theo). Cả hai dùng chung <b>Reference</b> (rule) và <b>Template</b> (khuôn file) bên dưới. Kéo xuống lấy lệnh cài.</p>
+    <div class="hero-facts">
+      <span class="fact"><b>19</b> Command + Skill</span>
+      <span class="fact"><b>23</b> Reference</span>
+      <span class="fact"><b>16</b> Template</span>
+      <span class="fact">cài <b>global</b> hoặc <b>riêng 1 project</b></span>
+    </div>
+  </header>
+
+  <section id="sec-entry">
+    <div class="section-head">
+      <h2>Bắt đầu &amp; thiết lập <span class="count">4 lệnh</span></h2>
+    </div>
+    <div class="section-note">Chạy 1 lần cho project mới, hoặc dùng lệnh gộp để khỏi gọi tay từng bước.</div>
+    <div class="rows" id="grid-entry"></div>
+  </section>
+
+  <section id="sec-claudemd">
+    <div class="section-head"><h2>CLAUDE.md của dự án bạn</h2></div>
+    <div class="section-note">Claude Code tự đọc file này mỗi lần mở dự án — <code>ak</code> tự ghi vào đó, ko phải bạn tự tay soạn.</div>
+    <div class="claudemd">
+      <div>
+        <h3>Cách nó vào file này</h3>
+        <ol>
+          <li>Lần đầu chạy <b>/ak:learning</b> ở 1 project → nếu repo chưa có <code>CLAUDE.md</code>, tạo mới; nếu đã có, <b>chỉ chèn thêm</b> khối đánh dấu bên dưới vào cuối file — chữ bạn viết sẵn ko bị đụng.</li>
+          <li>Trong khối đó có tên project, đường dẫn workspace, cách gõ lệnh bắt đầu ticket, và convention chung ko phụ thuộc stack (chat tiếng gì, code luôn tiếng Anh, diff tối thiểu, comment chỉ giải thích tại sao, git ko tự commit/push, tuyệt đối ko force-push tự ý/ko push protected branch).</li>
+          <li>Sau này slug/workspace/ngôn ngữ đổi → <b>/ak:coaching</b> tự cập nhật lại đúng khối đó, ko chạm phần khác.</li>
+          <li>Bên trong có cả sơ đồ luồng + bảng lệnh tiện ích, ko chỉ vài dòng — xem đủ ở <code>templates/CLAUDE.md</code> trong repo <code>ak</code> (rút gọn dưới đây để dễ xem).</li>
+        </ol>
+      </div>
+      <div class="claudemd-code">&lt;<span class="m">!-- ak:managed:start --</span>&gt;
+## ak — requirement-first delivery pipeline
+
+- Project: <span class="m">My App</span> (`<span class="m">my-app</span>`)
+- Workspace: `~/.workspaces/<span class="m">my-app</span>/`
+### Convention
+- Language: nói <span class="m">vi</span>, code/commit luôn English
+- Minimal diff, comment chỉ giải thích WHY
+- Git: ko tự commit/push, TUYỆT ĐỐI ko force-push tự ý, ko push thẳng nhánh protected
+
+### Start a ticket
+/ak TICKET-ID &lt;link&gt;        chạy hết chuỗi, dừng đúng 2 chỗ
+/ak:status TICKET-ID        xem đang ở đâu
+
+### The chain
+spec → clarify → confirm → plan → build
+  → review → [fix] → test → check → ship → audit
+              ▲ bạn xác nhận ở đây
+
+### Also available
+| learning | coaching | decompose | clean | feedback | flow-diagram |
+...
+&lt;<span class="m">!-- ak:managed:end --</span>&gt;
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-pipeline">
+    <div class="section-head">
+      <h2>Luồng chính <span class="count">11 bước, theo thứ tự</span></h2>
+    </div>
+    <div class="section-note">Gõ <code>/ak:&lt;tên&gt; TICKET-123</code> — hoặc chỉ <code>/ak TICKET-123</code> để nó tự chạy hết chuỗi này, chỉ dừng ở 2 bước có nhãn màu bên dưới.</div>
+    <div class="flow" id="grid-pipeline"></div>
+  </section>
+
+  <section id="sec-utility">
+    <div class="section-head">
+      <h2>Tiện ích <span class="count">4 lệnh</span></h2>
+    </div>
+    <div class="section-note">Dùng khi cần, ko thuộc luồng chính — thứ tự ko quan trọng.</div>
+    <div class="rows" id="grid-utility"></div>
+  </section>
+
+  <section id="sec-references">
+    <div class="section-note" style="margin-bottom:12px;">Reference &amp; Template — tài liệu tra cứu, ko phải thứ đọc hết từ trên xuống. Ko cài lẻ được, mỗi Skill tự đọc cái nó cần lúc chạy. Bấm mở khi cần biết luật/khuôn file nằm ở đâu.</div>
+    <details class="disclosure">
+      <summary><b>Reference</b> — 23 file rule dùng chung</summary>
+      <div class="flat-list" id="list-references"></div>
+    </details>
+  </section>
+
+  <section id="sec-templates">
+    <details class="disclosure">
+      <summary><b>Template</b> — 16 file khuôn worklog</summary>
+      <div class="flat-list" id="list-templates"></div>
+    </details>
+  </section>
+
+  <section id="sec-builder">
+    <div class="section-head"><h2>Lệnh cài đặt</h2></div>
+    <div class="builder">
+      <div class="builder-grid">
+        <div class="field">
+          <label>Cài ở đâu</label>
+          <div class="mode-toggle" id="mode-toggle">
+            <button class="active" data-mode="path">Riêng 1 project</button>
+            <button data-mode="global">Global (~/.claude)</button>
+          </div>
+        </div>
+        <div class="field" id="field-path">
+          <label>Đường dẫn project</label>
+          <input class="path-input" id="path-input" value="~/projects/my-app" spellcheck="false">
+        </div>
+        <div class="field" id="field-host" style="display:none;">
+          <label>Host</label>
+          <select class="host-select" id="host-select">
+            <option value="">Claude Code (mặc định)</option>
+            <option value="--cursor">Cursor</option>
+            <option value="--codex">Codex</option>
+            <option value="--agy">Antigravity</option>
+            <option value="--all">Tất cả host</option>
+          </select>
+        </div>
+      </div>
+      <div class="terminal">
+        <div class="term-bar"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span><span class="term-title">zsh</span></div>
+        <div class="term-body" id="command-box"></div>
+      </div>
+      <button class="copy-btn" id="copy-btn">Copy lệnh</button>
+      <div class="summary-line" id="summary-line"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Nội bộ dùng máy chấm PASS/FAIL thật (<code>check-gates.sh</code>), AI ko được tự nhận đạt.</span>
+    <a href="../docs/USER-GUIDE.md">docs/USER-GUIDE.md</a>
+  </footer>
+
+</div>
+
+<script>
+const STAGES = {
+  entry: [
+    {id:'start', name:'ak', desc:'Điểm vào mặc định — đưa ticket + link vào, tự chạy tới bước dừng đầu tiên.', ex:'/ak TICKET-123 https://tracker/TICKET-123'},
+    {id:'learning', name:'ak:learning', desc:'Lần đầu vào 1 project — AI tự học domain, ghi lại business rule.', ex:'/ak:learning "Brief ngắn về project"'},
+    {id:'coaching', name:'ak:coaching', desc:'Sửa/lại business rule khi AI hiểu sai hoặc spec đổi.', ex:'/ak:coaching "Rule X giờ đổi thành Y"'},
+    {id:'decompose', name:'ak:decompose', desc:'Ticket to quá (epic) → tách thành ticket con, xác nhận 1 lần cho cả cụm.', ex:'/ak:decompose "Epic: redesign checkout flow"'},
+  ],
+  pipeline: [
+    {id:'spec', name:'ak:spec', desc:'Chuẩn hoá yêu cầu: loại ticket, mức rủi ro, tiêu chí chấp nhận.'},
+    {id:'clarify', name:'ak:clarify', desc:'Soi spec với code thật, hỏi những chỗ chưa rõ.'},
+    {id:'confirm', name:'ak:confirm', desc:'Bạn xác nhận tay các quyết định trước khi cho code.', human:true},
+    {id:'plan', name:'ak:plan', desc:'Lên kế hoạch triển khai theo TDD từ scope đã chốt.'},
+    {id:'build', name:'ak:build', desc:'Code thật, viết test trước, map coverage.'},
+    {id:'review', name:'ak:review', desc:'Review diff độc lập, khách quan + điền bằng chứng.'},
+    {id:'fix', name:'ak:fix', desc:'Chỉ sửa finding review xác nhận đúng — bỏ qua cái sai/ngoài phạm vi.', conditional:'nếu review có lỗi'},
+    {id:'test', name:'ak:test', desc:'Chạy test thật, ghi lại bằng chứng (log/screenshot/output).'},
+    {id:'check', name:'ak:check', desc:'Chạy máy chấm PASS/FAIL thật — ko đoán, ko tự nhận.'},
+    {id:'ship', name:'ak:ship', desc:'Soạn checklist an toàn trước khi ship + ghi chú cho PR.'},
+    {id:'audit', name:'ak:audit', desc:'Đọc lại toàn bộ lần cuối — có khớp logic ko, trước khi ship thật.', human:true},
+  ],
+  utility: [
+    {id:'status', name:'ak:status', desc:'Xem nhanh ticket đang ở bước nào, còn thiếu gì.', ex:'/ak:status TICKET-123'},
+    {id:'clean', name:'ak:clean', desc:'Dọn worklog ticket đã xong, giữ lại domain knowledge.', ex:'/ak:clean TICKET-123'},
+    {id:'feedback', name:'ak:feedback', desc:'Báo lỗi/góp ý về chính bộ ak — tự file GitHub issue.', ex:'/ak:feedback "Mô tả lỗi gặp phải"'},
+    {id:'flow-diagram', name:'ak:flow-diagram', desc:'Dựng sơ đồ tái hiện bug/luồng UI, ko hỏi lại giữa chừng.', ex:'/ak:flow-diagram "log lỗi, mô tả bug..."'},
+  ],
+};
+
+const REFERENCES = [
+  {file:'vocabulary.md', desc:'Định nghĩa 4 từ này — Command, Skill, Reference, Template.'},
+  {file:'workflow.md', desc:'Bảng gate + thứ tự stage.'},
+  {file:'stage-contract.md', desc:'Nguồn thật: mỗi stage cần gì, tạo ra gì, next là gì.'},
+  {file:'skill-quality.md', desc:'Chuẩn bằng chứng tối thiểu mọi Skill phải đạt.'},
+  {file:'risk.md', desc:'Định nghĩa P0/P1/P2 và lane nào soft/hard.'},
+  {file:'security.md', desc:'Yêu cầu bảo mật riêng cho ticket P0.'},
+  {file:'maturity.md', desc:'Rubric chấm chất lượng, ko tự chấm.'},
+  {file:'enforce.md', desc:'Cờ/flag mà check-gates.sh dùng.'},
+  {file:'project-root.md', desc:'Cách tự tìm project/workspace từ cwd hoặc marker file.'},
+  {file:'learning.md', desc:'Quy tắc cho lần đầu học domain 1 project.'},
+  {file:'coaching.md', desc:'Quy tắc khi user sửa/cập nhật business rule.'},
+  {file:'clarify-check.md', desc:'Cách phát hiện xung đột spec vs code thật.'},
+  {file:'ba-integrity.md', desc:'Yêu cầu phân tích trung thực, ko phải chép lại cho có.'},
+  {file:'epic-signal.md', desc:'Dấu hiệu nhận biết 1 request là epic, cần tách nhỏ.'},
+  {file:'code-review.md', desc:'Chuẩn review trung lập + cách triage khi fix.'},
+  {file:'ui-evidence.md', desc:'Kỹ thuật chụp bằng chứng UI thật: khoanh vùng lỗi, so sánh trước/sau khi fix bug.'},
+  {file:'audit.md', desc:'8 cặp coherence (C1–C8) audit cuối phải kiểm.'},
+  {file:'locale.md', desc:'Bắt buộc trả lời đúng ngôn ngữ user dùng.'},
+  {file:'workspace-health.md', desc:'Luật check-workspace.sh kiểm layout workspace.'},
+  {file:'task-isolation.md', desc:'Mỗi ticket 1 worklog riêng, ko lẫn state.'},
+  {file:'pilot.md', desc:'Cách đo thành công thật qua 10 ticket pilot.'},
+  {file:'feedback.md', desc:'Cách báo bug/complaint về chính ak.'},
+  {file:'flow-diagram.md', desc:'Format sơ đồ box-drawing cho ak:flow-diagram.'},
+];
+
+const TEMPLATES = [
+  {file:'INDEX.md', desc:'Dashboard 1 ticket — Risk, trạng thái từng gate, log.'},
+  {file:'02-spec.md', desc:'Spec chuẩn hoá — Intent, Type, Risk, AC/NEG/PERM/EDGE (gộp luôn phần ý định gốc).'},
+  {file:'02b-security.md', desc:'Bằng chứng bảo mật — chỉ cần khi Risk=P0.'},
+  {file:'03-clarify-report.md', desc:'Câu hỏi + quyết định khi soi spec vs code.'},
+  {file:'03-qa-log.md', desc:'Log hỏi-đáp trong lúc clarify.'},
+  {file:'03b-human-confirm.md', desc:'Chữ ký xác nhận tay — chống AI tự giả xác nhận.'},
+  {file:'04-plan.md', desc:'Kế hoạch triển khai theo TDD, có DoD.'},
+  {file:'05-impl-log.md', desc:'Log code: RED→GREEN từng task, SHA, coverage.'},
+  {file:'06-review-qa.md', desc:'Bảng finding review + bằng chứng AC.'},
+  {file:'06b-test-evidence.md', desc:'Bằng chứng chạy test thật — lệnh, output, SHA.'},
+  {file:'06c-fix-log.md', desc:'Quyết định triage + fix cho từng finding.'},
+  {file:'07-ship.md', desc:'Checklist an toàn trước khi ship + rollback plan.'},
+  {file:'08-semantic-audit.md', desc:'8 cặp C1–C8 + verdict + chữ ký người cuối cùng.'},
+  {file:'pilot-metrics.md', desc:'Số liệu pilot 10 ticket.'},
+  {file:'CLAUDE.md', desc:':learning tự seed/update thẳng vào CLAUDE.md của repo dự án (trong khối đánh dấu riêng, ko đụng phần khác).'},
+  {file:'ci/github-actions-ak.yml', desc:'CI workflow mẫu chạy check-gates.sh.'},
+];
+
+function renderRows(groupKey, gridId){
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = STAGES[groupKey].map(s => `
+    <div class="row-item">
+      <span class="row-marker">·</span>
+      <div class="row-body">
+        <span class="row-name">${s.name}</span>
+        <div class="row-desc">${s.desc}</div>
+        ${s.ex ? `<div class="row-example">${s.ex}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderFlow(gridId){
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = STAGES.pipeline.map((s, i) => {
+    let tag = '';
+    if (s.human) tag = '<span class="tag human">bạn xác nhận</span>';
+    else if (s.conditional) tag = `<span class="tag conditional">${s.conditional}</span>`;
+    const node = `
+      <div class="node">
+        <div class="node-top">
+          <span class="node-num">${i+1}</span>
+          <span class="node-name">${s.name}</span>
+        </div>
+        <div class="node-desc">${s.desc}</div>
+        ${tag ? `<div class="node-tags">${tag}</div>` : ''}
+        <div class="node-files">ak:${s.id}.md · skills/${s.id}/SKILL.md</div>
+      </div>
+    `;
+    return i === 0 ? node : `<span class="flow-arrow">→</span>${node}`;
+  }).join('');
+}
+
+function renderFlatList(listId, items, prefix){
+  const el = document.getElementById(listId);
+  el.innerHTML = items.map(it => `
+    <div class="flat-row">
+      <div class="flat-file">${prefix}${it.file}</div>
+      <div class="flat-desc">${it.desc}</div>
+    </div>
+  `).join('');
+}
+
+function renderAll(){
+  renderRows('entry', 'grid-entry');
+  renderFlow('grid-pipeline');
+  renderRows('utility', 'grid-utility');
+  renderFlatList('list-references', REFERENCES, 'references/');
+  renderFlatList('list-templates', TEMPLATES, 'templates/');
+  renderCommand();
+}
+
+let mode = 'path';
+document.getElementById('mode-toggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-mode]');
+  if (!btn) return;
+  mode = btn.dataset.mode;
+  document.querySelectorAll('#mode-toggle button').forEach(b => b.classList.toggle('active', b === btn));
+  document.getElementById('field-path').style.display = mode === 'path' ? '' : 'none';
+  document.getElementById('field-host').style.display = mode === 'global' ? '' : 'none';
+  renderCommand();
+});
+
+document.getElementById('path-input').addEventListener('input', renderCommand);
+document.getElementById('host-select').addEventListener('change', renderCommand);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+function renderCommand(){
+  let installLine;
+  if (mode === 'path') {
+    const path = document.getElementById('path-input').value.trim() || '~/projects/my-app';
+    installLine = `bash install.sh --path ${path}`;
+  } else {
+    const host = document.getElementById('host-select').value;
+    installLine = `bash install.sh${host ? ' ' + host : ''}`;
+  }
+  const lines = [
+    'git clone git@github.com:vantrong2405/dev-workflow.git ak && cd ak',
+    installLine,
+  ];
+  document.getElementById('command-box').innerHTML = lines.map(l => `<span class="prompt">$</span> ${esc(l)}`).join('\n');
+
+  const modeText = mode === 'path' ? 'chỉ project này, ko đụng global' : 'global cho host đã chọn';
+  document.getElementById('summary-line').innerHTML = `Cài đủ 19 Command + Skill · ${modeText}`;
+}
+
+document.getElementById('copy-btn').addEventListener('click', async () => {
+  const text = document.getElementById('command-box').textContent.replace(/\$ /g, '');
+  const btn = document.getElementById('copy-btn');
+  try {
+    await navigator.clipboard.writeText(text);
+    btn.textContent = 'Đã copy ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy lệnh'; btn.classList.remove('copied'); }, 1600);
+  } catch (e) {
+    btn.textContent = 'Copy lỗi — tự bôi đen';
+  }
+});
+
+renderAll();
+</script>
+</body>
+</html>
