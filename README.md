@@ -112,6 +112,7 @@ has the reader-facing table.
 
 | Doc | Content |
 |-----|---------|
+| **[docs/catalog.html](./docs/catalog.html)** | Browsable catalog of every Command/Skill/Reference/Template + an install-command builder (open the file in a browser) |
 | **[docs/USER-GUIDE.md](./docs/USER-GUIDE.md)** | Full day-to-day guide: setup, daily flow, confirm phrase, worklog files, gates, pilot |
 | [docs/INSTALL.md](./docs/INSTALL.md) | Install, update, uninstall, verify, host paths |
 | [MARKETPLACE.md](./MARKETPLACE.md) | Host-specific install + smoke test |
