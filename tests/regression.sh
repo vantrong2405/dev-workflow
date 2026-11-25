@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export AK_PLUGIN="$ROOT"
 CHECK="$ROOT/bin/check-gates.sh"
 FIXTURES="$ROOT/fixtures"
 PASS=0
@@ -58,6 +59,208 @@ cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/wo
 sed -i.bak '/Type:/d' "$tmp_root/workspaces/demo/worklogs/TYPE-MISSING/INDEX.md"
 rm -f "$tmp_root/workspaces/demo/worklogs/TYPE-MISSING/INDEX.md.bak"
 export AK_WORKSPACES_ROOT="$tmp_root/workspaces"
+
+onboarded="$tmp_root/workspaces/onboarded"
+mkdir -p "$onboarded/worklogs/FIRST"
+sed 's/demo/onboarded/g' "$FIXTURES/workspaces/demo/PROJECT.md" >"$onboarded/PROJECT.md"
+touch "$onboarded/worklogs/FIRST/INDEX.md"
+sed 's/<project-slug>/onboarded/g; s/<language-code>/vi/g' \
+  "$ROOT/templates/workspaces/_project/PROJECT-FORM.md" >"$onboarded/PROJECT-FORM.md"
+assert_failure_output "workspace does not accept a pending convention interview" 'FAIL.*W2' \
+  "$ROOT/bin/check-workspace.sh" onboarded
+assert_failure_output "G0 rejects an incomplete project form" 'G0 FAIL:.*PROJECT-FORM' \
+  "$CHECK" FIRST --project onboarded --min G0
+sed -i.bak 's/interview:\*\* pending/interview:** skipped/' "$onboarded/PROJECT-FORM.md"
+assert_success "workspace accepts a skipped interview without domain notes" \
+  "$ROOT/bin/check-workspace.sh" onboarded
+assert_success "G0 accepts the lightweight form without domain notes" \
+  "$CHECK" FIRST --project onboarded --min G0
+sed -i.bak 's/interview:\*\* skipped/interview:** confirmed/' "$onboarded/PROJECT-FORM.md"
+assert_failure_output "G0 requires a rule when the form claims confirmation" 'G0 FAIL:.*PROJECT-FORM' \
+  "$CHECK" FIRST --project onboarded --min G0
+printf '| UI changes | Check the affected screen | Project | Owner, 2026-11-25 |\n' \
+  >>"$onboarded/PROJECT-FORM.md"
+assert_success "G0 accepts a form with an approved working rule" \
+  "$CHECK" FIRST --project onboarded --min G0
+sed -i.bak 's/`onboarded`/`wrong-repo`/' "$onboarded/PROJECT-FORM.md"
+assert_failure_output "G0 requires the form to match the workspace slug" 'G0 FAIL:.*PROJECT-FORM' \
+  "$CHECK" FIRST --project onboarded --min G0
+
+checkout="$tmp_root/product"
+mkdir -p "$checkout"
+git -C "$checkout" init -q
+printf 'original\n' >"$checkout/source.txt"
+git -C "$checkout" add source.txt
+git -C "$checkout" -c user.name=Fixture -c user.email=fixture@example.test commit -qm initial
+sha="$(git -C "$checkout" rev-parse HEAD)"
+source_state="$ROOT/bin/source-state.sh"
+assert_output "source state recognizes a clean committed checkout" "^commit:$sha$" \
+  bash "$source_state" "$checkout"
+printf 'changed\n' >"$checkout/source.txt"
+assert_output "source state separates tracked edits from the base commit" '^worktree:[0-9a-f]+$' \
+  bash "$source_state" "$checkout"
+printf 'first\n' >"$checkout/new.txt"
+first_state="$(bash "$source_state" "$checkout")"
+printf 'other\n' >"$checkout/new.txt"
+if [[ "$(bash "$source_state" "$checkout")" != "$first_state" ]]; then
+  ok "source state detects edited contents at the same untracked path"
+else
+  bad "source state detects edited contents at the same untracked path"
+fi
+git -C "$checkout" checkout -- source.txt
+rm "$checkout/new.txt"
+
+current="$tmp_root/workspaces/demo/worklogs/CURRENT-STATE"
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$current"
+find "$current" -type f -name '*.md' -exec sed -i.bak 's/PASS-G9/CURRENT-STATE/g' {} \;
+find "$current" -name '*.bak' -delete
+for field_file in 05-impl-log.md 06b-test-evidence.md; do
+  sed -i.bak -E "s/^([^\n]*Commit SHA[^a-f0-9]*)([a-f0-9]{7,})/\1$sha/" "$current/$field_file"
+done
+mkdir -p "$current/verification"
+cp "$FIXTURES/workspaces/demo/worklogs/PASS-G9/junit-PASS-G9.xml" "$current/verification/result.xml"
+report="$current/06b-test-evidence.md"
+sed -i.bak "s@junit-CURRENT-STATE.xml@verification/result.xml@g" "$report"
+printf '\n| Tested source | commit:%s |\n| Evidence checkout | %s |\n' "$sha" "$checkout" >>"$report"
+assert_success "strict G8 verifies current committed evidence against its checkout" \
+  "$CHECK" CURRENT-STATE --project demo --min G8 --strict
+printf 'modified\n' >"$checkout/source.txt"
+assert_failure_output "strict G8 rejects evidence for a modified checkout" 'tested source does not match' \
+  "$CHECK" CURRENT-STATE --project demo --min G8 --strict
+local_state="$(bash "$source_state" "$checkout")"
+sed -i.bak "s/commit:$sha/$local_state/" "$report"
+assert_failure_output "strict G8 rejects a local-only evidence record" 'evidence only covers local changes' \
+  "$CHECK" CURRENT-STATE --project demo --min G8 --strict
+assert_success "routine G8 can use local evidence without calling it commit verified" \
+  "$CHECK" CURRENT-STATE --project demo --min G8
+printf 'modified again\n' >"$checkout/source.txt"
+assert_failure_output "routine G8 rejects stale local evidence" 'tested source does not match' \
+  "$CHECK" CURRENT-STATE --project demo --min G8
+
+# Exercise the normal checker using simulated runner artifacts, not a live app.
+ui="$tmp_root/workspaces/demo/worklogs/UI-BUG"
+cp -R "$current" "$ui"
+sed -i.bak 's/Touches UI?\*\* ☐ No/Touches UI?** ☑ Yes ☐ No/' "$ui/02-spec.md"
+assert_failure_output "UI scope requires an explicit visual decision" 'G1 FAIL:.*Visual change' \
+  "$CHECK" UI-BUG --project demo --min G1
+cat >>"$ui/02-spec.md" <<'EOF'
+
+- **Visual change?** ☐ Yes ☑ No
+
+## UI states
+
+Successful submit shows confirmation.
+EOF
+assert_failure_output "routine UI bug cannot reach build before browser reproduction" 'G5 FAIL:.*ui-verification.json' \
+  "$CHECK" UI-BUG --project demo --min G5
+
+ui_state="$(bash "$source_state" "$checkout")"
+sed -i.bak "s/$local_state/$ui_state/" "$ui/06b-test-evidence.md"
+mkdir -p "$ui/evidence"
+python3 - "$ui/evidence" "commit:$sha" "$ui_state" <<'PY'
+import base64
+import json
+import sys
+from pathlib import Path
+
+evidence = Path(sys.argv[1])
+png = base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0"
+    "lEQVR42mP8/x8AAwMCAO+j3ioAAAAASUVORK5CYII="
+)
+case = {
+    "id": "AC-01",
+    "url": "http://localhost:3000/form",
+    "viewport": "1280x720",
+    "actor": "fixture-user",
+    "locale": "en",
+    "steps": "Sign in and click Submit",
+    "expected": "Confirmation is displayed",
+}
+for name, source, when, result, observed in [
+    ("before", sys.argv[2], "2026-11-25T10:00:00Z", "REPRODUCED", "Confirmation missing"),
+    ("after", sys.argv[3], "2026-11-25T10:05:00Z", "PASS", "Confirmation displayed"),
+]:
+    (evidence / f"{name}.png").write_bytes(png)
+    (evidence / f"{name}.log").write_text(f"Simulated browser output: {observed}\n")
+    case[name] = {
+        "tool": "Fixture runner",
+        "checked_at": when,
+        "source": source,
+        "result": result,
+        "observed": observed,
+        "capture": f"evidence/{name}.png",
+        "log": f"evidence/{name}.log",
+    }
+(evidence / "ui-verification.json").write_text(json.dumps({"cases": [case]}))
+PY
+assert_success "G5 accepts recorded reproduction of the UI bug" \
+  "$CHECK" UI-BUG --project demo --min G5
+assert_success "G8 accepts verified behavior without a visual baseline" \
+  "$CHECK" UI-BUG --project demo --min G8
+printf '\n- G8 | Fixture owner | Simulate waiver | 2026-11-25\n' >>"$ui/INDEX.md"
+mv "$ui/evidence/after.log" "$ui/after-fixture.log"
+assert_failure_output "G8 requires the browser result even with a waiver" 'G8 FAIL:.*after.log' \
+  "$CHECK" UI-BUG --project demo --min G8
+mv "$ui/after-fixture.log" "$ui/evidence/after.log"
+printf 'untested UI change\n' >"$checkout/source.txt"
+assert_failure_output "G8 rejects UI results after the source changes" 'tested source does not match' \
+  "$CHECK" UI-BUG --project demo --min G8
+printf 'modified again\n' >"$checkout/source.txt"
+sed -i.bak 's/Visual change?\*\* ☐ Yes ☑ No/Visual change?** ☑ Yes ☐ No/' "$ui/02-spec.md"
+assert_failure_output "G8 blocks visual changes without a golden run" 'G8 FAIL:.*require.*golden' \
+  "$CHECK" UI-BUG --project demo --min G8
+python3 - "$ui/evidence" "$ui_state" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+evidence = Path(sys.argv[1])
+manifest = evidence / "ui-verification.json"
+data = json.loads(manifest.read_text())
+data["cases"][0]["golden"] = {
+    "approval": "Fixture approved reference",
+    "baseline": "evidence/baseline.png",
+    "command": "fixture-runner --compare-baseline",
+    "exit_code": 0,
+    "source": sys.argv[2],
+    "report": "evidence/golden.xml",
+    "test": "submit golden",
+}
+manifest.write_text(json.dumps(data))
+(evidence / "baseline.png").write_bytes((evidence / "after.png").read_bytes())
+PY
+printf '<testsuite><testcase name="submit golden"><failure>Mismatch</failure></testcase></testsuite>\n' \
+  >"$ui/evidence/golden.xml"
+assert_failure_output "G8 rejects a failing golden comparison" 'G8 FAIL:.*golden test did not pass' \
+  "$CHECK" UI-BUG --project demo --min G8
+printf '<testsuite><testcase name="submit golden"/></testsuite>\n' >"$ui/evidence/golden.xml"
+assert_success "G8 accepts an approved passing golden comparison" \
+  "$CHECK" UI-BUG --project demo --min G8
+ui_feature="$tmp_root/workspaces/demo/worklogs/UI-FEATURE"
+cp -R "$ui" "$ui_feature"
+sed -i.bak 's/☑ Bug ☐ New feature/☐ Bug ☑ New feature/g' "$ui_feature/02-spec.md" "$ui_feature/INDEX.md"
+rm "$ui_feature/evidence/before.png" "$ui_feature/evidence/before.log"
+assert_success "a new UI feature only needs final browser and visual evidence" \
+  "$CHECK" UI-FEATURE --project demo --min G8
+
+review_open="$tmp_root/workspaces/demo/worklogs/REVIEW-OPEN"
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$review_open"
+cat >"$review_open/06-review-qa.md" <<'EOF'
+## Code review findings
+
+| ID | Sev | Status |
+|---|---|---|
+| R-1 | P1 | OPEN |
+
+## AC evidence
+
+| ID | How verified |
+|---|---|
+| AC-01 | Recorded test |
+EOF
+assert_failure_output "an open serious finding blocks a fast lane G7" 'G7 FAIL:.*still OPEN' \
+  "$CHECK" REVIEW-OPEN --project demo --min G7
 
 assert_failure "G1 rejects a worklog with no ticket Type" \
   "$CHECK" TYPE-MISSING --project demo --min G1

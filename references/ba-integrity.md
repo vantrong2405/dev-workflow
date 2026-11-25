@@ -290,11 +290,10 @@ name, because the claim is precisely that none of those changed.
    with no pre-existing test around the touched code isn't provably safe — either add
    characterization tests first (still `Type: Refactor`, this is proving the safety net exists, not
    changing behavior) or reclassify as risk until coverage exists.
-3. **Skip spec/clarify entirely** — route straight to `:build` per `references/stage-contract.md`'s
-   entry-point notes; there is no spec delta to normalize and no claim for a human to decide, only
-   a mechanical transformation to verify. `:start`'s fast-path offer already does this for
-   genuinely tiny non-behavioral tickets; a Refactor-typed ticket gets the same routing regardless
-   of size, because the reason for skipping is the type, not the size.
+3. **Use the existing behavior as the spec baseline.** Record one concrete acceptance criterion
+   tied to the existing coverage. Keep investigation concise and honor the approvals required by
+   `references/risk.md`.
+
 4. **Run the duplicate-scan anyway** (see above) — a refactor that renames or moves one copy of
    duplicated logic while missing a sibling copy silently reintroduces drift, which is exactly the
    kind of regression a "no behavior change" ticket must not cause.

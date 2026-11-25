@@ -22,7 +22,8 @@
 ```
 ~/.workspaces/<project-slug>/
   PROJECT.md
-  domain-knowledge/
+  PROJECT-FORM.md
+  domain-knowledge/    # optional
   worklogs/
   repos/<repo-slug>/
 ```

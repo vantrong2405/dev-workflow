@@ -1,7 +1,7 @@
 {
   "name": "ak",
   "version": "0.4.0",
-  "description": "Evidence-backed delivery with typed requirements, TDD, G0-G9 structural gates, and C1-C8 semantic audit.",
+  "description": "One task workflow with reusable project conventions, verified delivery, and release preparation.",
   "author": {
     "name": "trongdn2405",
     "email": "trongdn2405@gmail.com"

@@ -7,6 +7,7 @@ ticket usage, continue with [USER-GUIDE.md](./USER-GUIDE.md).
 
 - Git
 - Bash 3.2 or newer
+- Python 3.8 or newer for UI evidence checks
 - One or more supported hosts: Claude Code, Cursor, Codex, or Antigravity
 - `agy` on `PATH` only when installing Antigravity or using `--all`
 
@@ -41,7 +42,11 @@ exit with status 2 and do not silently fall back to Claude.
 `--all` preflights `agy` before installing any host. If `agy` is missing, it exits without a
 partial Claude/Cursor/Codex installation.
 
-The installer uses the clone as the plugin source. Keep or deliberately relocate that directory;
+Use `--only spec,build,review` for direct access to selected stages. Selecting `start`
+also includes its delivery stages. With `--path <dir>`, the installer makes a self-contained
+project installation under `<dir>/.claude`.
+
+The global installer uses the clone as the plugin source. Keep or deliberately relocate that directory;
 installed symlinks point back to it.
 
 ## What the installer changes
@@ -56,7 +61,7 @@ It does not modify product source. Depending on the host, it creates or refreshe
 | Codex marketplace | Creates `~/.agents/plugins/marketplace.json` only when that file does not already exist |
 | Antigravity | Rebuilds and validates `hosts/antigravity/`, then runs `agy plugin install` |
 
-All 18 stage skills are installed for Cursor/Codex, not a thin pointer. Shared `references/` and
+All 19 stage skills are installed by default for Cursor/Codex. Shared `references/` and
 `templates/` remain in the clone and are linked into every stage.
 Existing unrelated commands, skills, plugins, and an existing Codex marketplace file are preserved.
 
@@ -84,7 +89,7 @@ claude --plugin-dir /absolute/path/to/ak
 bash install.sh --cursor
 ```
 
-Restart/reload Cursor, then verify `/ak:status` appears.
+Restart/reload Cursor, then verify `/ak` appears.
 
 ### Codex
 
@@ -130,8 +135,8 @@ export AK_WORKSPACES_ROOT="$(pwd)/fixtures"
 ./bin/pilot-score.sh fixtures/workspaces/demo/pilot/PILOT-v0.4.md
 ```
 
-Finally, restart/reload the chosen host (start a new task in Codex) and verify both
-`/ak:status` and `/ak:audit` are available.
+Finally, restart/reload the chosen host (start a fresh task in Codex) and select the
+ak start skill or invoke `/ak` with a task.
 
 ## Update
 
@@ -205,7 +210,9 @@ Save it as `.ak.json`. For organization enforcement, copy
 `templates/ci/github-actions-ak.yml` to the product repository's `.github/workflows/`
 directory and require the `ak-gates` status check.
 
-Worklogs default to `~/.workspaces/<project-slug>/`, outside product source.
+Start with `/ak <task>`. On first use it creates `PROJECT-FORM.md` and asks about
+working conventions. The project form and worklogs default to
+`~/.workspaces/<project-slug>/`, outside product source.
 
 ## Troubleshooting
 

@@ -2,6 +2,7 @@
 
 - **Spec file:** [path or embedded below]
 - **Touches UI?** ☐ Yes ☐ No
+- **Visual change?** ☐ Yes ☐ No (required when Touches UI is Yes)
 - **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change ☐ Refactor
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (required — see `references/risk.md`)
 - **Touched repos:** ☐ (list from PROJECT.md)

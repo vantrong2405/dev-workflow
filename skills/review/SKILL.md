@@ -12,8 +12,7 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md`; independence means re-deriving conclusions from the diff and contracts.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 Verify implementation against requirements **and** review the actual code change (G7).
 
@@ -48,12 +47,15 @@ Every finding needs `path:line` (or hunk) + concrete fix proposal.
    same-pass SKIP rule for a duplicate
    *within* one review — this is about carrying a decision across tickets.)
 
-   Also invoke the `code-review` skill (medium/high effort) on the same diff for broader
-   reuse/simplification/efficiency coverage on top of the required class hunt above — it does not
-   replace the class hunt. Fold any correctness findings it surfaces into the class rows
-   below; quality-only findings stay out of the Sev/Class table.
+   Use an available review skill if complexity warrants a second perspective or a project
+   rule requires it. Fold distinct correctness findings into this review.
 4. Write findings into `templates/06-review-qa.md` Code review tables (Sev, Class, Location, Evidence, Risk, Fix proposal, Status=`OPEN`).
 5. Fill AC/NEG/PERM/EDGE How/By/Date evidence (+ UI checklist if Touches UI = Yes).
+   For UI tickets, review the browser assertion and available captures per
+   `references/ui-verification.md`. For visual changes, check the baseline or plan
+   to approve it. `:test` owns the final browser run and golden result at G8.
+   Cite existing run IDs when the evidence matches the current change. Keep the reviewer’s
+   independent judgment in this artifact.
 6. Re-check clarify decisions still hold after impl.
 7. Run `/ak:check <Ticket> [slug] G7` before any G7 PASS claim.
 

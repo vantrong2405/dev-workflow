@@ -49,7 +49,8 @@ agy plugin validate ./hosts/antigravity
 agy plugin install ./hosts/antigravity
 ```
 
-After install, read **[docs/USER-GUIDE.md](./docs/USER-GUIDE.md)**.
+After install, run `/ak <task>` or select ak's start skill. See the
+[Daily guide](./docs/USER-GUIDE.md).
 
 ### Update
 
@@ -85,8 +86,8 @@ are preserved. Full removal behavior: **[docs/INSTALL.md](./docs/INSTALL.md#unin
 chmod +x bin/check-gates.sh bin/pilot-score.sh
 export AK_WORKSPACES_ROOT="$(pwd)/fixtures"
 
-./tests/regression.sh                                                # expect 10 PASS
-./tests/install.sh                                                   # expect 14 PASS
+./tests/regression.sh
+./tests/install.sh
 ./tests/update.sh                                                    # expect 6 PASS
 ./tests/uninstall.sh                                                 # expect 11 PASS
 ./bin/check-gates.sh FIX-FAIL --project demo --min G1          # expect FAIL
@@ -95,8 +96,7 @@ export AK_WORKSPACES_ROOT="$(pwd)/fixtures"
 ./bin/pilot-score.sh fixtures/workspaces/demo/pilot/PILOT-v0.4.md  # expect PASS
 ```
 
-In the AI host, restart/reload it if required, then confirm `/ak:status` and
-`/ak:audit` appear.
+In the AI host, reload it and find the ak entry point (`/ak` or the start skill).
 
 ---
 

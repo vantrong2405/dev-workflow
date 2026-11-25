@@ -26,6 +26,20 @@ run_install_without_agy() {
     >"$TEST_HOME/install.out" 2>"$TEST_HOME/install.err"
 }
 
+run_installed_handoff_checks() {
+  local plugin="$1" workspaces="$TEST_HOME/workspaces"
+  mkdir -p "$workspaces"
+  cp -R "$ROOT/fixtures/workspaces/demo" "$workspaces/demo"
+  sed 's/<project-slug>/demo/g; s/<language-code>/vi/g; s/interview:\*\* pending/interview:** skipped/' \
+    "$plugin/shared/templates/workspaces/_project/PROJECT-FORM.md" >"$workspaces/demo/PROJECT-FORM.md"
+  rm "$workspaces/demo/domain-knowledge/INDEX.md"
+  (
+    export AK_PLUGIN="$plugin" AK_WORKSPACES_ROOT="$workspaces"
+    bash "$plugin/bin/check-workspace.sh" demo &&
+      bash "$plugin/bin/check-gates.sh" PASS-G8 --project demo --min tests
+  ) >"$TEST_HOME/handoff.out" 2>"$TEST_HOME/handoff.err"
+}
+
 new_home
 if run_install &&
    [[ -L "$TEST_HOME/.claude/plugins/ak" ]] &&
@@ -100,10 +114,36 @@ fi
 new_home
 if run_install --host antigravity &&
    grep -q "plugin install $ROOT/hosts/antigravity" "$TEST_HOME/agy.calls" &&
+   [[ -f "$ROOT/hosts/antigravity/flat-skills/start.md" ]] &&
+   [[ -f "$ROOT/hosts/antigravity/templates/workspaces/_project/PROJECT-FORM.md" ]] &&
+   [[ -f "$ROOT/hosts/antigravity/bin/source-state.sh" ]] &&
    [[ ! -e "$TEST_HOME/.claude" ]]; then
   ok "Antigravity bundle is installed through agy"
 else
   bad "Antigravity bundle is installed through agy"
+fi
+
+new_home
+install_target="$TEST_HOME/product"
+project_install="$install_target/.claude"
+if run_install --path "$install_target" --only start &&
+   run_install --path "$install_target" --only start &&
+   [[ -f "$project_install/commands/ak.md" ]] &&
+   [[ -f "$project_install/skills/ak-start/SKILL.md" ]] &&
+   [[ -f "$project_install/skills/ak-start/references/project-form.md" ]] &&
+   [[ -f "$project_install/skills/ak-learning/templates/workspaces/_project/PROJECT-FORM.md" ]] &&
+   [[ -f "$project_install/skills/ak-audit/SKILL.md" ]] &&
+   [[ ! -e "$project_install/skills/ak-feedback" ]] &&
+   [[ -f "$project_install/bin/lib/project-form.sh" ]] &&
+   [[ -f "$project_install/bin/lib/verify-ui-evidence.py" ]] &&
+   [[ -f "$project_install/skills/ak-test/templates/ui-verification.json" ]] &&
+   [[ -f "$project_install/skills/ak-clarify/references/ui-verification.md" ]] &&
+   [[ -x "$project_install/bin/source-state.sh" ]] &&
+   [[ ! -e "$project_install/bin/lib/lib" ]] &&
+   run_installed_handoff_checks "$project_install"; then
+  ok "self-contained start bundle keeps onboarding and delivery available on reinstall"
+else
+  bad "self-contained start bundle keeps onboarding and delivery available on reinstall"
 fi
 
 new_home

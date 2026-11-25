@@ -3,7 +3,11 @@
 Never hardcode customer paths. Resolve from cwd/git/marker/brief.
 
 Layout (preferred):
-`~/.workspaces/<project-slug>/{PROJECT.md,domain-knowledge/,worklogs/<Ticket_ID>/,repos/<repo-slug>/}`
+`~/.workspaces/<project-slug>/{PROJECT.md,PROJECT-FORM.md,worklogs/<Ticket_ID>/}`
+
+`domain-knowledge/` and `repos/<repo-slug>/` can hold deeper notes. Existing workspaces
+with the legacy domain index remain readable. See `project-form.md` for first-use ownership
+checks and conventions.
 
 Legacy layout still readable:
 `<root>/workspaces/<project-slug>/...`

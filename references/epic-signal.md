@@ -44,8 +44,6 @@ numbers here from that evidence — not from a new guess.
 
 ## On match
 
-Say so once and hand off:
-`"Việc này giống 1 epic (nhiều phần độc lập) — chạy /ak:decompose
-trước để tách rõ ràng, rồi quay lại đây cho từng phần?"` Wait for the answer;
-never silently decompose inline, never auto-run `:decompose` on the user's
-behalf.
+In `:start`, prepare the split inside the active flow using `:decompose`. Ask for
+confirmation of the proposed child boundaries and dependencies before starting any child.
+A standalone discovery stage can report that the work needs splitting.

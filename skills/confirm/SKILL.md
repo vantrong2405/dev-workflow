@@ -13,15 +13,11 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md`; this stage records decisions but never manufactures or reinterprets them.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
-**Risk=P2 fast path**: G3 is soft for P2 (see `references/risk.md`) — a real human `CONFIRM G3:`
-is still the safest evidence, but a genuinely tiny, non-behavioral P2 ticket may skip this stage
-and go straight to `:plan`/`:build` with `check-gates.sh` only warning, not failing, at G3. Say so
-explicitly once — `"Risk=P2 — CONFIRM G3 is optional here; skip it and continue, or send the
-confirm line if you'd rather have it on record."` — and let the user pick. `--strict` or any risk
-other than P2 always requires the full flow below.
+In `:start`, request G3 only for P0, strict/release work, or when the user explicitly asks
+to record it. For routine P1/P2 work, resolve any material questions and continue without a
+separate G3 round trip. Calling this command directly requests the confirmation flow.
 
 1. Present clarify decisions + OPEN Qs + spec deltas as a short summary — what's being locked in,
    not a raw dump of `03-clarify-report.md`.

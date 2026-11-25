@@ -6,6 +6,7 @@ set -euo pipefail
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=lib/resolve-paths.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/resolve-paths.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/project-form.sh"
 resolve_plugin_dir || AK_PLUGIN_DIR="$PLUGIN_DIR"
 PLUGIN_DIR="${AK_PLUGIN_DIR:-$PLUGIN_DIR}"
 
@@ -125,6 +126,7 @@ SHIP="$WORKLOG/07-ship.md"
 AUDIT="$WORKLOG/08-semantic-audit.md"
 DK_INDEX="$PROJECT_HOME/domain-knowledge/INDEX.md"
 PROJECT_MD="$PROJECT_HOME/PROJECT.md"
+PROJECT_FORM="$PROJECT_HOME/PROJECT-FORM.md"
 PILOT_DIR="$PROJECT_HOME/pilot"
 
 file_ok() { [[ -f "$1" ]]; }
@@ -190,8 +192,10 @@ fi
 waived() {
   local gate="$1"
   local w
-  if [[ "$gate" == "G8" && ( "$STRICT" -eq 1 || "$RISK" == "P0" ) ]]; then
-    return 1
+  if [[ "$gate" == "G8" ]]; then
+    if [[ "$STRICT" -eq 1 || "$RISK" == "P0" ]] || ui_ticket; then
+      return 1
+    fi
   fi
   if [[ "$gate" == "G3" && "$RISK" == "P0" ]]; then
     return 1
@@ -227,15 +231,30 @@ maybe_fail() {
   fail "$gate FAIL: $msg"
 }
 
+checked_flag() {
+  local file="$1" label="$2" choice="$3"
+  file_ok "$file" && grep -qiE \
+    "^[[:space:]]*(-[[:space:]]*)?(\*\*)?${label}(\*\*)?:?.*(☑|\[x\])[[:space:]]*${choice}([[:space:]]|$)" "$file"
+}
+
 ui_ticket() {
-  # Template default prints both checkbox options on one line
-  # ("☐ Yes ☑ No"); matching the literal word "Yes" anywhere on the line
-  # also matches inside the *unchecked* option. Require the check glyph
-  # immediately before "Yes" instead of the word alone.
-  if file_ok "$SPEC" && grep -qiE '(☑|\[x\]|\[X\])[[:space:]]*Yes' "$SPEC"; then
-    return 0
+  checked_flag "$SPEC" 'Touches UI\??' Yes ||
+    checked_flag "$INDEX" 'Touches UI\??' Yes ||
+    checked_flag "$TESTEV" 'Touches UI\??' Yes
+}
+
+verify_ui_evidence() {
+  local gate="$1" phase="$2" source="${3:-}" bug=no visual=no output
+  [[ "${spec_types:-}" != Bug ]] || bug=yes
+  if checked_flag "$SPEC" 'Visual change\??' Yes; then visual=yes; fi
+  if ! command -v python3 >/dev/null 2>&1; then
+    fail "$gate FAIL: UI evidence validation requires python3"
+    return
   fi
-  return 1
+  if ! output="$(python3 "$(dirname "${BASH_SOURCE[0]}")/lib/verify-ui-evidence.py" \
+      "$WORKLOG" "$SPEC" "$phase" "$bug" "$visual" "$source" 2>&1)"; then
+    fail "$gate FAIL: $output"
+  fi
 }
 
 placeholderish() {
@@ -292,6 +311,27 @@ verify_sha_git() {
     return
   fi
   maybe_fail G8 "CI-native: Commit SHA $sha does not match git HEAD ${head:0:12}…"
+}
+
+verify_recorded_source() {
+  local tested_source="$1" checkout="$2" sha="$3"
+  local kind="${tested_source%%:*}" hash="${tested_source#*:}" current_source
+  if [[ ! "$tested_source" =~ ^(commit|worktree):[0-9a-f]{40}([0-9a-f]{24})?$ ]] ||
+    [[ "$checkout" != /* ]]; then
+    maybe_fail G8 "tested source and absolute evidence checkout are required together"
+    return
+  fi
+  if [[ "$kind" == worktree && "$VERIFY_NATIVE" -eq 1 ]]; then
+    maybe_fail G8 "CI-native: evidence only covers local changes; verify the committed source"
+    return
+  fi
+  if [[ "$kind" == commit ]] && { placeholderish "$sha" || [[ "$hash" != "$sha"* ]]; }; then
+    maybe_fail G8 "Commit SHA does not match tested source"
+  fi
+  current_source="$(bash "$PLUGIN_DIR/bin/source-state.sh" "$checkout" 2>/dev/null || true)"
+  if [[ "$current_source" != "$tested_source" ]]; then
+    maybe_fail G8 "tested source does not match the current evidence checkout"
+  fi
 }
 
 # A length-only check ("must be >= N chars") passes any string that long,
@@ -364,8 +404,12 @@ verify_ci_url() {
 # --- G0 ---
 if need_gate G0; then
   file_ok "$PROJECT_MD" || maybe_fail G0 "missing PROJECT.md at $PROJECT_HOME"
-  file_ok "$DK_INDEX" || maybe_fail G0 "missing domain-knowledge/INDEX.md"
-  if file_ok "$DK_INDEX"; then
+  if [[ -e "$PROJECT_FORM" ]]; then
+    project_form_ready "$PROJECT_FORM" "$PROJECT_SLUG" || \
+      maybe_fail G0 "PROJECT-FORM.md incomplete or invalid — finish project onboarding"
+  elif ! file_ok "$DK_INDEX"; then
+    maybe_fail G0 "missing PROJECT-FORM.md or legacy domain-knowledge/INDEX.md"
+  else
     # File existing is not knowledge — an empty INDEX.md with the template
     # skeleton still passed the old check. Require the two signals the
     # template's own "G0 DoD" section defines as done: "Needs learning" must
@@ -474,6 +518,21 @@ if need_gate G1; then
     [[ "$spec_type_count" -eq 1 ]] || maybe_fail G1 "02-spec must select exactly one ticket Type"
     if [[ "$index_type_count" -eq 1 && "$spec_type_count" -eq 1 && "$index_types" != "$spec_types" ]]; then
       maybe_fail G1 "ticket Type mismatch: INDEX=$index_types 02-spec=$spec_types"
+    fi
+    if ui_ticket; then
+      if [[ "$index_type_count" -ne 1 || "$spec_type_count" -ne 1 || "$index_types" != "$spec_types" ]]; then
+        fail "G1 FAIL: UI tickets require matching ticket Type in INDEX and 02-spec.md"
+      fi
+      if ! checked_flag "$SPEC" 'Touches UI\??' Yes || checked_flag "$SPEC" 'Touches UI\??' No; then
+        fail "G1 FAIL: UI tickets must select only Yes for Touches UI? in 02-spec.md"
+      fi
+      if ! checked_flag "$SPEC" 'Visual change\??' Yes && ! checked_flag "$SPEC" 'Visual change\??' No; then
+        fail "G1 FAIL: UI tickets must set Visual change? in 02-spec.md"
+      elif checked_flag "$SPEC" 'Visual change\??' Yes && checked_flag "$SPEC" 'Visual change\??' No; then
+        fail "G1 FAIL: select exactly one Visual change? value"
+      fi
+    elif checked_flag "$SPEC" 'Visual change\??' Yes; then
+      fail "G1 FAIL: Visual change? Yes requires Touches UI? Yes"
     fi
     if [[ "$REQUIRE_MACHINE" -eq 1 ]]; then
       grep -qiE '^##[[:space:]]+Requirement provenance' "$SPEC" || \
@@ -725,6 +784,7 @@ fi
 
 # --- G5 ---
 if need_gate G5; then
+  if [[ "${spec_types:-}" == Bug ]] && ui_ticket; then verify_ui_evidence G5 before; fi
   file_ok "$QALOG" || maybe_fail G5 "missing 03-qa-log.md"
   if file_ok "$QALOG"; then
     # The old check scanned whole lines for "OPEN" not co-occurring with
@@ -909,7 +969,7 @@ if need_gate G7; then
     open_p0p1_count="$(printf '%s\n' "$open_p0p1" | grep -cE '.' || true)"
     open_p0p1_count="${open_p0p1_count:-0}"
     if [[ -n "$open_p0p1" && "$open_p0p1_count" -gt 0 ]]; then
-      maybe_fail G7 "$open_p0p1_count P0/P1 finding(s) still OPEN — run /ak:fix before G7 can PASS"
+      fail "G7 FAIL: $open_p0p1_count P0/P1 finding(s) still OPEN — run /ak:fix before G7 can PASS"
     fi
     grep -qE 'AC evidence|How verified' "$REVIEW" || maybe_fail G7 "06-review-qa missing AC evidence / How verified"
     empty_how="$(grep -E '\|[[:space:]]*(AC|NEG|PERM|EDGE)-[0-9]+[[:space:]]*\|[[:space:]]*\|' "$REVIEW" 2>/dev/null | wc -l | tr -d ' ' || true)"
@@ -1009,6 +1069,8 @@ if need_gate G8; then
 
     sha="$(table_val "$TESTEV" "Commit SHA")"
     ci="$(table_val "$TESTEV" "CI run URL")"
+    tested_source="$(table_val "$TESTEV" "Tested source")"
+    evidence_checkout="$(table_val "$TESTEV" "Evidence checkout")"
     junit="$(table_val "$TESTEV" "JUnit")"
     if [[ -z "$junit" ]]; then junit="$(table_val "$TESTEV" "log path")"; fi
 
@@ -1034,11 +1096,14 @@ if need_gate G8; then
         maybe_fail G8 "assertion evidence has no concrete requirement mapping"
     fi
 
+    if ! placeholderish "$tested_source" || ! placeholderish "$evidence_checkout"; then
+      verify_recorded_source "$tested_source" "$evidence_checkout" "$sha"
+    elif [[ "$VERIFY_NATIVE" -eq 1 ]] && ! placeholderish "$sha" && [[ "$sha" =~ [0-9a-fA-F]{7,} ]]; then
+      verify_sha_git "$sha"
+    fi
+
     # CI-native verification
     if [[ "$VERIFY_NATIVE" -eq 1 ]]; then
-      if ! placeholderish "$sha" && [[ "$sha" =~ [0-9a-fA-F]{7,} ]]; then
-        verify_sha_git "$sha"
-      fi
       if ! placeholderish "$junit"; then
         verify_junit_file "$junit"
       elif [[ "$ci" == "N/A-local" ]]; then
@@ -1049,14 +1114,11 @@ if need_gate G8; then
       fi
     fi
 
-    if ui_ticket || grep -qiE 'Touches UI\?.*☑ Yes|Touches UI\?.*\[x\] Yes' "$TESTEV"; then
-      if ! grep -qE '\|[[:space:]]*AC-[0-9]+[[:space:]]*\|[[:space:]]*[^|[:space:]]+' "$TESTEV"; then
-        if [[ "$STRICT" -eq 1 || "$RISK" == "P0" ]]; then
-          maybe_fail G8 "UI ticket requires screenshot/recording path"
-        else
-          warn "G8: UI ticket but screenshot paths look empty"
-        fi
+    if ui_ticket; then
+      if placeholderish "$tested_source" || placeholderish "$evidence_checkout"; then
+        fail "G8 FAIL: UI evidence requires Tested source and Evidence checkout"
       fi
+      verify_ui_evidence G8 after "$tested_source"
     fi
     if [[ "$STRICT" -eq 1 || "$RISK" == "P0" ]]; then
       out_lines="$(awk '/## Test run output/,/## Screenshots/{if($0 ~ /```/){c++} else if(c==1 && NF) print}' "$TESTEV" 2>/dev/null | wc -l | tr -d ' ' || true)"

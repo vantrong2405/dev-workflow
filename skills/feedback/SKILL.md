@@ -14,8 +14,7 @@ disable-model-invocation: false
 Apply `references/skill-quality.md`; this stage owns filed GitHub issue(s) for confirmed
 ak defects and its report-back, not fixing the underlying skill.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 Use when user complains about ak's own behavior (a skill, gate, or generated artifact) —
 not the target product the ticket is building. Read `references/feedback.md`.

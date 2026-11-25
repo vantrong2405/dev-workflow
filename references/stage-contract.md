@@ -12,22 +12,22 @@ genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-
 | Stage | Requires | Owns/produces | Blocks on | Next |
 |---|---|---|---|---|
 | decompose | epic-shaped request (spans >1 service/repo, mixes ticket Type, or independently shippable parts) | `epic-map.md` (project-level): child tickets + Type/Risk estimate + dependencies + epic-level Q&A, one confirm; dependency graph cross-checked with a duplicate-scan before hand-off | any epic-level question unanswered | first unblocked child's spec/start |
-| learning | locale + project brief/path; first-time project setup or explicit request to expand project knowledge | initial shared domain knowledge with provenance; opens a coaching ticket per unclear function purpose instead of blocking | unknown business facts needed for the initial knowledge pass | coaching (async, per ticket) or spec |
+| learning (G0) | identifiable repo or project | reusable project form with sourced facts, locale and confirmed preferences or recorded skip. Optional deeper domain research on request | ambiguous project identity or missing context needed for the current work | resume active task or report form |
 | coaching | existing knowledge + (explicit user correction or an answer to an open coaching ticket) | before/after delta, impacted consumers, changelog; self-closes the ticket when the answer doesn't conflict with recorded knowledge | unconfirmed delta/impact | spec or clarify |
 | spec (G1) | G0 + ticket input | Type, Risk, AC/NEG/PERM/EDGE, UI oracle | missing type/risk/source; ambiguous requirement | clarify (self-chained) |
-| clarify (G2/G5) | G1 + Type (preferred — self-classifies if absent) | type-specific evidence map, claims, Q&A | NO/UNCLEAR without decision | confirm |
+| clarify (G2/G5) | G1 + Type (preferred — self-classifies if absent) | type-specific evidence map, claims, Q&A and browser reproduction for UI bugs | NO/UNCLEAR without decision or missing required reproduction | confirm |
 | confirm (G3) | G2/G5 decisions visible | exact human phrase/provenance | missing/unauthorized/ambiguous decision | plan |
 | plan (G4) | G3 (preferred — self-analyzes ticket if absent) | runnable task/DoD/test mapping | uncovered AC/claim; unresolvable command | build |
 | build (G6) | G5 (preferred — calls plan, which self-analyzes, if absent) | per-task RED→GREEN evidence, code, coverage map, SHA | red test for wrong reason; scope drift; uncovered id | review |
 | review (G7) | G6 + actual diff | independent findings + AC/side-effect evidence | no diff; OPEN P0/P1; missing evidence | fix or test |
 | fix | OPEN findings | triage decision + narrow change + regression proof | unjustified decision; unresolved P0/P1 | review |
-| test (G8) | G7 | executed-command ledger + raw/JUnit evidence + SHA | planned command not run; failure; stale evidence | check |
+| test (G8) | G7 | executed-command ledger + raw/JUnit evidence + SHA, plus browser evidence and approved golden comparisons when applicable | planned command not run, failure, stale or missing required evidence | check |
 | check | requested minimum gate | deterministic PASS/FAIL/JSON result | any structural/provenance failure | owning stage |
-| ship (G9) | G8 | deployment-profile safety/rollback plan | unsafe migration/rollout/rollback/ownership | audit |
+| ship (G9) | G8 | deployment-profile safety/rollback plan | unsafe migration/rollout/rollback/ownership | audit when required |
 | audit (AUDIT) | G9 strict | C1–C8 quotes, verdicts, reasoning, human sign-off | any missing/UNCLEAR/INCOHERENT pair | owning stage |
 | status | workspace/ticket selector | read-only state, uncertainty, one next action | ambiguous selector/path | user clarification |
 | clean | exact ticket + G9 or explicit force | archive receipt or confirmed purge receipt | broad target; unconfirmed purge | start/status |
-| start | ticket + resolvable workspace | single deep-analysis pass, reuses shared project knowledge, one collapsed stop for confirm, then continuous dispatch through the delivery pipeline (spec…check) — never dispatches learning/coaching itself | epic-shaped request (routes to decompose); >4 claims or >2 Types found within one repo (routes to decompose early, same offer, before the collapsed stop); first genuine stop (P0/P1 finding, unresolved clarify claim, or ship/audit — always manual); G0 failure only when project-level foundation is missing/unusable, then routes to one-time learning; changed business rule routes to coaching | owning stage at the stop point, or ship |
+| start | task and identifiable repo or project | inline first-use setup, one investigation, implementation, verification and G8 handoff. Continue through G9 and applicable AUDIT when release preparation is requested | unresolved material decision, required approval, failing evidence or genuine access blocker. Use decompose for independently deliverable work | resume the same task after a reply, or report verified handoff |
 
 ## Ticket-type strategy dispatch
 
@@ -37,7 +37,7 @@ genuine blocker. Worklog artifact filenames renamed with the stage: `03-clarify-
 | New feature | Closest analog → insertion points → constraints/contracts → negative integration effects |
 | Spec change | Exact before/after → every consumer of changed behavior → signed side effects |
 | Requirement change | Exact old/new rule → every encoding across code/config/copy/docs/repos → named authority |
-| Refactor | State the no-behavior-change claim → confirm existing test coverage → duplicate-scan → route straight to `:build`, skipping spec/clarify |
+| Refactor | State the no-behavior-change claim → confirm existing test coverage → duplicate-scan → plan and verify against the preserved behavior, with approvals as required |
 
 Mixed tickets use claim-level Type. They must not use one strategy for all claims. A ticket mixing
 Refactor with any other type is not a Refactor — the moment a claim changes observable behavior it
@@ -45,15 +45,9 @@ moves to its real type.
 
 ## Entry-point stages (outside the gate sequence)
 
-`decompose` and `start` do not own a gate themselves (no `G0`…`G9`/`AUDIT`
-row belongs to either) — they own **sequencing and stop-point count**, not
-verdicts. Every gate they pass through still runs the owning stage's real
-requirements from the table above; `check-gates.sh` does not know either
-stage exists and does not need to. `decompose` runs before any child's
-`spec`/`start`. `start` is the default way to walk `spec`→`check` (and hand
-off to `ship`/`audit`) with as few user-visible stops as the ticket's Risk
-allows — never a shortcut around what a stage requires. Calling a named
-`/ak:<stage>` command directly instead of `start` remains valid for
-manual, step-by-step control of one specific step. `references/risk.md`'s
-P0/P1/P2 lanes govern `start`'s stop count exactly as they govern the manual
-path; `start` does not introduce a fourth lane.
+`start` and `decompose` coordinate stage owners. The default path uses one investigation
+for spec, clarify and plan; each owner records its required output. When a stage runs inside
+`start`, return its result to the coordinator. Do not interrupt the user with another command,
+repeat settled investigation, or stop solely because a stage completed. Standalone commands
+still report their own result and next action. See `workflow.md` for the sequence and
+`risk.md` for the conditions that require human input.

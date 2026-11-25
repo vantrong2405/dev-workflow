@@ -16,16 +16,15 @@ Apply `references/skill-quality.md`. This stage owns **splitting decisions and
 the up-front risk/question map**; it does not own any child ticket's spec,
 clarify, or code.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per
-`references/locale.md` before anything else.
+Use the project locale from `references/locale.md`.
 
 ## When to run this
 
 - User calls `/ak:decompose <description>` directly on a request too
   big for one worklog (touches multiple modules/services, mixes ticket Types,
   or would need its own epic-tracking to stay isolated per `task-isolation.md`).
-- `:start`/`:spec` detect the same shape and offer this stage instead of
-  silently opening one oversized worklog — offer, never auto-run.
+- `:start` can invoke this stage to prepare the split in the active flow. A standalone
+  `:spec` offers the split before handing off. Both wait for approval of the split itself.
 
 **Signal it's an epic, not one ticket:** read `references/epic-signal.md` —
 the qualitative signal and the same-repo numeric backstop are defined there

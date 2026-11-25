@@ -12,14 +12,13 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md`; status is read-only and separates structural, semantic, and human-final state.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 Show concise knowledge and gate progress.
 Read `references/workflow.md`, `references/project-root.md`, `references/locale.md`, `references/workspace-health.md`.
 Reply in user language.
 Without ticket: report domain freshness (see `bin/check-workspace.sh` W0–W6 checks — plugin dir,
-PROJECT.md, domain-knowledge/INDEX.md, worklogs/ layout, stray files, per-ticket INDEX.md,
+PROJECT.md, PROJECT-FORM.md or legacy domain-knowledge/INDEX.md, worklogs/ layout, stray files, per-ticket INDEX.md,
 marker-slug consistency) + run its summary directly, do not re-derive by hand. Also list any
 `domain-knowledge/coaching-tickets/*.md` with `Status: OPEN` (id + title) so the user can see
 what's waiting on an answer — these are async and don't block anything, just surface them.
@@ -31,13 +30,8 @@ No code changes; keep default output short.
 Report G9 structural, AUDIT semantic, and human sign-off separately. Run the checker when possible;
 never infer PASS from a checkbox alone. Include uncertainty and exactly one next command.
 
-**Audit-pending nudge.** Without a ticket, also scan `worklogs/*/INDEX.md` for tickets that are
-G9 PASS but have no AUDIT verdict recorded, and surface them as a one-line list (id + days since
-G9) — e.g. `3 ticket(s) shipped, not yet audited: TICKET-42 (6d), TICKET-51 (1d), adhoc-foo (14d)`.
-This is a visibility nudge only — never blocks, never auto-runs `:audit`, never changes any gate.
-It exists because `:audit` is the one gate with no structural enforcement (`references/risk.md`'s
-own timebox table already flags it as the gate most likely to get cut under deadline pressure) —
-`:status` is the cheapest place to keep it visible without adding ceremony to `:ship`.
+Without a ticket, identify release-ready worklogs still waiting on a required audit. Respect
+recorded P2 audit skips. Report release readiness separately from actual deployment.
 
 Calling this mid-pipeline (after some gates PASS, before the ticket is done) is a legitimate,
 low-cost way to re-orient — not just a start/end check. `check-gates.sh --json` gives a full

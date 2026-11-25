@@ -12,8 +12,7 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md`; this stage owns deployment-specific safety, not generic N/A ceremony.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 1. Require G8 PASS.
 2. **Self-analyzed chain check.** Re-check `02-spec.md`, `03-clarify-report.md`, `04-plan.md` for
@@ -39,7 +38,8 @@ before anything else.
 
 ## 9/10 controls
 
-First select deployment profile: `web/service`, `worker`, `library/package`, `mobile/desktop`,
+Use a relevant release profile from the project form, verifying it against the change.
+Available profiles: `web/service`, `worker`, `library/package`, `mobile/desktop`,
 `docs/config`, or explicit custom. Apply relevant controls; every N/A needs a profile-based reason
 and owner. Migration rollback addresses deployed data/schema, not only code. Record rollout/rollback
 authority and observable abort signal. Never deploy, push, or merge without explicit authority.

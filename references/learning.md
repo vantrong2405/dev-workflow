@@ -1,6 +1,7 @@
 # Learning
 
-Use when workspace knowledge is empty or missing for ticket scope.
+Use for an explicit deeper domain research pass. Initial task onboarding and targeted factual
+refresh use `project-form.md`.
 
 Input brief should include project name, domain, repo map, and learning goal.
 
@@ -56,7 +57,7 @@ the theory that they "might be relevant" without a route/reference pointing at t
 repo-wide read produces a domain-knowledge file padded with guesses, which is worse than a shorter
 file that only states what was actually confirmed.
 
-## What "captured enough" means (G0 DoD bar — do not tick early)
+## What counts as captured domain knowledge
 
 `business.md` / `architecture.md` / `glossary.md` need **real content**, not a filled-in template
 skeleton — a heading with one vague sentence under it is not meaningfully different from an empty
@@ -69,7 +70,7 @@ unlocks unlimited postings; free caps at 3 active. `Job.status` is a state machi
 — concrete enough that a later ticket's spec can cite it as fact without re-reading the code.
 
 Mark `Needs learning: no` only when the domain file actually reads like the second example, not
-the first. Do not tick it to unblock G0 — G0's job is to catch exactly this shortcut. If a section
+the first. Mark domain notes by what is actually known. The project form can be ready while deeper research is unfinished. If a section
 of `business.md`/`architecture.md` still reads like the first example after this pass, leave it
 marked unconfirmed rather than writing something that merely fills the space.
 

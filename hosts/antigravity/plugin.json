@@ -1,0 +1,6 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "ak",
+  "version": "0.4.0",
+  "description": "One task workflow with project onboarding, verified handoff, and optional release preparation."
+}
