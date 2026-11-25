@@ -57,7 +57,7 @@ AIはPASSを自称してはならない。`bin/check-gates.sh`は構造の判定
 トラブルシューティングは [INSTALL.md](./INSTALL.md) を参照。
 
 ```bash
-git clone https://github.com/trongdn2405/ak.git
+git clone https://github.com/vantrong2405/dev-workflow.git ak
 cd ak
 bash install.sh             # Claude Codeのみ（デフォルト）
 bash install.sh --cursor    # Cursorのみ
@@ -353,7 +353,7 @@ CLI:
   あなたが構築している製品/チケットのバグではない。
 - このセッションで説明したことをすべて集約し、`gh issue list`で既存の重複がないか確認してから、
   各title/bodyの確認を求める。
-- `gh issue create --repo trongdn2405/ak`経由でファイルする; issueのURLを報告する。または
+- `gh issue create --repo vantrong2405/dev-workflow`経由でファイルする; issueのURLを報告する。または
   項目がスキップされた理由（重複、却下）を報告する。
 - `gh`のインストールと認証が必要（`gh auth status`）。認証済みの任意のGitHubアカウントは公開リポジトリで
   issueを開ける — write accessは不要。

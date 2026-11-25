@@ -47,11 +47,20 @@ backstop; do not restate either here.
 
 Otherwise this is one ticket (any size) — continue below.
 
+**Reuse project knowledge on every ticket.** Read the existing
+`domain-knowledge/INDEX.md` and only the relevant domain files; do not rerun
+`:learning` or ask the user to teach the project again for a new ticket.
+G0 checks that the shared project foundation exists and is usable, not that
+every ticket-specific detail was pre-recorded. Investigate ticket-specific
+gaps from the relevant code/docs during step 1 and route unresolved business
+intent through the normal clarify/coaching path.
+
 **`:start` never dispatches `:learning` or `:coaching`.** They're independent
-of this pipeline (see `references/workflow.md` "Stage order"). If G0 FAILs
-because domain-knowledge is missing or contradicted, **stop and tell the
-user** to run `:learning`/`:coaching` themselves first, then call `:start`
-again — never auto-invoke either on their behalf.
+of this pipeline (see `references/workflow.md` "Stage order"). If the
+project-level foundation is genuinely missing/unusable, stop and tell the
+user to run `:learning` once, then call `:start` again. If an existing
+confirmed business rule changed, route that delta to `:coaching`. Never ask
+for a full learning pass just because this ticket covers a new area.
 
 ## Step 1 — one deep analysis pass, before asking anything
 

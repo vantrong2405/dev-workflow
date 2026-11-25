@@ -14,7 +14,7 @@ Only the latest released version (see [CHANGELOG.md](./CHANGELOG.md)) receives s
 This is a solo-maintained repository, not an organization — there is no dedicated security team or
 org-owned mailbox behind it. Two channels, in order of preference:
 
-1. [GitHub private vulnerability reporting](https://github.com/trongdn2405/ak/security) —
+1. [GitHub private vulnerability reporting](https://github.com/vantrong2405/dev-workflow/security) —
    use the "Report a vulnerability" button on the Security tab if present. This is the preferred
    channel once enabled; it keeps the report private to maintainer + GitHub and supports draft
    advisories.

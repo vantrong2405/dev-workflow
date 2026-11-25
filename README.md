@@ -29,7 +29,7 @@ shares one fast lane so normal tickets don't collect ceremony they don't need â€
 ## Install
 
 ```bash
-git clone https://github.com/trongdn2405/ak.git
+git clone https://github.com/vantrong2405/dev-workflow.git ak
 cd ak
 bash install.sh                          # global, Claude Code (default) â€” see docs/INSTALL.md for Cursor/Codex/Antigravity
 bash install.sh --path ~/projects/my-app # self-contained in that project only, nothing global

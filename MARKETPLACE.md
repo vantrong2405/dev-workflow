@@ -19,7 +19,7 @@ For prerequisites, files changed, update steps, and troubleshooting, see
 ### Claude Code
 
 ```text
-/plugin marketplace add https://github.com/trongdn2405/ak
+/plugin marketplace add https://github.com/vantrong2405/dev-workflow
 /plugin install ak@ak-marketplace
 /reload-plugins
 ```
@@ -27,7 +27,7 @@ For prerequisites, files changed, update steps, and troubleshooting, see
 ### Local installer
 
 ```bash
-git clone https://github.com/trongdn2405/ak.git
+git clone https://github.com/vantrong2405/dev-workflow.git ak
 cd ak
 bash install.sh                         # Claude only (default)
 bash install.sh --cursor

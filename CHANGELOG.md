@@ -155,8 +155,8 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Neutral language:** no project-specific names or hardcoded paths in plugin source.
 - **Token-optimised docs:** all references and skill files written for minimal AI context load.
 
-[Unreleased]: https://github.com/trongdn2405/ak/compare/v0.4.0...HEAD
-[0.4.0]: https://github.com/trongdn2405/ak/releases/tag/v0.4.0
-[0.3.0]: https://github.com/trongdn2405/ak/releases/tag/v0.3.0
-[0.2.0]: https://github.com/trongdn2405/ak/releases/tag/v0.2.0
-[0.1.0]: https://github.com/trongdn2405/ak/releases/tag/v0.1.0
+[Unreleased]: https://github.com/vantrong2405/dev-workflow/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/vantrong2405/dev-workflow/releases/tag/v0.4.0
+[0.3.0]: https://github.com/vantrong2405/dev-workflow/releases/tag/v0.3.0
+[0.2.0]: https://github.com/vantrong2405/dev-workflow/releases/tag/v0.2.0
+[0.1.0]: https://github.com/vantrong2405/dev-workflow/releases/tag/v0.1.0

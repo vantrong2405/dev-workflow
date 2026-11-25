@@ -6,13 +6,20 @@ Hướng dẫn này giải thích **cách sử dụng** plugin hằng ngày.
 Về cài đặt/cập nhật, xem [INSTALL.md](./INSTALL.md). Về tóm tắt lệnh theo host, xem
 [MARKETPLACE.md](../MARKETPLACE.md). Về cấu trúc thiết kế, xem [STRUCTURE.md](../STRUCTURE.md).
 
+## Bắt đầu nhanh
+
+- **Chỉ lần đầu trong một project:** gọi `/ak:learning`, gửi đường dẫn repo và mô tả ngắn về project. Không cần học lại khi mở ticket mới.
+- **Mỗi ticket sau đó:** gọi `/ak` kèm yêu cầu hoặc mã ticket/link, ví dụ `/ak TICKET-123 https://tracker/TICKET-123`.
+- **Cứ trả lời khi skill hỏi.** `/ak` tự chọn và chạy các bước tiếp theo; bạn không cần gọi lần lượt `spec`, `plan`, `build`, `review`, `test`.
+- Muốn tự chạy một bước cụ thể thì dùng lệnh `/ak:<tên-bước>` trong bảng lệnh ở mục 4.
+
 ---
 
 ## 1. Plugin này làm gì
 
 Bắt buộc đi theo con đường **đặt yêu cầu lên hàng đầu** trước khi viết code:
 
-1. Học / coaching domain knowledge
+1. Thiết lập domain knowledge cho project (chỉ lần đầu; cập nhật khi business rule thay đổi)
 2. Viết acceptance criteria có thể kiểm chứng (và Risk tier)
 3. Phát hiện xung đột với code hiện tại
 4. **Bạn** xác nhận các quyết định (`CONFIRM G3:…`)
@@ -58,7 +65,7 @@ directory của bạn nhưng không sửa source của sản phẩm. Đọc [INS
 đường dẫn chính xác, cách cập nhật, smoke test cô lập, và xử lý sự cố.
 
 ```bash
-git clone https://github.com/trongdn2405/ak.git
+git clone https://github.com/vantrong2405/dev-workflow.git ak
 cd ak
 bash install.sh             # chỉ Claude Code (mặc định)
 bash install.sh --cursor    # chỉ Cursor
@@ -357,7 +364,7 @@ CLI:
   tạo ra — không phải bug trong sản phẩm/ticket bạn đang xây dựng.
 - Tổng hợp mọi thứ bạn đã mô tả trong phiên này, kiểm tra `gh issue list` để tìm trùng lặp đã có,
   rồi hỏi bạn xác nhận từng title/body trước khi tạo issue.
-- Tạo issue qua `gh issue create --repo trongdn2405/ak`; báo lại URL issue, hoặc lý do một
+- Tạo issue qua `gh issue create --repo vantrong2405/dev-workflow`; báo lại URL issue, hoặc lý do một
   mục bị bỏ qua (trùng lặp, bị từ chối).
 - Yêu cầu `gh` đã cài đặt và xác thực (`gh auth status`). Bất kỳ tài khoản GitHub đã xác thực nào
   cũng có thể mở issue trên repo public — không cần quyền write.
@@ -423,7 +430,7 @@ bên khác nhau, tệp contract thắng; sửa tệp đó trước, rồi mới 
 
 | Gate | PASS nghĩa là | Nếu FAIL thì chạy |
 |------|------------|-------------|
-| G0 | Domain knowledge đã sẵn sàng | `:learning` / `:coaching` |
+| G0 | Workspace và domain knowledge dùng chung của project đã sẵn sàng; dùng lại cho ticket mới | Chỉ chạy `:learning` nếu project chưa có nền tảng; `:coaching` nếu business rule đã xác nhận thay đổi |
 | G1 | Một Type + Risk, provenance, AC (+ security nếu P0) | `:spec` |
 | G2 | Xung đột đã được quyết định | `:clarify` |
 | G3 | Human CONFIRM trong INDEX + `03b` | `:confirm` |

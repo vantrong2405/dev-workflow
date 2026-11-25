@@ -19,7 +19,7 @@ bash --version
 ## Clone and install
 
 ```bash
-git clone https://github.com/trongdn2405/ak.git
+git clone https://github.com/vantrong2405/dev-workflow.git ak
 cd ak
 bash install.sh
 ```
@@ -67,7 +67,7 @@ Existing unrelated commands, skills, plugins, and an existing Codex marketplace 
 Inside Claude Code:
 
 ```text
-/plugin marketplace add https://github.com/trongdn2405/ak
+/plugin marketplace add https://github.com/vantrong2405/dev-workflow
 /plugin install ak@ak-marketplace
 /reload-plugins
 ```

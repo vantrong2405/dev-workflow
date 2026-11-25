@@ -25,12 +25,12 @@ not the target product the ticket is building. Read `references/feedback.md`.
 1. Collect: use the description argument plus any feedback already raised earlier this
    conversation (skill name, expected vs actual, evidence — quote/log/artifact path).
 2. Verify `gh auth status`; if not authenticated, stop and tell user how to fix.
-3. `gh issue list --repo trongdn2405/ak --state open --search "<keywords>"` to check for an
+3. `gh issue list --repo vantrong2405/dev-workflow --state open --search "<keywords>"` to check for an
    existing duplicate before filing.
 4. Ask `[FEEDBACK]` to confirm each issue's title/body before creating — never file silently.
 5. For each confirmed, non-duplicate item:
    ```bash
-   gh issue create --repo trongdn2405/ak --title "<title>" --label feedback --body "<body>"
+   gh issue create --repo vantrong2405/dev-workflow --title "<title>" --label feedback --body "<body>"
    ```
    Body must include: skill/command affected, expected behavior, actual behavior, repro
    steps/evidence, ticket/workspace context if relevant.

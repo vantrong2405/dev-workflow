@@ -4,12 +4,12 @@
 
 [![Version](https://img.shields.io/badge/version-0.4.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](./docs/INSTALL.md)
+[![Hosts](https://img.shields.io/badge/hosts-Claude%20%7C%20Cursor%20%7C%20Codex%20%7C%20Antigravity-purple)](#インストール)
 
 [English](README.md) · [Tiếng Việt](README.vi.md) · **[日本語](README.ja.md)**
 
 Claude Code、Cursor、Codex、Antigravity向けの**要件ファーストのAI開発ワークフロー**: 明確な仕様 →
-人によるconfirm → TDD → 機械検証済みエビデンス → 安全なship。
+人による1回のconfirm → TDD → 機械検証済みエビデンス → 人による1回のサインオフ → ship。
 
 ## なぜ
 
@@ -20,16 +20,20 @@ Claude Code、Cursor、Codex、Antigravity向けの**要件ファーストのAI�
 - エビデンスなしに「完了」と表示する
 - 実際にconfirmされた内容から逸脱する
 
-akは、構造的ゲート **G0–G9** と必須の意味論的 **AUDIT** がPASSするまで先に進めないよう
+akは、構造的ゲートがPASSし、かつ必須の意味論的**audit**がサインオフするまで先に進めないよう
 ブロックする。チェッカー（`bin/check-gates.sh`）が唯一の真実の源であり、AIがPASSを自称することは
-許されない。
+許されない。**Risk P0**（金銭・権限・PII・migration）だけが全ステップをhard-gateし、それ以外
+（P1/P2）は共通のfast laneを使うので、通常のチケットは不要な儀式を背負わない —
+[ゲートとリスク](#ゲートとリスク)を参照。
 
 ## インストール
 
 ```bash
-git clone https://github.com/trongdn2405/ak.git
+git clone https://github.com/vantrong2405/dev-workflow.git ak
 cd ak
-bash install.sh          # デフォルトはClaude Code — Cursor/Codex/Antigravityはdocs/INSTALL.mdを参照
+bash install.sh                          # グローバル、Claude Code（デフォルト）— Cursor/Codex/Antigravityはdocs/INSTALL.mdを参照
+bash install.sh --path ~/projects/my-app # そのプロジェクトだけに自己完結でインストール、グローバルには触れない
+bash install.sh --only spec,build,review # そのstageだけインストール、どちらのモードでも可
 ```
 
 その後、任意のプロジェクトで:
@@ -38,7 +42,10 @@ bash install.sh          # デフォルトはClaude Code — Cursor/Codex/Antigr
 /ak TICKET-123 https://tracker/TICKET-123
 ```
 
-host別のインストール/更新/アンインストールの完全な手順: [docs/INSTALL.md](./docs/INSTALL.md)。
+プロジェクトでの初回実行時、そのプロジェクト自身の `CLAUDE.md` も seed/update される（マーク付きの
+1ブロックのみ — 他の内容には触れない）。内容はpipeline、Riskルール、stack非依存の規約（言語の使い分け、
+最小diff、WHATではなくWHYをコメント、force-push禁止）。host別のインストール/更新/アンインストールの
+完全な手順: [docs/INSTALL.md](./docs/INSTALL.md)。
 
 ## フロー
 
@@ -73,32 +80,42 @@ epic的なリクエストはまず `:decompose` を通り、childチケットに
 |---------|--------|
 | `/ak:spec` | テスト可能なAC + Risk tier（P0/P1/P2） |
 | `/ak:clarify` | spec/意図と実際の挙動を照合; 決定事項を記録 |
-| `/ak:confirm` | 人によるサインオフ — plan/buildの前に必須 |
+| `/ak:confirm` | 人によるサインオフ — plan/buildの前に必須な唯一の停止点 |
 | `/ak:plan` / `:build` | TDDプラン + 実装 + カバレッジマップ |
 | `/ak:review` / `:fix` | 中立的なdiffレビュー + トリアージ/修正 |
 | `/ak:test` | 実際のテスト + 機械エビデンス（SHA/CI/junit） |
-| `/ak:ship` | ship安全性チェックリスト（ゲートG9） |
-| `/ak:audit` | 意味論的整合性チェック + 人によるサインオフ |
+| `/ak:check` | チェッカーを実際に実行 — 自称PASSはなし |
+| `/ak:ship` | ship安全性チェックリスト |
+| `/ak:audit` | 意味論的整合性チェック — shipが確定する前の最後のサインオフ |
+| `/ak:decompose` | epicをchildチケットに分割、1回のconfirmで分割全体をカバー |
+| `/ak:learning` / `:coaching` | プロジェクトのdomain knowledgeを初期構築・修正 |
+| `/ak:status` / `:clean` | チケットの状態 / 完了したworklogのアーカイブ |
+| `/ak:feedback` | `ak` 自身のバグを報告 |
+| `/ak:flow-diagram` | bug/UI-flowをplain-text図として再現、途中で質問しない |
 
-完全なコマンドリファレンス（全16コマンド、引数、各コマンドが単独で動作する条件）:
+完全なコマンドリファレンス（全19コマンド、引数、各コマンドが単独で動作する条件）:
 [docs/USER-GUIDE.md §4](./docs/USER-GUIDE.md#4-commands-cheat-sheet)。
 
 ## ゲートとリスク
 
-10個の構造的ゲート（**G0–G9**）に加えて1つの意味論的 **AUDIT** が上記のフローを強制する; 3つのRisk
-レーン（**P0** hard / **P1** hard / **P2** fast）がチケットにどれだけの手続きが必要かを決める。
-権威ある定義は [references/stage-contract.md](./references/stage-contract.md) と
-[references/risk.md](./references/risk.md) にあり、
-[docs/USER-GUIDE.md §6](./docs/USER-GUIDE.md#6-gates-g0g9--audit-in-one-table) には読者向けの表がある。
+10個の構造的ゲートに加えて1つの意味論的auditが上記のフローを強制する。3つのRiskレーンがチケット
+にどれだけの手続きが必要かを決める — **P0だけがhard-gateされる唯一のtier**であり、P1とP2は共通の
+fast laneを使うので、通常の挙動変更が金銭/権限/PII/migrationの変更と同じように途中confirmを強制
+されることはない。`/ak:confirm` と `/ak:audit` はtierに関わらず、人が実際に何かを決める2つの
+ポイントであり続ける。権威ある定義は [references/stage-contract.md](./references/stage-contract.md)
+と [references/risk.md](./references/risk.md) にあり、[docs/USER-GUIDE.md
+§6](./docs/USER-GUIDE.md#6-gates-g0g9--audit-in-one-table) には読者向けの表がある。
 
 ## もっと詳しく
 
 | ドキュメント | 内容 |
 |-----|---------|
+| **[docs/catalog.html](./docs/catalog.html)** | 全Command/Skill/Reference/Templateの閲覧可能なカタログ + インストールコマンド生成器（ブラウザでファイルを開く） |
 | **[docs/USER-GUIDE.md](./docs/USER-GUIDE.md)** | 日々の使い方の完全ガイド: セットアップ、日々のフロー、confirmフレーズ、worklogファイル、ゲート、パイロット |
 | [docs/INSTALL.md](./docs/INSTALL.md) | インストール、更新、アンインストール、検証、host別パス |
 | [MARKETPLACE.md](./MARKETPLACE.md) | host別インストール + smoke test |
 | [STRUCTURE.md](./STRUCTURE.md) | 注釈付きリポジトリレイアウト |
+| [references/vocabulary.md](./references/vocabulary.md) | Command / Skill / Reference / Templateの定義 |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | プラグインを変更する方法 |
 | [CHANGELOG.md](./CHANGELOG.md) | バージョン履歴 |
 | [SECURITY.md](./SECURITY.md) | 脆弱性の報告 |

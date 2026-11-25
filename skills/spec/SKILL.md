@@ -70,7 +70,12 @@ field/button label and the exact machine-checkable signal (`expected_text`,
 description). Screen not designed yet → mark the row `☐ TBD — confirm before :build closes`,
 never leave it silently blank.
 
-Empty knowledge → `:learning`; wrong/changed → `:coaching`.
+Reuse the project's confirmed domain knowledge. Do not rerun `:learning` for
+each ticket or because this ticket touches a new area: investigate ticket-
+specific gaps from code/docs and resolve requirement questions in `:clarify`.
+Use `:learning` only when the project's shared knowledge foundation is
+genuinely uninitialized; use `:coaching` when a previously confirmed business
+rule is corrected or changed.
 Before PASS, verify exactly one Type per claim, exactly one Risk, every requirement has a source or
 explicit `UNVERIFIED`, and every UI oracle is observable without asking the implementer.
 

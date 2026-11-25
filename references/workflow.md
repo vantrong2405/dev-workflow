@@ -16,7 +16,7 @@ Risk tiers: see `references/risk.md` (P0 hard / P1 fast / P2 fast — P0 is the 
 ## Gates and dispatch
 | Gate | PASS means | FAIL command |
 |---|---|---|
-| G0 | domain knowledge matches ticket scope | empty → `:learning`; wrong/changed → `:coaching` (directly, or by answering a coaching ticket `:learning` opened — see `references/learning.md`/`coaching.md`). `:start` does not run either for you — see "Stage order" below. |
+| G0 | project workspace and shared domain knowledge are initialized and reusable | missing project foundation → `:learning` once; confirmed business rule changed → `:coaching`. Do not rerun `:learning` for each ticket. Ticket-specific gaps are investigated in `:spec`/`:clarify` and do not fail G0 by themselves. `:start` does not run either for you — see "Stage order" below. |
 | G1 | AC + Risk set; **P0 also `02b-security.md`**; **Touches UI also QA handoff oracle table** | `:spec` |
 | G2 | each non-MATCH has decision, owner, date (P2 soft unless `--strict`) | `:clarify` |
 | G3 | human `CONFIRM G3:` on INDEX **and** `03b-human-confirm.md` (no AI names; P0 + PM); P2 soft unless `--strict` | `:confirm` |
@@ -62,9 +62,12 @@ tickets in `domain-knowledge/coaching-tickets/`, answered one at a time via
 schedule, entirely outside `:start`.
 
 `:start` runs one analysis pass, then dispatches continuously through the delivery pipeline **only**
-— never past it. If G0 fails (domain-knowledge missing or contradicted), `:start` stops and tells
-the user to run `:learning`/`:coaching` themselves, then call `:start` again — it does not invoke
-either on their behalf. Delivery then follows `:spec` → `:clarify` → `:confirm` → `:plan` →
+— never past it. G0 checks whether project-level workspace knowledge is initialized and reusable;
+it is not a demand to relearn the project for every ticket. If the project foundation is genuinely
+missing, `:start` stops and tells the user to run `:learning` once. If an existing business rule is
+wrong or changed, it routes to `:coaching`. Gaps limited to this ticket are investigated in
+`:spec`/`:clarify`. `:start` does not invoke `:learning` or `:coaching` on the user's behalf.
+Delivery then follows `:spec` → `:clarify` → `:confirm` → `:plan` →
 `:build` → `:review` → (`:fix` if P0/P1 OPEN) → `:test` → `/ak:check` → `:ship` →
 `:audit` → `:status` → (`:clean` when ticket done), stopping only at a genuine blocker or at
 `:ship`/`:audit` (always manual). See `skills/start/SKILL.md` for the full one-stop mechanics.

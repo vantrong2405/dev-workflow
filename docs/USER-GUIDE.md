@@ -55,7 +55,7 @@ files under your home directory but does not edit product source. Read [INSTALL.
 for exact paths, updates, isolated smoke testing, and troubleshooting.
 
 ```bash
-git clone https://github.com/trongdn2405/ak.git
+git clone https://github.com/vantrong2405/dev-workflow.git ak
 cd ak
 bash install.sh             # Claude Code only (default)
 bash install.sh --cursor    # Cursor only
@@ -355,7 +355,7 @@ CLI:
   not a bug in the product/ticket you are building.
 - Aggregates whatever you've described this session, checks `gh issue list` for an existing
   duplicate, then asks you to confirm each title/body before filing.
-- Files via `gh issue create --repo trongdn2405/ak`; reports back the issue URL(s), or the
+- Files via `gh issue create --repo vantrong2405/dev-workflow`; reports back the issue URL(s), or the
   reason an item was skipped (duplicate, declined).
 - Requires `gh` installed and authenticated (`gh auth status`). Any authenticated GitHub account
   can open an issue on a public repo — write access is not required.
