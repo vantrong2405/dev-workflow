@@ -42,8 +42,10 @@ nghiệp vụ đã lưu.
 | Kiểm chứng | Review diff, xử lý lỗi tìm thấy và chạy kiểm tra phù hợp. Dùng lại kết quả nếu lệnh, đầu vào, trạng thái code và tiêu chí vẫn khớp. |
 | Bàn giao | Tóm tắt đã sửa gì, đã kiểm tra gì và còn vướng ở đâu. Mặc định dừng ở G8, sẵn sàng review. |
 
-Bug UI phải được tái hiện trên trình duyệt trước khi sửa. Mọi ticket UI cần một kiểm
-tra hành vi đạt trên bản code hiện tại. Thay đổi giao diện còn cần golden test đạt khi
+Với bug UI, ak chuẩn bị dữ liệu test và sơ đồ từng cú bấm trước. Bạn chạy theo sơ đồ
+rồi gửi kết quả quan sát và ảnh hoặc video, hoặc giao ak chạy giúp. Ưu tiên giao diện
+tiếng Anh khi app hỗ trợ và lỗi phù hợp. Sau khi sửa, chạy đủ các ca UI đã ghi trong
+yêu cầu. Thay đổi giao diện còn cần golden test đạt khi
 so với ảnh mẫu đã duyệt. Thiếu môi trường hoặc kiểm tra thất bại sẽ chặn bước tương
 ứng. [Quy trình kiểm chứng UI](../references/ui-verification.md)
 
@@ -76,6 +78,7 @@ bằng chứng giữa các file, ví dụ rollback có xử lý đúng migration
 | `/ak:learning`, `/ak:coaching` | Cập nhật form hoặc sửa kiến thức nghiệp vụ |
 | `/ak:decompose` | Đề xuất cách chia epic |
 | `/ak:spec`, `/ak:clarify`, `/ak:confirm`, `/ak:plan` | Thao tác riêng trên yêu cầu và kế hoạch |
+| `/ak:redteam` | Phản biện kế hoạch trước khi sửa code và kiểm tra lại bản đã chỉnh |
 | `/ak:build`, `/ak:review`, `/ak:fix`, `/ak:test` | Thao tác riêng trên thay đổi và kiểm chứng |
 | `/ak:check`, `/ak:ship`, `/ak:audit` | Chạy checker, chuẩn bị ship hoặc audit riêng |
 | `/ak:status`, `/ak:clean` | Xem tiến độ hoặc lưu trữ worklog đủ điều kiện |

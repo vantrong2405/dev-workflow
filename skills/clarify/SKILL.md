@@ -20,11 +20,13 @@ persisting, not before.
 
 Compare spec to running behavior and force decisions.
 
-For a UI bug, reproduce the actual behavior in a running browser before code edits.
-Use Playwright when available or the project's browser tool, then record the failing
-capture, execution log and source state per `references/ui-verification.md`.
-If you cannot reproduce it, report the blocker. Source inspection alone cannot clear
-the browser reproduction requirement at G5.
+For a UI bug, prepare the test data and invoke `:flow-diagram` for the click-by-click
+reproduction before code edits. Show the diagram in chat and let the user run it.
+Prefer English UI when supported, except when the original locale matters to the bug.
+Once the user observes the failure, record their browser evidence per
+`references/ui-verification.md`. If the user delegates the reproduction, use
+Playwright or the project's browser tool and record the run as yours. G5 requires
+an observed failure and the diagram. Source inspection alone cannot clear it.
 
 Inside `:start`, use the shared investigation and the decisions already provided in that
 conversation. Record the G2/G5 artifacts from those findings. Investigate gaps only, and

@@ -8,9 +8,12 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from xml.etree import ElementTree
 
+from test_report import junit_cases
+
 
 SOURCE = re.compile(r"(?:commit|worktree):[0-9a-f]{40}(?:[0-9a-f]{24})?")
 CASE_ID = re.compile(r"(?:AC|NEG|PERM|EDGE)-[0-9]+")
+BUG_ID = re.compile(r"BUG-([0-9]{2,})")
 
 
 def require(condition, message):
@@ -22,7 +25,7 @@ def required_text(record, key):
     value = record.get(key)
     require(
         isinstance(value, str) and value.strip() and
-        value.strip().lower() not in {"tbd", "todo", "n/a", "unknown", "…", "..."},
+        value.strip().lower() not in {"tbd", "todo", "n/a", "unknown", "pending", "unverified", "not run", "…", "..."},
         f"missing concrete {key}",
     )
     return value.strip()
@@ -76,23 +79,82 @@ def golden_run(root, run, source, captures):
     require(run.get("source") == source, "golden run does not match the tested source")
     baseline = capture_file(root, required_text(run, "baseline"))
     require(baseline not in captures, "golden baseline must be separate from browser captures")
-    report = ElementTree.parse(artifact(root, required_text(run, "report")))
-    require(report.getroot().tag in {"testsuite", "testsuites"}, "golden report must be JUnit XML")
     test_name = required_text(run, "test")
-    matches = [case for case in report.iter("testcase") if case.get("name") == test_name]
+    try:
+        report = junit_cases(artifact(root, required_text(run, "report")))
+    except ValueError as error:
+        raise ValueError(f"golden test did not pass: {test_name} ({error})") from None
+    matches = [case for case in report if case.get("name") == test_name]
     require(len(matches) == 1, f"golden report needs exactly one test named {test_name}")
     require(all(child.tag not in {"failure", "error", "skipped"} for child in matches[0]),
             f"golden test did not pass: {test_name}")
 
 
-def verify(root, spec, phase, is_bug, is_visual, source):
+def qa_cases(spec, guided, spec_ids, is_bug, is_visual):
+    rows = {}
+    in_qa = False
+    for line in spec.splitlines():
+        if line.startswith("## "):
+            in_qa = line.lower().startswith("## qa handoff")
+        if not in_qa or not line.lstrip().startswith("|"):
+            continue
+        cells = [cell.strip() for cell in re.split(r"(?<!\\)\|", line.strip().strip("|"))]
+        case_id = cells[0]
+        if not CASE_ID.fullmatch(case_id):
+            continue
+        require(case_id in spec_ids and case_id not in rows, f"unknown or duplicate UI QA case: {case_id}")
+        if guided:
+            require(len(cells) >= 6, f"{case_id}: QA handoff needs Reproduction bug and Visual comparison values")
+            for key, value in zip(("action", "oracle type", "expected outcome"), cells[1:4]):
+                required_text({key: value}, key)
+                require("TBD" not in value.upper(), f"{case_id}: resolve the QA {key} before verification")
+            bug, visual = cells[4:6]
+            require(bug == "No" or (is_bug and BUG_ID.fullmatch(bug)),
+                    f"{case_id}: set Reproduction bug to BUG-01 style ID or No")
+            require(visual == "No" or (is_visual and visual == "Yes"),
+                    f"{case_id}: set Visual comparison to Yes or No")
+            rows[case_id] = (None if bug == "No" else bug, visual == "Yes")
+        else:
+            rows[case_id] = (None, False)
+    if guided:
+        require(rows, "UI spec needs at least one filled QA handoff row")
+        if is_bug:
+            require(any(bug for bug, _ in rows.values()), "UI bug must name at least one reproduction case")
+        if is_visual:
+            require(any(visual for _, visual in rows.values()), "mark the UI cases that need a visual comparison")
+    return rows
+
+
+def verify_diagrams(root, cases):
+    bug_ids = sorted({bug for bug, _ in cases.values() if bug})
+    for position, bug in enumerate(bug_ids, start=1):
+        require(bug == f"BUG-{position:02d}", "number UI bugs consecutively from BUG-01")
+        path = f"evidence/ui-repro-{bug.lower()}.md"
+        diagram = artifact(root, path).read_text(encoding="utf-8")
+        headings = re.findall(r"^### BUG #([0-9]+): .+", diagram, re.MULTILINE)
+        require(headings == [str(position)], f"{path}: needs one diagram headed BUG #{position}")
+        fence = "`" * 3
+        blocks = re.findall(rf"^{fence}text[ \t]*\n(.*?)^{fence}[ \t]*$", diagram, re.MULTILINE | re.DOTALL)
+        require(len(blocks) == 1 and blocks[0].lstrip().startswith("👤 USER "),
+                f"{path}: start the text diagram with the USER role/account")
+        for label in ("[Action hiện tại]", "[Action tiếp theo]",
+                      "BUG PHÁT SINH TẠI ĐÂY", "Vị trí", "URL Hiện tại (Sai)", "Kỳ vọng đúng", "Nguyên nhân"):
+            require(label in blocks[0], f"{path}: missing {label}")
+
+
+def verify(root, spec, phase, is_bug, is_visual, source, require_guided=False):
+    spec_text = spec.read_text(encoding="utf-8")
+    guided = require_guided or bool(re.search(
+        r"^- \*\*UI evidence protocol:\*\* guided-v1\s*$", spec_text, re.MULTILINE,
+    ))
     manifest = artifact(root, "evidence/ui-verification.json")
     cases = json.loads(manifest.read_text(encoding="utf-8")).get("cases")
     require(isinstance(cases, list) and cases, "UI evidence needs at least one browser case")
-    spec_ids = set(re.findall(
-        r"^\s*\|\s*((?:AC|NEG|PERM|EDGE)-[0-9]+)\s*\|",
-        spec.read_text(encoding="utf-8"), re.MULTILINE,
-    ))
+    requirement_text = re.split(r"^## QA handoff", spec_text, maxsplit=1, flags=re.MULTILINE | re.IGNORECASE)[0]
+    spec_ids = set(re.findall(r"^\s*\|\s*((?:AC|NEG|PERM|EDGE)-[0-9]+)\s*\|", requirement_text, re.MULTILINE))
+    qa = qa_cases(spec_text, guided, spec_ids, is_bug, is_visual)
+    if guided and is_bug:
+        verify_diagrams(root, qa)
     seen = set()
     has_golden = False
     for case in cases:
@@ -101,6 +163,10 @@ def verify(root, spec, phase, is_bug, is_visual, source):
                 f"missing, unknown or duplicate UI case ID: {case_id}")
         seen.add(case_id)
         try:
+            bug, compare_visual = qa.get(case_id, (None, False))
+            if guided:
+                require(case_id in qa, "case is missing from the QA handoff")
+                required_text(case, "fixture")
             url = urlsplit(required_text(case, "url"))
             require(url.scheme in {"http", "https"} and url.hostname and url.username is None,
                     "browser URL must be HTTP(S) without embedded credentials")
@@ -108,7 +174,13 @@ def verify(root, spec, phase, is_bug, is_visual, source):
                     "viewport must be WIDTHxHEIGHT")
             for key in ("actor", "locale", "steps", "expected"):
                 required_text(case, key)
-            before = browser_run(root, case.get("before", {}), "REPRODUCED") if is_bug else None
+            before = None
+            if is_bug and (bug or not guided):
+                run = case.get("before", {})
+                before = browser_run(root, run, "REPRODUCED")
+                if guided:
+                    require(run.get("performed_by") in {"user", "agent"}, "record who reproduced the bug")
+                    required_text(run, "confirmation")
             if phase == "before":
                 continue
             after = browser_run(root, case.get("after", {}), "PASS")
@@ -123,16 +195,21 @@ def verify(root, spec, phase, is_bug, is_visual, source):
                 captures = {after[2]} | ({before[2]} if before else set())
                 golden_run(root, case.get("golden", {}), source, captures)
                 has_golden = True
+            elif compare_visual:
+                raise ValueError("this UI case requires a golden comparison")
         except (ValueError, OSError, AttributeError, TypeError, ElementTree.ParseError) as error:
             raise ValueError(f"{case_id}: {error}") from None
+    required_cases = set(qa) if phase == "after" else {case_id for case_id, (bug, _) in qa.items() if bug}
+    missing = sorted(required_cases - seen)
+    require(not missing, "missing UI evidence for: " + ", ".join(missing))
     if phase == "after" and is_visual:
         require(has_golden, "visual changes require an approved golden comparison")
 
 
 if __name__ == "__main__":
-    worklog, spec_file, phase, bug, visual, tested_source = sys.argv[1:]
+    worklog, spec_file, phase, bug, visual, tested_source, guided = sys.argv[1:]
     try:
-        verify(Path(worklog).resolve(), Path(spec_file), phase, bug == "yes", visual == "yes", tested_source)
+        verify(Path(worklog).resolve(), Path(spec_file), phase, bug == "yes", visual == "yes", tested_source, guided == "yes")
     except (ValueError, OSError, AttributeError, TypeError) as error:
         print(f"UI evidence: {error}", file=sys.stderr)
         sys.exit(1)

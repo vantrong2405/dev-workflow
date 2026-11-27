@@ -77,7 +77,7 @@ ak/
 ```
 
 **Stages in `install.sh`:**
-`decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback flow-diagram`
+`decompose start learning coaching spec clarify confirm plan redteam build review fix test check ship audit status clean feedback flow-diagram`
 
 **Host selection:** default is `claude`; shorthand flags are `--claude`, `--cursor`, `--codex`,
 `--agy`, `--all` (the long-form `--host`/`--agent` is also supported). Cursor and Codex receive live
@@ -97,6 +97,7 @@ clone, worklogs, unrelated files, and any modified Codex marketplace configurati
 | `03-clarify-report.md` | G2 |
 | `03b-human-confirm.md` + INDEX CONFIRM | G3 |
 | `04-plan.md` | G4 |
+| `04b-plan-review.md` | G4 plan review tied to the approved plan |
 | `03-qa-log.md` (no OPEN) | G5 |
 | `05-impl-log.md` | G6 |
 | `06-review-qa.md` | G7 |

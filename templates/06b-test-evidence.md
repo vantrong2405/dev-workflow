@@ -10,7 +10,7 @@
 |---|---|
 | Commit SHA | [40-char or short SHA] |
 | CI run URL | [https://… or N/A-local] |
-| JUnit / XML / log path | [path or URL] |
+| JUnit / XML / log path | [local path (optional with CI run URL)] |
 | Branch | [name] |
 | Tested source | [commit:sha or worktree:hash] |
 | Evidence checkout | [absolute Git checkout path] |

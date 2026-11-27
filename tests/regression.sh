@@ -94,6 +94,26 @@ git -C "$checkout" add source.txt
 git -C "$checkout" -c user.name=Fixture -c user.email=fixture@example.test commit -qm initial
 sha="$(git -C "$checkout" rev-parse HEAD)"
 source_state="$ROOT/bin/source-state.sh"
+resolver="$ROOT/bin/lib/resolve-paths.sh"
+assert_output "a new Git checkout does not inherit a lone unrelated workspace" '^product$' \
+  bash -c 'cd "$1"; source "$2"; resolve_project_slug && printf "%s\n" "$AK_PROJECT_SLUG_RESOLVED"' _ "$checkout" "$resolver"
+assert_failure "lookup from an unmatched checkout does not read another project ticket" \
+  bash -c 'cd "$1"; source "$2"; resolve_worklog_dir TYPE-MISSING' _ "$checkout" "$resolver"
+mkdir -p "$tmp_root/workspaces/product"
+cp "$FIXTURES/workspaces/demo/PROJECT.md" "$tmp_root/workspaces/product/PROJECT.md"
+assert_failure_output "an existing same-name workspace cannot claim a different checkout" 'does not map this checkout' \
+  bash -c 'cd "$1"; source "$2"; resolve_project_slug' _ "$checkout" "$resolver"
+rm "$tmp_root/workspaces/product/PROJECT.md"
+mkdir -p "$tmp_root/workspaces/another/worklogs/TYPE-MISSING"
+assert_failure_output "a duplicate ticket requires explicit project selection" 'ambiguous worklog' \
+  bash -c 'cd "$1"; source "$2"; resolve_worklog_dir TYPE-MISSING' _ "$tmp_root" "$resolver"
+assert_output "explicit project selection resolves the intended duplicate ticket" '/demo/worklogs/TYPE-MISSING$' \
+  bash -c 'cd "$1"; source "$2"; resolve_worklog_dir TYPE-MISSING demo' _ "$tmp_root" "$resolver"
+assert_output "a unique standalone ticket lookup still works from outside a repo" '/another/worklogs/TYPE-MISSING$' \
+  bash -c 'cd "$1"; source "$2"; resolve_worklog_dir TYPE-MISSING another' _ "$tmp_root" "$resolver"
+mv "$tmp_root/workspaces/another/worklogs/TYPE-MISSING" "$tmp_root/workspaces/another/worklogs/UNIQUE"
+assert_output "an unscoped unique ticket can be located from outside a project" '/another/worklogs/UNIQUE$' \
+  bash -c 'cd "$1"; source "$2"; resolve_worklog_dir UNIQUE' _ "$tmp_root" "$resolver"
 assert_output "source state recognizes a clean committed checkout" "^commit:$sha$" \
   bash "$source_state" "$checkout"
 printf 'changed\n' >"$checkout/source.txt"
@@ -146,10 +166,22 @@ assert_failure_output "UI scope requires an explicit visual decision" 'G1 FAIL:.
 cat >>"$ui/02-spec.md" <<'EOF'
 
 - **Visual change?** ☐ Yes ☑ No
+- **UI evidence protocol:** guided-v1
+
+## Additional acceptance cases
+
+| AC-02 | user focuses Submit | presses Enter | confirmation appears | web |
 
 ## UI states
 
 Successful submit shows confirmation.
+
+## QA handoff — testable oracle
+
+| ID | Field/action labels | Oracle type | Oracle value | Reproduction bug | Visual comparison |
+|---|---|---|---|---|---|
+| AC-01 | Click Submit | expected_text | Confirmation appears | BUG-01 | No |
+| AC-02 | Press Enter on Submit | expected_text | Confirmation appears | No | No |
 EOF
 assert_failure_output "routine UI bug cannot reach build before browser reproduction" 'G5 FAIL:.*ui-verification.json' \
   "$CHECK" UI-BUG --project demo --min G5
@@ -174,6 +206,7 @@ case = {
     "viewport": "1280x720",
     "actor": "fixture-user",
     "locale": "en",
+    "fixture": "Seeded example form",
     "steps": "Sign in and click Submit",
     "expected": "Confirmation is displayed",
 }
@@ -192,10 +225,33 @@ for name, source, when, result, observed in [
         "capture": f"evidence/{name}.png",
         "log": f"evidence/{name}.log",
     }
+case["before"].update(performed_by="user", confirmation="Synthetic user run for checker fixture")
 (evidence / "ui-verification.json").write_text(json.dumps({"cases": [case]}))
 PY
-assert_success "G5 accepts recorded reproduction of the UI bug" \
+assert_failure_output "G5 requires the click-by-click diagram in addition to browser evidence" 'G5 FAIL:.*ui-repro-bug-01.md' \
   "$CHECK" UI-BUG --project demo --min G5
+sed -n '/^### BUG #1:/,$p' "$ROOT/references/flow-diagram.md" >"$ui/evidence/ui-repro-bug-01.md"
+assert_success "G5 accepts a guided human reproduction before build" \
+  "$CHECK" UI-BUG --project demo --min G5
+assert_failure_output "G8 rejects missing UI acceptance evidence" 'G8 FAIL:.*missing UI evidence for: AC-02' \
+  "$CHECK" UI-BUG --project demo --min G8
+python3 - "$ui/evidence/ui-verification.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+manifest = json.loads(path.read_text())
+case = dict(manifest["cases"][0])
+case.pop("before")
+case.update(id="AC-02", steps="Focus Submit and press Enter")
+manifest["cases"].append(case)
+path.write_text(json.dumps(manifest))
+PY
+sed -i.bak 's/Confirmation appears | No | No/Confirmation appears | BUG-02 | No/' "$ui/02-spec.md"
+assert_failure_output "G5 requires a separate diagram for a second distinct UI bug" 'G5 FAIL:.*ui-repro-bug-02.md' \
+  "$CHECK" UI-BUG --project demo --min G5
+sed -i.bak 's/BUG-02 | No/No | No/' "$ui/02-spec.md"
 assert_success "G8 accepts verified behavior without a visual baseline" \
   "$CHECK" UI-BUG --project demo --min G8
 printf '\n- G8 | Fixture owner | Simulate waiver | 2026-11-25\n' >>"$ui/INDEX.md"
@@ -208,6 +264,7 @@ assert_failure_output "G8 rejects UI results after the source changes" 'tested s
   "$CHECK" UI-BUG --project demo --min G8
 printf 'modified again\n' >"$checkout/source.txt"
 sed -i.bak 's/Visual change?\*\* ☐ Yes ☑ No/Visual change?** ☑ Yes ☐ No/' "$ui/02-spec.md"
+sed -i.bak 's/BUG-01 | No/BUG-01 | Yes/' "$ui/02-spec.md"
 assert_failure_output "G8 blocks visual changes without a golden run" 'G8 FAIL:.*require.*golden' \
   "$CHECK" UI-BUG --project demo --min G8
 python3 - "$ui/evidence" "$ui_state" <<'PY'
@@ -237,9 +294,14 @@ assert_failure_output "G8 rejects a failing golden comparison" 'G8 FAIL:.*golden
 printf '<testsuite><testcase name="submit golden"/></testsuite>\n' >"$ui/evidence/golden.xml"
 assert_success "G8 accepts an approved passing golden comparison" \
   "$CHECK" UI-BUG --project demo --min G8
+sed -i.bak 's/Confirmation appears | No | No/Confirmation appears | No | Yes/' "$ui/02-spec.md"
+assert_failure_output "G8 requires golden evidence for every marked UI case" 'G8 FAIL:.*AC-02:.*golden comparison' \
+  "$CHECK" UI-BUG --project demo --min G8
+sed -i.bak 's/Confirmation appears | No | Yes/Confirmation appears | No | No/' "$ui/02-spec.md"
 ui_feature="$tmp_root/workspaces/demo/worklogs/UI-FEATURE"
 cp -R "$ui" "$ui_feature"
 sed -i.bak 's/☑ Bug ☐ New feature/☐ Bug ☑ New feature/g' "$ui_feature/02-spec.md" "$ui_feature/INDEX.md"
+sed -i.bak 's/BUG-01 | Yes/No | Yes/' "$ui_feature/02-spec.md"
 rm "$ui_feature/evidence/before.png" "$ui_feature/evidence/before.log"
 assert_success "a new UI feature only needs final browser and visual evidence" \
   "$CHECK" UI-FEATURE --project demo --min G8
@@ -288,6 +350,68 @@ rm -f "$tmp_root/workspaces/demo/worklogs/DISCOVERY-MISSING/04-plan.md.bak"
 assert_failure_output "G4 rejects a plan without command discovery proof" \
   'G4 FAIL:.*Command discovery' \
   "$CHECK" DISCOVERY-MISSING --project demo --min G4 --strict
+
+redteam="$tmp_root/workspaces/demo/worklogs/REDTEAM"
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$redteam"
+assert_success "a historical check can read a legacy plan" \
+  "$CHECK" REDTEAM --project demo --min G4
+assert_failure_output "an active build requires redteam for a legacy plan" 'G4 FAIL:.*missing 04b-plan-review' \
+  "$CHECK" REDTEAM --project demo --min G5 --require-plan-review
+sed -i.bak 's/☑ P1/☐ P1 ☑ P2/g' "$redteam/02-spec.md" "$redteam/INDEX.md"
+printf '\n- **Review protocol:** redteam-v2\n' >>"$redteam/04-plan.md"
+printf '\n- G4 | Fixture waiver | Fixture owner | 2026-12-31\n' >>"$redteam/INDEX.md"
+assert_failure_output "new P2 plans cannot waive a missing redteam review" 'G4 FAIL:.*missing 04b-plan-review' \
+  "$CHECK" REDTEAM --project demo --min G4
+review_plan="$redteam/04b-plan-review.md"
+cp "$ROOT/templates/04b-plan-review.md" "$review_plan"
+plan_sha="$(bash "$ROOT/bin/plan-review-state.sh" "$redteam")"
+sed -i.bak "s/| Plan review state | |/| Plan review state | $plan_sha |/; s/| Review mode | |/| Review mode | same-session |/; s/| Review verdict | REVISE |/| Review verdict | PASS |/" "$review_plan"
+assert_failure_output "G4 blocks an OPEN finding even with a PASS label" 'G4 FAIL:.*open redteam finding RT-01' \
+  "$CHECK" REDTEAM --project demo --min G4
+sed -i.bak 's/| OPEN |/| CLEARED |/' "$review_plan"
+assert_failure_output "G4 rejects a review with blank evidence and resolution" 'G4 FAIL:.*incomplete redteam evidence' \
+  "$CHECK" REDTEAM --project demo --min G4
+sed -i.bak '/^| RT-01 |/d' "$review_plan"
+printf '| RT-01 | Other callers reuse submit | AC-01 and form handler | Duplicate confirmation on retry | P1 | FIXED | Plan now includes one confirmation assertion on retry. |\n' >>"$review_plan"
+assert_success "G4 accepts resolved counterexamples for the reviewed plan" \
+  "$CHECK" REDTEAM --project demo --min G4
+printf '\nCheck the revised retry case.\n' >>"$redteam/04-plan.md"
+assert_failure_output "G4 rejects an older review after the plan changes" 'G4 FAIL:.*does not match the current plan' \
+  "$CHECK" REDTEAM --project demo --min G5 --require-plan-review
+printf '\nAcceptance now requires exactly one confirmation per retry.\n' >>"$redteam/02-spec.md"
+revised_sha="$(bash "$ROOT/bin/plan-review-state.sh" "$redteam")"
+sed -i.bak "s/$plan_sha/$revised_sha/" "$review_plan"
+assert_success "a rechecked current revision clears the pre-build checker" \
+  "$CHECK" REDTEAM --project demo --min G5 --require-plan-review
+printf '\nRelease approval was recorded after the original review.\n' >>"$redteam/03b-human-confirm.md"
+assert_output "a later sign-off note does not invalidate the reviewed plan" "^$revised_sha$" \
+  bash "$ROOT/bin/plan-review-state.sh" "$redteam"
+printf '\nThe default retry behavior is now different.\n' >>"$redteam/02-spec.md"
+assert_failure_output "G4 reopens review when the spec changes without a plan edit" 'G4 FAIL:.*does not match the current plan and decisions' \
+  "$CHECK" REDTEAM --project demo --min G5 --require-plan-review
+sed -i.bak 's/ANSWERED/OPEN/' "$redteam/03-qa-log.md"
+latest_sha="$(bash "$ROOT/bin/plan-review-state.sh" "$redteam")"
+sed -i.bak "s/$revised_sha/$latest_sha/" "$review_plan"
+assert_failure_output "pre-build checker rejects recorded open questions in the fast lane" 'G5 FAIL:.*OPEN question' \
+  "$CHECK" REDTEAM --project demo --min G5 --require-plan-review
+
+approved="$tmp_root/workspaces/demo/worklogs/APPROVED"
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$approved"
+sed -i.bak 's/PASS-G9 trongdn2405/APPROVED Nguyễn Thị Ánh/' "$approved/INDEX.md" "$approved/03b-human-confirm.md"
+assert_success "strict G3 accepts matching Unicode approver names" \
+  "$CHECK" APPROVED --project demo --min G3 --strict
+sed -i.bak 's/Nguyễn Thị Ánh/Lê Văn Bình/' "$approved/03b-human-confirm.md"
+assert_failure_output "strict G3 rejects differing approval records" 'G3 FAIL:.*signatures differ' \
+  "$CHECK" APPROVED --project demo --min G3 --strict
+
+bad_report="$tmp_root/workspaces/demo/worklogs/BAD-REPORT"
+cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$bad_report"
+printf "<testsuite failures='1'><testcase name='submit'/></testsuite>\n" >"$bad_report/junit-PASS-G9.xml"
+assert_failure_output "routine G8 rejects a failed final JUnit report" 'G8 FAIL:.*JUnit reports failures' \
+  "$CHECK" BAD-REPORT --project demo --min G8
+rm "$bad_report/junit-PASS-G9.xml"
+assert_failure_output "routine G8 rejects a missing cited report" 'G8 FAIL:.*missing or empty junit/log' \
+  "$CHECK" BAD-REPORT --project demo --min G8
 
 cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/worklogs/LEDGER-MISSING"
 find "$tmp_root/workspaces/demo/worklogs/LEDGER-MISSING" -type f -name '*.md' -exec \
@@ -342,6 +466,8 @@ cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/wo
 find "$tmp_root/workspaces/demo/worklogs/AUDIT-PASS" -type f -name '*.md' -exec \
   sed -i.bak 's/PASS-G9/AUDIT-PASS/g' {} \;
 find "$tmp_root/workspaces/demo/worklogs/AUDIT-PASS" -name '*.bak' -delete
+mv "$tmp_root/workspaces/demo/worklogs/AUDIT-PASS/junit-PASS-G9.xml" \
+  "$tmp_root/workspaces/demo/worklogs/AUDIT-PASS/junit-AUDIT-PASS.xml"
 {
   echo '# 08 Semantic audit'
   for pair in 1 2 3 4 5 6 7 8; do
@@ -369,7 +495,7 @@ cp -R "$FIXTURES/workspaces/demo/worklogs/PASS-G9" "$tmp_root/workspaces/demo/wo
 find "$tmp_root/workspaces/demo/worklogs/TEMPLATE-CONFORMANCE" -type f -name '*.md' -exec \
   sed -i.bak 's/PASS-G9/TEMPLATE-CONFORMANCE/g' {} \;
 find "$tmp_root/workspaces/demo/worklogs/TEMPLATE-CONFORMANCE" -name '*.bak' -delete
-printf '<testsuite tests="3" failures="0"></testsuite>\n' \
+printf '<testsuite tests="1" failures="0"><testcase name="ac01"/></testsuite>\n' \
   >"$tmp_root/workspaces/demo/worklogs/TEMPLATE-CONFORMANCE/junit.xml"
 python3 - "$ROOT/templates/06b-test-evidence.md" \
   "$tmp_root/workspaces/demo/worklogs/TEMPLATE-CONFORMANCE/06b-test-evidence.md" <<'PY'
@@ -383,7 +509,7 @@ fills = {
   r'☐ P0 ☐ P1 ☐ P2': '☑ P1',
   r'\[40-char or short SHA\]': 'abcdef1234567890',
   r'\[https://… or N/A-local\]': 'N/A-local',
-  r'\[path or URL\]': 'junit.xml',
+  r'\[local path \(optional with CI run URL\)\]': 'junit.xml',
   r'\[name\]': 'fixture',
   r'# paste test runner output here': 'rspec\nFinished in 0.12 seconds\n3 examples, 0 failures',
   r'\| \| \| \| \| \| \| N/A \|': '| `rspec` | api | 2026-08-11T10:00Z / 2026-08-11T10:01Z | 0 | raw output above | AC-01 | N/A |',

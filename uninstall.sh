@@ -2,7 +2,8 @@
 # Uninstall ak from one coding agent, or all supported agents.
 set -euo pipefail
 
-STAGES=(decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback flow-diagram)
+PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$PLUGIN_DIR/bin/lib/stages.sh"
 TARGET_HOST="claude"
 TARGET_EXPLICIT=0
 PROJECT_CLAUDE_CMDS="${AK_PROJECT_CLAUDE_COMMANDS:-}"
@@ -109,7 +110,7 @@ remove_colon_commands() {
 
 remove_stage_entries() {
   local dest_root="$1" label="$2" s
-  for s in "${STAGES[@]}"; do
+  for s in "${ALL_STAGES[@]}"; do
     remove_owned_path "$dest_root/ak-$s" "$label"
     remove_owned_path "$dest_root/dev-workflow-$s" "$label"
   done

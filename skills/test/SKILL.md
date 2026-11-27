@@ -1,8 +1,8 @@
 ---
 name: test
 description: >-
-  Run tests; record machine evidence. Under --strict/P0, checker verifies
-  SHA vs git HEAD and junit file contents.
+  Run tests and record evidence for the current code. The checker reads cited
+  local JUnit results at G8. Strict/P0 verification also checks committed source.
 argument-hint: "<Ticket ID> Run after review — fill 06b-test-evidence.md"
 arguments: [ticket_id]
 disable-model-invocation: false

@@ -10,6 +10,10 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- UI bug intake prepares test data and a Unicode click-by-click reproduction for the user before G5.
+- Routine delivery verifies cited JUnit results, every declared UI case, and current Redteam inputs.
+- Added `:redteam` before build. G4 blocks on open findings or review evidence for a different plan revision.
+
 - `/ak` now carries a task from first-use setup through verified handoff. `--ship` continues
   into release preparation and applicable audit in the same conversation.
 - The reusable project form records sourced setup facts and working rules the user confirmed.

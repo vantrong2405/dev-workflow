@@ -3,8 +3,8 @@
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ALL_STAGES=(decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback flow-diagram)
-START_STAGES=(decompose learning spec clarify confirm plan build review fix test check ship audit)
+source "$PLUGIN_DIR/bin/lib/stages.sh"
+START_STAGES=(decompose learning spec clarify flow-diagram confirm plan redteam build review fix test check ship audit)
 STAGES=("${ALL_STAGES[@]}")
 VENDORED_SKILLS=(grilling tdd)
 TARGET_HOST="claude"
@@ -127,16 +127,22 @@ if [[ -n "$ONLY_RAW" ]]; then
     STAGES+=("$_s")
   done
   [[ "${#STAGES[@]}" -gt 0 ]] || { echo "ERROR: --only matched no stages" >&2; exit 2; }
+  _dependencies=()
   case " ${STAGES[*]} " in
-    *" start "*)
-      for _s in "${START_STAGES[@]}"; do
-        case " ${STAGES[*]} " in
-          *" $_s "*) ;;
-          *) STAGES+=("$_s") ;;
-        esac
-      done
-      ;;
+    *" vibe "*) _dependencies=(vibe-design start "${START_STAGES[@]}") ;;
+    *" start "*) _dependencies=("${START_STAGES[@]}") ;;
+    *" build "*) _dependencies=(spec plan redteam clarify flow-diagram) ;;
+    *" plan "*) _dependencies=(redteam) ;;
   esac
+  case " ${STAGES[*]} " in
+    *" clarify "*|*" fix "*) _dependencies+=(flow-diagram) ;;
+  esac
+  for _s in ${_dependencies[@]+"${_dependencies[@]}"}; do
+    case " ${STAGES[*]} " in
+      *" $_s "*) ;;
+      *) STAGES+=("$_s") ;;
+    esac
+  done
 fi
 
 case "$TARGET_HOST" in
@@ -163,7 +169,7 @@ fi
 
 prepare_source() {
   local s local_dest
-  for _bin in check-gates.sh check-workspace.sh clean-worklog.sh pilot-score.sh source-state.sh; do
+  for _bin in check-gates.sh check-workspace.sh clean-worklog.sh pilot-score.sh source-state.sh plan-review-state.sh vibe-specs.sh; do
     if [[ -f "$PLUGIN_DIR/bin/$_bin" ]]; then
       chmod +x "$PLUGIN_DIR/bin/$_bin"
     fi

@@ -16,6 +16,7 @@ MIN_GATE="G8"
 STRICT=0
 VERIFY_NET=0
 JSON=0
+REQUIRE_PLAN_REVIEW=0
 FAILS=()
 WARNS=()
 WAIVES=()
@@ -23,12 +24,13 @@ RISK="P1"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") <Ticket_ID> [--project <slug>] [--min G0|…|G9|AUDIT|tests|ready|final] [--strict] [--verify-net] [--json]
+Usage: $(basename "$0") <Ticket_ID> [--project <slug>] [--min G0|…|G9|AUDIT|tests|ready|final] [--strict] [--verify-net] [--require-plan-review] [--json]
 
 --min also accepts plain-word aliases: tests=G8, ready=G9, final=AUDIT.
 Default --min G8. Merge: --min G9 --strict (implies --verify-net).
 Ship final: --min AUDIT (requires G9 PASS + 08-semantic-audit.md human sign-off).
 --strict: CI-native verify; no P1/P2 soft; no G8 WAIVE; enable --verify-net.
+--require-plan-review: enforce G4 redteam review even for plans created before this requirement.
 G3 requires INDEX phrase + 03b-human-confirm.md (no AI names). P1/P2 without --strict: G3 soft (warn).
 P0: 02b-security.md, always hard — --strict has no effect on P0's own gates, it only removes the
 P1/P2 softening and other CI-native checks. Pilot:yes on INDEX requires pilot log row at G9.
@@ -65,6 +67,7 @@ while [[ $# -gt 0 ]]; do
     --min) MIN_GATE="${2:-G8}"; shift 2 ;;
     --strict) STRICT=1; shift ;;
     --verify-net) VERIFY_NET=1; shift ;;
+    --require-plan-review) REQUIRE_PLAN_REVIEW=1; shift ;;
     --json) JSON=1; shift ;;
     -h|--help) usage; exit 0 ;;
     -*)
@@ -97,13 +100,8 @@ fi
 if [[ -n "$PROJECT_SLUG" ]]; then
   export AK_PROJECT_SLUG="$PROJECT_SLUG"
 fi
-WORKLOG="$(resolve_worklog_dir "$TICKET" "${PROJECT_SLUG:-}" || true)"
-if [[ -z "${WORKLOG:-}" ]]; then
-  resolve_project_slug "${PROJECT_SLUG:-}" || true
-  WORKLOG="$(resolve_worklog_dir "$TICKET" "${AK_PROJECT_SLUG_RESOLVED:-}" || true)"
-fi
-if [[ -z "${WORKLOG:-}" ]]; then
-  echo "ERROR: worklog not found for ticket=$TICKET" >&2
+if ! WORKLOG="$(resolve_worklog_dir "$TICKET" "${PROJECT_SLUG:-}")"; then
+  echo "ERROR: cannot resolve worklog for ticket=$TICKET" >&2
   exit 2
 fi
 
@@ -118,6 +116,7 @@ HCONFIRM="$WORKLOG/03b-human-confirm.md"
 CREPORT="$WORKLOG/03-clarify-report.md"
 QALOG="$WORKLOG/03-qa-log.md"
 PLAN="$WORKLOG/04-plan.md"
+PLAN_REVIEW="$WORKLOG/04b-plan-review.md"
 IMPL="$WORKLOG/05-impl-log.md"
 REVIEW="$WORKLOG/06-review-qa.md"
 FIXLOG="$WORKLOG/06c-fix-log.md"
@@ -244,15 +243,16 @@ ui_ticket() {
 }
 
 verify_ui_evidence() {
-  local gate="$1" phase="$2" source="${3:-}" bug=no visual=no output
+  local gate="$1" phase="$2" source="${3:-}" bug=no visual=no guided=no output
   [[ "${spec_types:-}" != Bug ]] || bug=yes
   if checked_flag "$SPEC" 'Visual change\??' Yes; then visual=yes; fi
+  if [[ "$REQUIRE_PLAN_REVIEW" -eq 1 ]]; then guided=yes; fi
   if ! command -v python3 >/dev/null 2>&1; then
     fail "$gate FAIL: UI evidence validation requires python3"
     return
   fi
-  if ! output="$(python3 "$(dirname "${BASH_SOURCE[0]}")/lib/verify-ui-evidence.py" \
-      "$WORKLOG" "$SPEC" "$phase" "$bug" "$visual" "$source" 2>&1)"; then
+  if ! output="$(python3 -B "$(dirname "${BASH_SOURCE[0]}")/lib/verify-ui-evidence.py" \
+      "$WORKLOG" "$SPEC" "$phase" "$bug" "$visual" "$source" "$guided" 2>&1)"; then
     fail "$gate FAIL: $output"
   fi
 }
@@ -271,18 +271,144 @@ field_nonempty() {
   return 0
 }
 
-verify_junit_file() {
-  local path="$1"
-  # resolve relative to cwd or worklog
-  local f="$path"
-  if [[ ! -f "$f" && -f "$WORKLOG/$path" ]]; then f="$WORKLOG/$path"; fi
-  if [[ ! -f "$f" && -f "$PROJECT_HOME/$path" ]]; then f="$PROJECT_HOME/$path"; fi
-  if [[ ! -f "$f" ]]; then
-    maybe_fail G8 "CI-native: junit/log path not found: $path"
+verify_plan_review() {
+  if ! file_ok "$PLAN"; then
+    fail "G4 FAIL: redteam review requires 04-plan.md"
     return
   fi
-  if grep -qE 'failures="[1-9][0-9]*"|errors="[1-9][0-9]*"|<failure|<error' "$f" 2>/dev/null; then
-    maybe_fail G8 "CI-native: junit/log reports failures/errors: $f"
+  if ! file_ok "$PLAN_REVIEW"; then
+    fail "G4 FAIL: missing 04b-plan-review.md; run :redteam before build"
+    return
+  fi
+
+  local current reviewed mode findings finding
+  reviewed="$(table_val "$PLAN_REVIEW" "Plan review state")"
+  if [[ "$REQUIRE_PLAN_REVIEW" -eq 1 || -n "$reviewed" ]] ||
+     grep -qE '^- \*\*Review protocol:\*\* redteam-v2[[:space:]]*$' "$PLAN"; then
+    if ! current="$(bash "$PLUGIN_DIR/bin/plan-review-state.sh" "$WORKLOG" 2>/dev/null)"; then
+      fail "G4 FAIL: cannot fingerprint the plan and decisions for redteam review"
+      return
+    fi
+  else
+    # Keep historical v1 records readable. Active builds always use the new state.
+    reviewed="$(table_val "$PLAN_REVIEW" "Plan SHA")"
+    if ! current="$(git -C "$WORKLOG" hash-object --no-filters -- 04-plan.md 2>/dev/null)"; then
+      fail "G4 FAIL: cannot fingerprint the historical plan"
+      return
+    fi
+  fi
+  if [[ "$reviewed" != "$current" ]]; then
+    fail "G4 FAIL: redteam review does not match the current plan and decisions; re-review before build"
+  fi
+  mode="$(table_val "$PLAN_REVIEW" "Review mode")"
+  if [[ "$mode" != same-session && "$mode" != separate-agent ]]; then
+    fail "G4 FAIL: redteam review must record the actual review mode"
+  fi
+  if [[ "$(table_val "$PLAN_REVIEW" "Review verdict")" != PASS ]]; then
+    fail "G4 FAIL: redteam review requires a PASS verdict"
+  fi
+
+  findings="$(awk -F'|' '
+    function trim(value) {
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
+      return value
+    }
+    function missing(value) {
+      value = tolower(trim(value))
+      return value == "" || value ~ /^(…|[.][.][.]|tbd|todo|n\/a|[-]+)$/
+    }
+    /^## Counterexamples[[:space:]]*$/ { in_table = 1; next }
+    /^##[[:space:]]/ { in_table = 0 }
+    in_table && /^\|/ {
+      id = trim($2)
+      if (id == "ID" || id ~ /^[-:]+$/) next
+      count++
+      if (id !~ /^RT-[0-9]+$/ || seen[id]++ || NF != 9) {
+        print "invalid or duplicate redteam row: " id
+      } else if (trim($7) == "OPEN") {
+        print "open redteam finding " id
+      } else if (trim($7) !~ /^(CLEARED|FIXED)$/ || trim($6) !~ /^P[012]$/ ||
+                 missing($3) || missing($4) || missing($5) || missing($8)) {
+        print "incomplete redteam evidence or resolution for " id
+      }
+    }
+    END { if (!count) print "redteam review needs at least one concrete counterexample" }
+  ' "$PLAN_REVIEW")"
+  if [[ -n "$findings" ]]; then
+    while IFS= read -r finding; do fail "G4 FAIL: $finding"; done <<<"$findings"
+  fi
+}
+
+verify_junit_file() {
+  local path="$1" f output
+  if [[ "$path" == \`*\` ]]; then path="${path:1:${#path}-2}"; fi
+  case "$path" in
+    /*) f="$path" ;;
+    *)
+      f="$WORKLOG/$path"
+      if [[ ! -f "$f" && -f "$PROJECT_HOME/$path" ]]; then f="$PROJECT_HOME/$path"; fi
+      if [[ ! -f "$f" && -f "$path" ]]; then f="$path"; fi
+      ;;
+  esac
+  if [[ ! -f "$f" || ! -s "$f" ]]; then
+    fail "G8 FAIL: missing or empty junit/log: $path"
+    return
+  fi
+  if [[ "$f" == *.xml ]] || grep -qE '<testsuites?([[:space:]>])' "$f"; then
+    if ! output="$(python3 "$PLUGIN_DIR/bin/lib/test_report.py" "$f" 2>&1)"; then
+      fail "G8 FAIL: $output ($f)"
+    fi
+  fi
+}
+
+
+# Match the ticket prefix as text and keep human names verbatim, including Unicode.
+recorded_confirmation() {
+  local file="$1" prefix="$2"
+  file_ok "$file" || return 1
+  awk -v label="$prefix:" -v ticket="$TICKET" '
+    {
+      line = $0
+      sub(/^[[:space:]]*/, "", line)
+      sub(/[[:space:]]*$/, "", line)
+      if (index(line, label) != 1) next
+      signed = substr(line, length(label) + 1)
+      sub(/^[[:space:]]+/, "", signed)
+      if (index(signed, ticket " ") != 1) next
+      signed = substr(signed, length(ticket) + 2)
+      if (!match(signed, /[[:space:]][0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/)) next
+      name = substr(signed, 1, RSTART - 1)
+      sub(/^[[:space:]]+/, "", name)
+      sub(/[[:space:]]+$/, "", name)
+      if (name == "" || substr(name, 1, 1) == "<" || substr(name, 1, 1) == "[" ||
+          name ~ /^[[:punct:][:space:]]+$/ ||
+          tolower(name) ~ /^(ai|chatgpt|claude|copilot|cursor|assistant|bot)([[:space:]]|$)/) {
+        invalid = 1
+        next
+      }
+      signature = name " " substr(signed, RSTART + 1)
+      if (previous != "" && signature != previous) invalid = 1
+      previous = signature
+    }
+    END {
+      if (invalid || previous == "") exit 1
+      print previous
+    }
+  ' "$file"
+}
+
+check_confirmations_match() {
+  local role="$1" from_index from_record
+  if ! from_index="$(recorded_confirmation "$INDEX" "$role")"; then
+    maybe_fail G3 "INDEX needs one valid human $role signature"
+    return
+  fi
+  if ! from_record="$(recorded_confirmation "$HCONFIRM" "$role")"; then
+    maybe_fail G3 "03b-human-confirm.md needs one valid human $role signature"
+    return
+  fi
+  if [[ "$from_index" != "$from_record" ]]; then
+    fail "G3 FAIL: $role signatures differ between INDEX.md and 03b-human-confirm.md"
   fi
 }
 
@@ -684,53 +810,34 @@ if need_gate G2; then
         gsub(/^[[:space:]]+|[[:space:]]+$/, "", decision)
         gsub(/☐|☑|\[x\]|\[X\]|\[ \]/, "", decision)
         gsub(/^[[:space:]]+|[[:space:]]+$/, "", decision)
-        if (decision == "" || tolower(decision) ~ /^n\/?a$/) print $0
+        if (decision == "" || tolower(decision) ~ /^(n\/?a|tbd|todo|pending|…|[.][.][.])$/) print $0
       }
     ' "$CREPORT" 2>/dev/null || true)"
     unconfirmed_count="$(printf '%s\n' "$unconfirmed_claims" | grep -cE '.' || true)"
     unconfirmed_count="${unconfirmed_count:-0}"
     if [[ -n "$unconfirmed_claims" && "$unconfirmed_count" -gt 0 ]]; then
-      maybe_fail G2 "$unconfirmed_count claim row(s) marked NO/UNCLEAR with no recorded Decision"
+      fail "G2 FAIL: $unconfirmed_count claim row(s) marked NO/UNCLEAR with no recorded Decision"
     fi
   fi
 fi
 
 # --- G3 ---
 if need_gate G3; then
-  file_ok "$INDEX" || maybe_fail G3 "missing INDEX.md (need CONFIRM G3:)"
-  file_ok "$HCONFIRM" || maybe_fail G3 "missing 03b-human-confirm.md (anti-forge human confirm file)"
-  confirm_ok_phrase() {
-    local src="$1"
-    grep -qE "CONFIRM G3:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$src"
-  }
-  banned_ai_name() {
-    local src="$1"
-    grep -qiE "CONFIRM G3(-PM)?:[[:space:]]*$TICKET[[:space:]]+(AI|ChatGPT|Claude|Copilot|Cursor|Assistant|Bot)\\b" "$src"
-  }
-  if file_ok "$INDEX"; then
-    confirm_ok_phrase "$INDEX" || maybe_fail G3 "INDEX missing CONFIRM G3: $TICKET <name> <YYYY-MM-DD>"
-    banned_ai_name "$INDEX" && maybe_fail G3 "INDEX CONFIRM uses forbidden AI/tool name"
-  fi
+  check_confirmations_match "CONFIRM G3"
   if file_ok "$HCONFIRM"; then
-    confirm_ok_phrase "$HCONFIRM" || maybe_fail G3 "03b-human-confirm.md missing CONFIRM G3 phrase"
-    banned_ai_name "$HCONFIRM" && maybe_fail G3 "03b-human-confirm CONFIRM uses forbidden AI/tool name"
     grep -qiE 'Source:.*user-message' "$HCONFIRM" || maybe_fail G3 "03b-human-confirm must set Source: user-message"
-    if [[ "$RISK" == "P0" ]]; then
-      grep -qE "CONFIRM G3-PM:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$HCONFIRM" \
-        || maybe_fail G3 "P0 requires CONFIRM G3-PM in 03b-human-confirm.md"
-      banned_ai_name "$HCONFIRM" && true
-      grep -qiE "CONFIRM G3-PM:[[:space:]]*$TICKET[[:space:]]+(AI|ChatGPT|Claude|Copilot|Cursor|Assistant|Bot)\\b" "$HCONFIRM" \
-        && maybe_fail G3 "CONFIRM G3-PM uses forbidden AI/tool name"
-    fi
   fi
-  if file_ok "$INDEX" && [[ "$RISK" == "P0" ]]; then
-    grep -qE "CONFIRM G3-PM:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$INDEX" \
-      || maybe_fail G3 "P0 requires CONFIRM G3-PM on INDEX"
+  if [[ "$RISK" == "P0" ]]; then
+    check_confirmations_match "CONFIRM G3-PM"
   fi
 fi
 
 # --- G4 ---
 if need_gate G4; then
+  if [[ "$REQUIRE_PLAN_REVIEW" -eq 1 ]] || file_ok "$PLAN_REVIEW" ||
+    { file_ok "$PLAN" && grep -qE '^- \*\*Review protocol:\*\* redteam-v[12][[:space:]]*$' "$PLAN"; }; then
+    verify_plan_review
+  fi
   file_ok "$PLAN" || maybe_fail G4 "missing 04-plan.md"
   if file_ok "$PLAN"; then
     grep -qE '\|[[:space:]]*[0-9]+[[:space:]]*\|' "$PLAN" || maybe_fail G4 "04-plan has no task rows"
@@ -833,7 +940,7 @@ if need_gate G5; then
     pure_open_count="$(printf '%s\n' "$pure_open" | grep -cE '.' || true)"
     pure_open_count="${pure_open_count:-0}"
     if [[ -n "$pure_open" && "$pure_open_count" -gt 0 ]]; then
-      maybe_fail G5 "$pure_open_count OPEN question(s) in 03-qa-log.md"
+      fail "G5 FAIL: $pure_open_count OPEN question(s) in 03-qa-log.md"
     fi
   fi
 fi
@@ -1102,13 +1209,12 @@ if need_gate G8; then
       verify_sha_git "$sha"
     fi
 
-    # CI-native verification
+    if ! placeholderish "$junit"; then
+      verify_junit_file "$junit"
+    elif [[ "$ci" == "N/A-local" ]]; then
+      fail "G8 FAIL: N/A-local requires an existing junit/log path"
+    fi
     if [[ "$VERIFY_NATIVE" -eq 1 ]]; then
-      if ! placeholderish "$junit"; then
-        verify_junit_file "$junit"
-      elif [[ "$ci" == "N/A-local" ]]; then
-        maybe_fail G8 "CI-native: N/A-local requires existing junit/log path"
-      fi
       if ! placeholderish "$ci" && [[ "$ci" =~ ^https?:// ]]; then
         verify_ci_url "$ci"
       fi
@@ -1238,14 +1344,8 @@ if need_gate AUDIT; then
       maybe_fail AUDIT "INCOHERENT pair(s) remain; routing does not permit PASS"
     grep -qE '☑ UNCLEAR|\[[xX]\] UNCLEAR' "$AUDIT" 2>/dev/null && \
       maybe_fail AUDIT "UNCLEAR pair(s) remain; human decision must resolve them before PASS"
-    audit_confirm_ok() {
-      grep -qE "AUDIT CONFIRM:[[:space:]]*$TICKET[[:space:]]+[A-Za-z0-9_. -]+[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}" "$AUDIT"
-    }
-    audit_banned_name() {
-      grep -qiE "AUDIT CONFIRM:[[:space:]]*$TICKET[[:space:]]+(AI|ChatGPT|Claude|Copilot|Cursor|Assistant|Bot)\\b" "$AUDIT"
-    }
-    audit_confirm_ok || maybe_fail AUDIT "missing human AUDIT CONFIRM: $TICKET <name> <YYYY-MM-DD> in 08-semantic-audit.md"
-    audit_banned_name && maybe_fail AUDIT "AUDIT CONFIRM uses forbidden AI/tool name"
+    recorded_confirmation "$AUDIT" "AUDIT CONFIRM" >/dev/null ||
+      maybe_fail AUDIT "08-semantic-audit.md needs one valid human AUDIT CONFIRM signature"
     if ! grep -qE '☑ PASS|\[x\] PASS' "$AUDIT" 2>/dev/null; then
       maybe_fail AUDIT "Result not marked PASS in 08-semantic-audit.md"
     fi

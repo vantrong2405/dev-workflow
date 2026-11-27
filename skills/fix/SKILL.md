@@ -32,9 +32,10 @@ will still fail G7, not silently pass.
 3. **Triage every OPEN finding** before editing code:
    - Read cited `path:line` and surrounding call sites.
    - Decide `FIX` / `SKIP` / `DEFER` using rules in template + below.
-4. Before applying a UI fix, reproduce the finding in a running browser and
-   capture the failing state. Reuse a matching reproduction when it already
-   proves the finding. Follow `references/ui-verification.md`.
+4. Before applying a UI fix, reuse a matching diagram and reproduction when
+   they already prove the finding. Otherwise prepare test data and a new
+   `:flow-diagram`, then record the user's browser run or a delegated run.
+   Follow `references/ui-verification.md`.
 5. Apply **only** `FIX` items. Prefer smallest change that removes the defect.
 6. Add/adjust test when defect class is `500` / `missing` / `injection` / `case` and no covering test exists.
 7. Update `06-review-qa.md`: set finding Status to `FIXED` / `SKIPPED` / `DEFERRED` + link to fix-log row.

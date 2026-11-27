@@ -20,9 +20,11 @@ here, but "checks" doesn't mean "refuses to start without one already on file":
 0. Use the project locale from `references/locale.md`.
    For UI work, resolve the UI flags and required evidence from
    `references/ui-verification.md`. A UI bug needs a real G5 PASS after browser
-   reproduction before edits, even when invoking this skill directly.
-1. Run `/ak:check <Ticket> [slug] G5`. If a UI bug lacks its reproduction, use
-   `:spec` and `:clarify` to record it, then rerun G5 before editing.
+   reproduction before edits, even when invoking this skill directly. Bring a
+   legacy UI spec up to the guided QA format and reuse any matching real evidence
+   before requesting new reproduction.
+1. Run the installed `bin/check-gates.sh <Ticket> --project <slug> --min G5 --require-plan-review`.
+   If a UI bug lacks its reproduction, use `:spec` and `:clarify` to record it.
 2. Use the existing plan when in scope and genuine decisions are resolved. A relaxed PASS
    with warnings does not satisfy a missing required approval.
 3. If it FAILs because `04-plan.md` doesn't exist yet (standalone `:build` call, no `:plan` run),
@@ -35,6 +37,10 @@ here, but "checks" doesn't mean "refuses to start without one already on file":
    gap and prefer routing to `:clarify`/`:confirm` over silently guessing the decision — this is
    the one case where "self-analyze and continue" is the wrong call, since a real open question
    was already raised and left unanswered, not simply skipped.
+5. If the plan review is missing, unresolved or stale, run `:redteam`, revise through
+   `:plan`, and recheck G5 with `--require-plan-review` before editing. This applies
+   to standalone and resumed builds. Begin edits after the required check passes.
+   Record task progress in the implementation log.
 
 ## Steps
 
@@ -68,9 +74,9 @@ caught something; it's red because the function is missing. Read the RED failure
 not just its color, before writing "why RED proves the missing behavior" — a coincidentally-typed
 error is not proof the validation logic exists yet.
 
-Also invoke the `tdd` skill for a more thorough red-green-refactor treatment (refactor-phase
-discipline, project-specific test patterns) on top of the required cycle above — it does not
-replace the required cycle. ak installs `tdd` automatically if it isn't already present.
+Use the plan's accepted behavior and tests for the RED→GREEN cycle above. If you
+need additional TDD technique guidance, consult the vendored `tdd` examples for
+test design and refactoring. Existing requirements and plan decisions carry forward.
 Fill **Commit SHA** at the top of `05-impl-log.md` with the real commit the PASS claim is made
 against — required for P0/P1/`--strict`, same bar as G8's test evidence. A PASS recorded with no
 SHA, or against a stale one, is not verifiable evidence.

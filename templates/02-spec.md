@@ -3,6 +3,7 @@
 - **Spec file:** [path or embedded below]
 - **Touches UI?** ☐ Yes ☐ No
 - **Visual change?** ☐ Yes ☐ No (required when Touches UI is Yes)
+- **UI evidence protocol:** guided-v1
 - **Type:** ☐ Bug ☐ New feature ☐ Spec change ☐ Requirement change ☐ Refactor
 - **Risk:** ☐ P0 ☐ P1 ☐ P2   (required — see `references/risk.md`)
 - **Touched repos:** ☐ (list from PROJECT.md)
@@ -65,12 +66,16 @@ One AC per row. Format:
 
 ## QA handoff — testable oracle (required if Touches UI = Yes)
 
-One row per AC/NEG/PERM/EDGE id above — real field/button labels + a machine-checkable oracle, so
+One row per UI AC/NEG/PERM/EDGE above with exact screen labels and a machine-checkable oracle, so
 independent QA can build test cases from this file alone. Not blank; not "shows success message".
 
-| ID | Field/action labels (exact, as shown on screen) | Oracle type | Oracle value |
-|---|---|---|---|
-| AC-01 | e.g. `email` field, `Submit` button | ☐ expected_text ☐ expected_url_includes ☐ expected_result_count ☐ expected_network ☐ other | e.g. "Registration successful" |
+| ID | Field/action labels (exact, as shown on screen) | Oracle type | Oracle value | Reproduction bug | Visual comparison |
+|---|---|---|---|---|---|
+| AC-01 | e.g. `email` field, `Submit` button | expected_text | e.g. "Registration successful" | BUG-01 or No | Yes or No |
+
+Use `BUG-01`, `BUG-02`, and so on for cases that reproduce each distinct existing defect.
+Use `No` for cases that only verify the fix or protect existing behavior. Set visual comparison
+to `Yes` for each case that needs an approved screenshot comparison. Every row is verified after.
 
 `expected_text` = exact text after action. `expected_url_includes` = URL fragment after
 nav/redirect. `expected_result_count` = row-count relation (e.g. "≥1"). `expected_network` = API

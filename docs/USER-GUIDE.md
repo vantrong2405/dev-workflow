@@ -41,8 +41,10 @@ or discuss a lasting rule, and `/ak:coaching` for domain knowledge corrections.
 | Verify | Review the actual diff, fix justified findings, then run the appropriate checks. Reuse a recorded run when the command, inputs, current source and assertions match. |
 | Hand off | Report the changes, evidence and any blocker. The default endpoint is G8, ready for review. |
 
-UI bugs require live browser reproduction before editing. Every UI ticket requires a
-passing browser assertion on the tested source. Visual changes also require a passing
+For a UI bug, ak prepares test data and a click-by-click diagram first. Run it in a browser
+and send the observed result and a capture, or delegate the run to ak. English UI is
+preferred when supported and appropriate to the defect. After editing, verify every UI case
+listed in the handoff. Visual changes also require a passing
 comparison with an approved screenshot baseline. Missing access or a failed required
 check blocks the corresponding gate. [Browser verification](../references/ui-verification.md)
 
@@ -78,6 +80,7 @@ after strict G9, including whether rollback addresses the migration described.
 | `/ak:learning`, `/ak:coaching` | Refresh the form or correct domain knowledge |
 | `/ak:decompose` | Propose an epic split separately |
 | `/ak:spec`, `/ak:clarify`, `/ak:confirm`, `/ak:plan` | Control one requirements or planning step |
+| `/ak:redteam` | Challenge the current plan before build and recheck revisions |
 | `/ak:build`, `/ak:review`, `/ak:fix`, `/ak:test` | Control one implementation or verification step |
 | `/ak:check`, `/ak:ship`, `/ak:audit` | Run checker, prepare release, or check coherence separately |
 | `/ak:status`, `/ak:clean` | Inspect progress or archive an eligible worklog |

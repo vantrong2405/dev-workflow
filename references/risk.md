@@ -18,8 +18,13 @@ are hard when included in the requested minimum. The default handoff at G8 needs
 on a clear fast-lane ticket. An open decision that changes the work or an unresolved P0/P1
 review finding still blocks a verified handoff. An explicit OPEN P0/P1 review finding fails
 G7 even when the surrounding gate is relaxed.
-Required UI bug reproduction at G5 and browser or golden evidence at G8 also fail hard.
+Unresolved material claims at G2 and recorded open questions at G5 fail hard.
+The required UI diagram and browser reproduction at G5, and browser or golden evidence
+at G8, also fail hard.
 UI verification cannot be waived. See `ui-verification.md`.
+The G4 redteam requirement also fails hard for active delivery. Use
+`--require-plan-review` before build, including with a legacy plan. Historical worklogs
+without a review protocol remain readable through the normal checker.
 
 `--strict` makes the soft gates hard again, disallows G8 waivers, and enables native evidence
 checking. If strict is requested up front, gather G3 approval before implementation.

@@ -33,6 +33,11 @@ plan `Source: self-analyzed (no upstream spec/clarify)`.
 Create the implementation plan from the available scope and record its provenance.
 Fill `templates/04-plan.md` for the ticket.
 Each task must map to AC/claim, target repo/path, DoD, and test command.
+When the spec has a `Vibe business flow` section, include `templates/vibe/plan.md` as an
+appendix. Use the same flow and acceptance IDs, and link the current diagram revision and
+approved mockup manifest for the linked screens. Keep the mapping current on revisions.
+Keep `- **Review protocol:** redteam-v2` on every new or revised plan. Track task
+progress in `05-impl-log.md` so the reviewed plan stays stable.
 
 For UI tickets specify the browser scenario and its assertion. For visual changes
 identify the existing approved baseline or plan how to get approval for a new one.
@@ -58,7 +63,10 @@ with a fake-sounding command passes the machine gate and still leaves `:build` w
 concrete to run.
 
 Print uncovered AC/claim gaps; gaps block next stage.
-Do not enter build here and do not invent tasks beyond confirmed decisions.
+When invoked inside `:start` or `:vibe`, return the draft to the coordinator for `:redteam`.
+When invoked directly, run `:redteam` on the draft and report its result before ending
+the planning command. Revise material findings and have the changed plan rechecked.
+Keep product code untouched during planning and within the confirmed scope.
 
 ## 9/10 controls
 

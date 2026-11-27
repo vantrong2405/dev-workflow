@@ -66,6 +66,10 @@ field/button label and the exact machine-checkable signal (`expected_text`,
 `expected_url_includes`, `expected_result_count`, `expected_network`, or `other` with a precise
 description). Screen not designed yet → mark the row `☐ TBD — confirm before :build closes`,
 never leave it silently blank.
+Keep `UI evidence protocol: guided-v1`. Identify each required UI case. Assign
+`BUG-01`, `BUG-02`, etc. to cases that reproduce each existing defect, and mark
+the cases that need a golden comparison. Pick the app's English UI and exact
+labels where available, unless the defect depends on a different locale.
 
 For UI tickets select exactly one `Visual change?` answer. A Yes requires an
 approved golden comparison along with the browser evidence described in

@@ -40,17 +40,8 @@ done
 
 [[ -n "$TICKET" ]] || usage
 
-WORKLOG="$(resolve_worklog_dir "$TICKET" "$SLUG_HINT" || true)"
-if [[ -z "${WORKLOG:-}" || ! -d "$WORKLOG" ]]; then
-  resolve_project_home "$SLUG_HINT" || {
-    echo "ERROR: cannot resolve project home" >&2
-    exit 1
-  }
-  WORKLOG="${AK_PROJECT_HOME}/worklogs/${TICKET}"
-fi
-
-if [[ ! -d "$WORKLOG" ]]; then
-  echo "ERROR: worklog not found: $WORKLOG" >&2
+if ! WORKLOG="$(resolve_worklog_dir "$TICKET" "$SLUG_HINT")"; then
+  echo "ERROR: cannot resolve worklog for ticket=$TICKET" >&2
   exit 1
 fi
 

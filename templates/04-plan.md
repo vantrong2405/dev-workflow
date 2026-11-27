@@ -1,10 +1,11 @@
 # 04 Plan: [Feature_Name]
 
 - **Input:** `02-spec.md` + `03-clarify-report.md`
+- **Review protocol:** redteam-v2
 
 ## Standard DoD (per task)
 
-Task is ☐ Done only when:
+Record task completion in `05-impl-log.md`. A task is done when:
 
 1. Code + tests match the DoD column
 2. Maps to at least 1 AC or claim
@@ -12,10 +13,10 @@ Task is ☐ Done only when:
 
 ## Tasks
 
-| # | Task | AC / claim | Repo | DoD / test command | Command discovery proof | Status |
-|---|---|---|---|---|---|---|
-| 1 | | AC-01 / C-01 | | `…` | runner/path checked: … | ☐ |
-| 2 | | | | | | ☐ |
+| # | Task | AC / claim | Repo | DoD / test command | Command discovery proof |
+|---|---|---|---|---|---|
+| 1 | | AC-01 / C-01 | | `…` | runner/path checked: … |
+| 2 | | | | | |
 
 ## Regression matrix (touched modules)
 

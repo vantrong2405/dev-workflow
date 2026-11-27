@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#fffaf5">
   <title>ak — Một lệnh từ yêu cầu đến bàn giao</title>
   <link rel="icon" href="../assets/logo/favicon.svg?v=orange" type="image/svg+xml">
-  <link rel="stylesheet" href="catalog.css?v=verification">
-  <script src="catalog.js?v=verification" defer></script>
+  <link rel="stylesheet" href="catalog.css?v=vibe-pages">
+  <script src="catalog.js?v=vibe-pages" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Đến nội dung chính</a>
@@ -20,9 +20,10 @@
       </a>
       <nav aria-label="Điều hướng chính">
         <a href="#workflow">Luồng làm việc</a>
+        <a href="#vibe">Vibe code</a>
         <a href="#skills">Bản đồ skill</a>
         <a href="#install">Cài đặt</a>
-        <a href="USER-GUIDE.vi.md">Tài liệu</a>
+        <a href="#faq">Hỏi đáp</a>
       </nav>
       <a class="source-link" href="https://github.com/vantrong2405/dev-workflow">GitHub</a>
     </header>
@@ -37,6 +38,7 @@
           <div class="hero-actions">
             <a class="button button-primary" href="#install">Cài đặt ak</a>
             <a class="button button-quiet" href="#workflow">Xem luồng làm việc</a>
+            <a class="button button-quiet" href="#vibe">Xem Vibe code</a>
           </div>
         </div>
         <div class="demo-stage">
@@ -66,41 +68,118 @@
       </section>
     </div>
 
+  <section class="shell section vibe-spotlight" id="vibe" aria-labelledby="vibe-title">
+    <header class="section-heading">
+      <div>
+        <p class="eyebrow"><code>/ak:vibe</code> React · Next.js · Tailwind</p>
+        <h2 id="vibe-title">Vibe code</h2>
+      </div>
+      <p>Từ yêu cầu thô đến quy tắc nghiệp vụ, ảnh mockup và bản demo đã kiểm chứng.</p>
+    </header>
+    <div class="vibe-destinations">
+      <a class="vibe-destination" href="vibe.html"><strong>Luồng Vibe <span aria-hidden="true">↗</span></strong><small>Từ làm rõ nghiệp vụ đến Redteam và bàn giao.</small></a>
+      <a class="vibe-destination" href="mockups.html"><strong>Kho Mockup <span aria-hidden="true">↗</span></strong><small>Các mẫu danh sách, chi tiết và biểu mẫu đã render.</small></a>
+      <a class="vibe-destination" id="vibe-specs" href="vibe-specs.html"><strong>Kho spec nghiệp vụ <span aria-hidden="true">↗</span></strong><small>Spec đang áp dụng, checklist và lịch sử kiểm chứng.</small></a>
+    </div>
+  </section>
+
   <section class="shell workflow section" id="workflow" aria-labelledby="workflow-title">
     <div class="section-heading">
       <h2 id="workflow-title">Từ yêu cầu đến bàn giao</h2>
-      <p>Bạn giao việc một lần. Agent tự nối các bước và hỏi khi cần bạn quyết định.</p>
+      <div class="workflow-intro">
+        <p>Bạn giao việc một lần. Agent tự nối các bước và hỏi khi cần bạn quyết định.</p>
+        <a href="#moc-kiem-tra">Tra cứu các mốc G0–G9</a>
+      </div>
     </div>
-    <div class="flow-map">
+    <div class="flow-map" id="workflow-player">
       <figure class="flow-figure">
-        <iframe src="ak-workflow.html?v=ui-gates" title="Sơ đồ luồng ak"></iframe>
+        <iframe src="ak-workflow.html?v=gate-guide" title="Sơ đồ luồng ak"></iframe>
       </figure>
-      <div class="flow-branches">
-        <h3>Các nhánh khi cần</h3>
-        <p>Bấm một bước trên sơ đồ để xem các skill trong popup.</p>
-        <dl>
-          <div>
-            <dt>Repo mới</dt>
-            <dd><a href="#skill-learning"><code>:learning</code></a> điền form rồi quay lại task.</dd>
+      <div class="flow-panel">
+        <header class="flow-panel-header">
+          <h3>Ví dụ chạy một task</h3>
+          <span class="flow-count" data-flow-count hidden></span>
+        </header>
+        <div class="flow-slides" id="flow-slides">
+          <article class="flow-slide" data-node="start">
+            <h4>Giao việc cho ak</h4>
+            <p><code>/ak Sửa nút “Học dự án” để mở popup</code></p>
+            <p>Ví dụ đi qua một repo mới, một lần kiểm tra chưa đạt và yêu cầu chuẩn bị phát hành sau khi bàn giao.</p>
+            <a href="#skill-start"><code>/ak</code></a>
+          </article>
+          <article class="flow-slide" data-node="learning" data-edge="start-learning">
+            <h4>Học dự án lần đầu</h4>
+            <p>Agent tìm cách chạy app, test và hỏi quy ước bạn muốn giữ. Task sau dùng lại form đã lưu.</p>
+            <a href="#skill-learning"><code>:learning</code></a>
+          </article>
+          <article class="flow-slide" data-node="understand" data-edge="learning-understand">
+            <h4>Hiểu việc và tái hiện lỗi</h4>
+            <p>Agent chuẩn bị dữ liệu test và vẽ đường đi từng cú bấm. Bạn chạy lại trên trình duyệt và gửi kết quả. Khi có bằng chứng lỗi mới bắt đầu sửa (<code>G5</code>).</p>
+            <a href="#skill-spec"><code>:spec</code></a>
+            <a href="#skill-clarify"><code>:clarify</code></a>
+            <a href="#skill-flow-diagram"><code>:flow-diagram</code></a>
+            <a href="#skill-plan"><code>:plan</code></a>
+          </article>
+          <article class="flow-slide" data-node="redteam" data-edge="understand-redteam">
+            <h4>Phản biện kế hoạch</h4>
+            <p>Nếu chặn click trên mọi link của sơ đồ, popup có thể mở đúng nhưng các link khác mất hành vi mở tab mới. Thu hẹp phần xử lý và bổ sung ca kiểm tra.</p>
+            <p>Còn phát hiện chưa xử lý thì chỉnh kế hoạch rồi phản biện lại. Chỉ sang sửa code khi bản kế hoạch hiện tại đã qua phản biện (<code>G4</code>).</p>
+            <a href="#skill-redteam"><code>:redteam</code></a>
+            <a href="#skill-plan"><code>:plan</code></a>
+          </article>
+          <article class="flow-slide" data-node="build" data-edge="redteam-build">
+            <h4>Sửa code</h4>
+            <p>Sửa xử lý khi bấm nút. Chạy ca hồi quy để thấy lỗi trước khi sửa và kết quả đạt sau khi sửa, nếu repo hỗ trợ ca test đó.</p>
+            <a href="#skill-build"><code>:build</code></a>
+          </article>
+          <article class="flow-slide" data-node="verify" data-edge="build-verify">
+            <h4>Kiểm chứng bản sửa</h4>
+            <p>Review diff, bấm lại trên trình duyệt và kiểm tra hành vi. Đổi kiểu hiển thị thì chạy thêm golden test so với ảnh mẫu đã duyệt.</p>
+            <a href="#skill-review"><code>:review</code></a>
+            <a href="#skill-test"><code>:test</code></a>
+            <a href="#skill-check"><code>:check</code></a>
+          </article>
+          <article class="flow-slide" data-node="decision" data-edge="verify-decision">
+            <h4>Chưa đạt</h4>
+            <p>Popup mở bằng chuột, nhưng bàn phím chưa mở được. Kết quả này dẫn sang bước xử lý lỗi.</p>
+          </article>
+          <article class="flow-slide" data-node="fix" data-edge="decision-fix">
+            <h4>Xử lý lỗi được phát hiện</h4>
+            <p>Tái hiện bằng bàn phím, sửa phần xử lý và quay lại kiểm chứng.</p>
+            <a href="#skill-fix"><code>:fix</code></a>
+          </article>
+          <article class="flow-slide" data-node="verify" data-edge="fix-verify">
+            <h4>Kiểm chứng lại</h4>
+            <p>Chạy lại ca bị ảnh hưởng trên code hiện tại. Xác nhận popup mở bằng cả chuột lẫn bàn phím, trang giữ nguyên vị trí cuộn.</p>
+            <a href="#skill-test"><code>:test</code></a>
+            <a href="#skill-check"><code>:check</code></a>
+          </article>
+          <article class="flow-slide" data-node="decision" data-edge="verify-decision">
+            <h4>Đã đạt</h4>
+            <p>Test bắt buộc đã qua và bằng chứng thuộc đúng bản code hiện tại. Đây là mốc đủ bằng chứng để bàn giao (<code>G8</code>).</p>
+          </article>
+          <article class="flow-slide" data-node="handoff" data-edge="decision-handoff">
+            <h4>Bàn giao để review</h4>
+            <p>Bạn nhận phần đã sửa, các test đã chạy và bằng chứng. Đây là điểm kết thúc mặc định.</p>
+            <a href="#skills-release">Các skill bàn giao</a>
+          </article>
+          <article class="flow-slide" data-node="ship" data-edge="handoff-ship">
+            <h4>Chuẩn bị phát hành với <code>--ship</code></h4>
+            <p>Khi bạn yêu cầu, agent xác nhận phạm vi và kiểm tra kế hoạch triển khai, theo dõi, quay lui (<code>G9</code>). Nếu cần, agent rà lại hồ sơ và xin ký duyệt.</p>
+            <a href="#skill-ship"><code>:ship</code></a>
+            <a href="#skill-audit"><code>:audit</code></a>
+          </article>
+        </div>
+        <div class="flow-controls" hidden>
+          <progress data-flow-progress aria-label="Tiến độ luồng làm việc"></progress>
+          <div class="flow-actions">
+            <button type="button" data-flow-prev>Bước trước</button>
+            <button type="button" data-flow-play class="flow-play">Phát</button>
+            <button type="button" data-flow-next>Bước sau</button>
+            <button type="button" data-flow-replay>Phát lại</button>
           </div>
-          <div>
-            <dt>Việc lớn có thể chia nhỏ</dt>
-            <dd><a href="#skill-decompose"><code>:decompose</code></a> đề xuất task con cho bạn duyệt.</dd>
-          </div>
-          <div>
-            <dt>Cần quyết định hoặc phê duyệt</dt>
-            <dd><a href="#skill-clarify"><code>:clarify</code></a> hỏi phần chưa rõ. <a href="#skill-confirm"><code>:confirm</code></a> ghi nhận phê duyệt khi bắt buộc.</dd>
-          </div>
-          <div>
-            <dt>Review tìm thấy lỗi</dt>
-            <dd><a href="#skill-fix"><code>:fix</code></a> xử lý phát hiện rồi kiểm tra lại phần đã sửa.</dd>
-          </div>
-          <div>
-            <dt>Bạn yêu cầu <code>--ship</code></dt>
-            <dd><a href="#skill-ship"><code>:ship</code></a> chuẩn bị phát hành, rồi <a href="#skill-audit"><code>:audit</code></a> nếu cần ký duyệt.</dd>
-          </div>
-        </dl>
-        <a class="text-link" href="#skills">Xem tất cả skill</a>
+        </div>
+        <span class="visually-hidden" data-flow-status role="status"></span>
       </div>
     </div>
     <section class="verification-guide" id="verification" aria-labelledby="verification-title">
@@ -109,13 +188,71 @@
         <p>Ví dụ: bấm “Học dự án” làm trang cuộn. Kết quả mong đợi là popup mở và vị trí cuộn giữ nguyên.</p>
       </header>
       <ol class="verification-steps" role="list">
-        <li><h4>Tái hiện trước khi sửa</h4><p><a href="#skill-clarify"><code>:clarify</code></a> mở app, lặp đúng thao tác gây lỗi, lưu ảnh hoặc video và log. Bug UI thiếu bằng chứng tái hiện sẽ bị chặn ở G5.</p></li>
-        <li><h4>Sửa và chạy test hồi quy</h4><p><a href="#skill-plan"><code>:plan</code></a> chọn điều kiện cần kiểm tra. Khi có test cho hành vi đó, <a href="#skill-build"><code>:build</code></a> xác nhận test đỏ vì lỗi và chạy lại cho xanh sau khi sửa.</p></li>
-        <li><h4>Xác nhận trên code hiện tại</h4><p><a href="#skill-test"><code>:test</code></a> lặp lại thao tác trong cùng điều kiện, kiểm tra popup mở và trang giữ vị trí cuộn. <a href="#skill-check"><code>:check</code></a> chặn G8 nếu bằng chứng thiếu hoặc đã cũ.</p></li>
+        <li><h4>Chuẩn bị sơ đồ và chạy lại lỗi</h4><p>Agent chuẩn bị dữ liệu, vẽ từng cú bấm bằng <a href="#skill-flow-diagram"><code>:flow-diagram</code></a> và đưa sơ đồ cho bạn chạy. <a href="#skill-clarify"><code>:clarify</code></a> ghi kết quả thực tế trước khi sửa (<code>G5</code>).</p></li>
+        <li><h4>Phản biện, sửa và chạy test hồi quy</h4><p><a href="#skill-redteam"><code>:redteam</code></a> tìm ca mà kế hoạch bỏ sót và yêu cầu sửa plan trước khi build. Khi có test, <a href="#skill-build"><code>:build</code></a> xác nhận test đỏ vì lỗi và chạy lại cho xanh sau khi sửa.</p></li>
+        <li><h4>Xác nhận trên code hiện tại</h4><p><a href="#skill-test"><code>:test</code></a> lặp lại thao tác trong cùng điều kiện, kiểm tra popup mở và trang giữ vị trí cuộn. <a href="#skill-check"><code>:check</code></a> yêu cầu bằng chứng còn khớp bản code trước khi bàn giao (<code>G8</code>).</p></li>
       </ol>
       <dl class="verification-tools">
-        <div><dt>Playwright</dt><dd>Ưu tiên Playwright khi có sẵn. Có thể dùng DevTools hoặc công cụ trình duyệt của dự án. Thiếu quyền truy cập app, dữ liệu test hoặc công cụ thì bước tương ứng bị chặn.</dd></div>
+        <div><dt>Dữ liệu và ngôn ngữ</dt><dd>Agent chuẩn bị URL, vai trò test và dữ liệu mẫu. Ưu tiên nhãn tiếng Anh nếu app hỗ trợ. Với lỗi dịch thuật hoặc lỗi theo ngôn ngữ, giữ đúng ngôn ngữ báo lỗi.</dd></div>
+        <div><dt>Playwright</dt><dd>Bạn chạy lại theo sơ đồ hoặc giao agent chạy bằng Playwright, DevTools hay công cụ của repo. Agent lưu người thực hiện và kết quả quan sát.</dd></div>
         <div><dt>Golden test</dt><dd>Thay đổi màu, bố cục hoặc kiểu hiển thị phải chạy so sánh tự động với ảnh mẫu đã duyệt và lưu kết quả đạt. Bug chỉ làm sai thao tác cần kiểm tra hành vi.</dd></div>
+      </dl>
+      <details class="repro-example" id="vi-du-tai-hien">
+        <summary>Xem sơ đồ ví dụ từng cú bấm</summary>
+        <p>Ví dụ dùng giao diện tiếng Anh và tài khoản giả lập cho môi trường test.</p>
+        <pre tabindex="0" aria-label="Sơ đồ các bước tái hiện lỗi"><code>BUG #1: Popup opens and the page jumps
+
+                                        👤 USER (Role: Admin / Account: admin@example.com)
+                                        │
+                                        │ ① Open the test URL
+                                        ▼
+                  ┌───────────────────────────────────────────┐    ┈┈► [Action hiện tại]: Màn hình Sign in
+                  │ URL: /login                               │
+                  │ [Action tiếp theo]: Fill [Email]          │
+                  │   with admin@example.com                  │
+                  │ [Action tiếp theo]: Fill [Password]       │
+                  │   with password123 (test fixture)         │
+                  │ [Action tiếp theo]: Click [Sign in]       │
+                  └─────────────────────┬─────────────────────┘
+                                        │ ② Sign in
+                                        ▼
+                  ┌───────────────────────────────────────────┐    ┈┈► [Action hiện tại]: Dashboard, signed in
+                  │ URL: /dashboard                           │
+                  │ [Action tiếp theo]: Click [Learning]      │
+                  └─────────────────────┬─────────────────────┘
+                                        │ ③ Open the Learning page
+                                        ▼
+                  ┌───────────────────────────────────────────┐    ┈┈► [Action hiện tại]: Sơ đồ hiện, ghi vị trí cuộn
+                  │ URL: /learning                            │
+                  │ [Action tiếp theo]: Click [Project setup] │
+                  └─────────────────────┬─────────────────────┘
+                                        │ ④ Click [Project setup]
+                                        ▼
+                  ┌───────────────────────────────────────────┐    ┈┈► ⚠️ BUG PHÁT SINH TẠI ĐÂY:
+                  │ URL: /learning#project-setup              │          📍 Vị trí: catalog.js:42 (ví dụ)
+                  │ Popup mở, trang cuộn về cuối.             │          🌐 URL Hiện tại (Sai): /learning#project-setup
+                  │ Gửi URL thực tế và ảnh vùng popup.        │          🎯 Kỳ vọng đúng: /learning giữ nguyên vị trí cuộn (AC-01)
+                  │                                           │          💡 Nguyên nhân: click handler mở popup nhưng để link tự điều hướng.
+                  └───────────────────────────────────────────┘</code></pre>
+      </details>
+    </section>
+    <section class="gate-guide" id="moc-kiem-tra" aria-labelledby="gate-guide-title">
+      <header>
+        <h3 id="gate-guide-title">Mỗi mốc kiểm tra điều gì?</h3>
+        <p>G0–G9 là mã các mốc kiểm tra của ak. Khi hiện <strong>PASS</strong>, mốc đã đạt. Khi hiện <strong>FAIL</strong>, ak báo điều kiện còn thiếu. Mỗi việc áp dụng các kiểm tra tương ứng với thay đổi và mức rủi ro.</p>
+      </header>
+      <dl class="gate-list">
+        <div><dt><code>G0</code> Có thông tin dự án</dt><dd>Xác định đúng repo và có thông tin thiết lập để làm việc, như cách chạy app, test và quy ước đã ghi.</dd></div>
+        <div><dt><code>G1</code> Yêu cầu đủ rõ để kiểm tra</dt><dd>Ghi loại việc, mức rủi ro và tiêu chí nghiệm thu có căn cứ. Ví dụ, bấm nút phải mở popup và giữ nguyên vị trí cuộn.</dd></div>
+        <div><dt><code>G2</code> Đối chiếu với hành vi hiện tại</dt><dd>Đọc code hoặc chạy app để tìm chỗ yêu cầu khác với cách hệ thống đang hoạt động và làm rõ các điểm mâu thuẫn.</dd></div>
+        <div><dt><code>G3</code> Có xác nhận khi cần</dt><dd>Ghi ai duyệt, duyệt nội dung gì và khi nào. Việc rủi ro cao như tiền hoặc phân quyền cần thêm xác nhận của quản lý dự án (PM).</dd></div>
+        <div><dt><code>G4</code> Kế hoạch qua phản biện</dt><dd>Biết sửa ở đâu, chạy kiểm tra nào. Redteam đã phản biện bản kế hoạch hiện tại và các phát hiện đã được xử lý.</dd></div>
+        <div><dt><code>G5</code> Đủ căn cứ trước khi sửa</dt><dd>Các câu hỏi có thể đổi cách sửa đã được giải quyết. Bug UI cần sơ đồ từng cú bấm, dữ liệu test và bằng chứng lỗi đã xảy ra khi chạy trên trình duyệt.</dd></div>
+        <div><dt><code>G6</code> Có bản sửa theo kế hoạch</dt><dd>Ghi rõ đã sửa file nào, đáp ứng tiêu chí nào và đã chạy kiểm tra gì khi sửa.</dd></div>
+        <div><dt><code>G7</code> Bản sửa qua review</dt><dd>Đã đọc thay đổi code, đối chiếu tiêu chí và xử lý các phát hiện nghiêm trọng. Agent kiểm tra cả luồng có thể bị ảnh hưởng.</dd></div>
+        <div><dt><code>G8</code> Đủ bằng chứng để bàn giao</dt><dd>Các test phù hợp đã đạt trên bản code hiện tại. Task UI cần kết quả kiểm tra hành vi trên trình duyệt. Đổi hình ảnh cần thêm so sánh với ảnh mẫu đã duyệt.</dd></div>
+        <div><dt><code>G9</code> Sẵn sàng phát hành</dt><dd>Khi yêu cầu phát hành, kiểm tra cách triển khai, tín hiệu theo dõi và cách quay về bản cũ nếu có sự cố.</dd></div>
+        <div><dt><code>AUDIT</code> Rà soát hồ sơ trước khi chốt</dt><dd>Khi áp dụng, đối chiếu yêu cầu, quyết định, kết quả test và kế hoạch phát hành. Người có thẩm quyền xác nhận kết quả rà soát.</dd></div>
       </dl>
     </section>
   </section>
@@ -130,7 +267,7 @@
       <figure class="profile-file">
         <figcaption><code>PROJECT-FORM.md</code><span>Ví dụ cách điền cho repo ak</span></figcaption>
         <dl>
-          <div><dt>Lệnh test có thật trong repo ak</dt><dd><code>bash tests/regression.sh</code><small>Nguồn: <a href="../.github/workflows/tests.yml">workflow CI của ak</a></small></dd></div>
+          <div><dt>Lệnh test có thật trong repo ak</dt><dd><code>bash tests/regression.sh</code><small>Nguồn <code>.github/workflows/tests.yml</code></small></dd></div>
           <div><dt>Ví dụ quy ước do người dùng đề xuất</dt><dd>Khi sửa checker, chạy regression test trước khi bàn giao.<small>Minh họa. Quy ước chỉ được lưu sau khi bạn duyệt.</small></dd></div>
         </dl>
       </figure>
@@ -140,7 +277,7 @@
   <section class="shell section skill-map" id="skills" aria-labelledby="skills-title">
     <div class="section-heading">
       <h2 id="skills-title">Từng skill làm gì?</h2>
-      <p><code>/ak</code> gọi các skill phù hợp trong cùng một luồng. Mở từng mục để xem đầu vào, đầu ra và ví dụ.</p>
+      <p>Mở từng skill để xem khi nào dùng, thứ tự các bước và kết quả cần đạt.</p>
     </div>
     <div class="skill-layout">
       <nav class="skill-nav" aria-label="Nhóm skill">
@@ -155,51 +292,96 @@
             <h3 id="skills-setup-title">Bắt đầu và học dự án</h3>
             <p>Thiết lập thông tin dùng chung trước khi xử lý task.</p>
             <details class="skill" id="skill-start" name="ak-skills" open>
-              <summary><code>/ak</code> <span>Điều phối một task từ đầu đến bàn giao</span></summary>
+              <summary><code>/ak</code> <span>Một task chạy qua những bước nào?</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Mô tả việc cần làm hoặc mã ticket và link.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Tự thiết lập khi gặp repo mới, điều phối các skill cần thiết và hỏi khi cần quyết định.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Kết quả đã kiểm chứng, hoặc lý do đang bị chặn.</dd></div>
-                </dl>
-                <p class="skill-example"><strong>Ví dụ</strong> Gõ <code>/ak Sửa CSV để giữ bộ lọc</code> và trả lời trong cùng hội thoại.</p>
-                <a class="skill-source" href="../skills/start/SKILL.md">Xem hướng dẫn skill</a>
+                <p class="skill-request"><strong>Ví dụ bạn giao</strong> <code>/ak Bấm “Học dự án” phải mở popup, giữ nguyên vị trí cuộn</code></p>
+                <ol class="skill-run" role="list">
+                  <li>
+                    <h3>Nạp quy ước dự án</h3>
+                    <p>Lần đầu, <a href="#skill-learning"><code>:learning</code></a> tìm cách chạy app và test, hỏi quy ước rồi lưu form. Task sau dùng lại form.</p>
+                  </li>
+                  <li>
+                    <h3>Chốt kết quả và tái hiện lỗi</h3>
+                    <p><a href="#skill-spec"><code>:spec</code></a> ghi kết quả mong đợi. <a href="#skill-flow-diagram"><code>:flow-diagram</code></a> chuẩn bị cách chạy từng bước và <a href="#skill-clarify"><code>:clarify</code></a> ghi lại lỗi bạn quan sát được trước khi sửa (<code>G5</code>).</p>
+                  </li>
+                  <li>
+                    <h3>Lên kế hoạch và thử tìm điểm gãy</h3>
+                    <p><a href="#skill-plan"><code>:plan</code></a> đề xuất chỗ sửa và ca test. <a href="#skill-redteam"><code>:redteam</code></a> tìm giả định sai, ảnh hưởng phụ và ca bị bỏ sót. Nếu còn phát hiện mở, sửa kế hoạch rồi review lại.</p>
+                  </li>
+                  <li>
+                    <h3>Sửa code và chạy test hồi quy</h3>
+                    <p>Khi kế hoạch đã qua phản biện (<code>G4</code>), <a href="#skill-build"><code>:build</code></a> chạy test đỏ, sửa code rồi chạy lại cho xanh khi repo hỗ trợ.</p>
+                  </li>
+                  <li>
+                    <h3>Review và kiểm tra lại trên trình duyệt</h3>
+                    <p><a href="#skill-review"><code>:review</code></a> soi diff, gọi <a href="#skill-fix"><code>:fix</code></a> khi cần. <a href="#skill-test"><code>:test</code></a> xác nhận popup mở, trang đứng yên. Nếu đổi giao diện, chạy thêm golden test.</p>
+                  </li>
+                  <li>
+                    <h3>Bàn giao khi có bằng chứng đạt</h3>
+                    <p><a href="#skill-check"><code>:check</code></a> xác nhận test và bằng chứng khớp bản code để bàn giao (<code>G8</code>). Nếu còn thiếu, bạn biết cần kiểm tra lại điều gì.</p>
+                  </li>
+                </ol>
+                <details class="skill-branches">
+                  <summary>Khi nào luồng thay đổi?</summary>
+                  <ul>
+                    <li>Tính năng mới → <a href="#skill-spec"><code>:spec</code></a> ghi hành vi cần thêm. <a href="#skill-test"><code>:test</code></a> kiểm tra hành vi đó sau khi triển khai.</li>
+                    <li>Thiếu yêu cầu làm đổi cách sửa → <a href="#skill-clarify"><code>:clarify</code></a> hỏi đúng phần đó.</li>
+                    <li>Task lớn → <a href="#skill-decompose"><code>:decompose</code></a> trình bản chia task.</li>
+                    <li>Task P0, chạy strict hoặc yêu cầu phát hành → <a href="#skill-confirm"><code>:confirm</code></a> ghi phê duyệt cần thiết.</li>
+                    <li>Bạn yêu cầu <code>--ship</code> → <a href="#skill-ship"><code>:ship</code></a> chuẩn bị phát hành và gọi <a href="#skill-audit"><code>:audit</code></a> khi cần.</li>
+                  </ul>
+                </details>
+              </div>
+            </details>
+            <details class="skill" id="skill-vibe" name="ak-skills">
+              <summary><code>/ak:vibe</code> <span>Vẽ luồng, duyệt mockup và xây app React hoặc Next.js</span></summary>
+              <div class="skill-body">
+                <p class="skill-context"><strong>Đầu vào</strong> Ý tưởng tính năng hoặc một task Vibe đang làm dở.</p>
+                <ol class="skill-steps">
+                  <li><a href="vibe.html#skill-vibe-business">Làm rõ nghiệp vụ</a> và <a href="vibe.html#skill-vibe-plan">vẽ luồng cùng kế hoạch</a>.</li>
+                  <li><a href="vibe.html#skill-vibe-render">Render ảnh từ mẫu có sẵn</a> và lấy xác nhận đúng phiên bản ảnh.</li>
+                  <li><a href="vibe.html#skill-vibe-redteam">Phản biện kế hoạch</a>, rồi <a href="vibe.html#skill-vibe-build">triển khai và kiểm chứng</a> sau khi bạn đồng ý.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Bản demo, ảnh đã duyệt và bằng chứng test nối với từng luồng nghiệp vụ.</p>
               </div>
             </details>
             <details class="skill" id="skill-learning" name="ak-skills">
               <summary><code>/ak:learning</code> <span>Điền hoặc cập nhật form dự án</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Repo đang mở, đường dẫn dự án hoặc mục cần học lại.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Đọc script, CI và thiết lập liên quan, hỏi cách bạn muốn làm việc rồi tóm thành rule để bạn duyệt.</dd></div>
-                  <div><dt>Trả gì</dt><dd><code>PROJECT-FORM.md</code> với dữ kiện có nguồn và quy ước đã được xác nhận.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Repo đang mở, đường dẫn dự án hoặc mục cần học lại.</p>
+                <ol class="skill-steps">
+                  <li>Đọc cấu trúc repo, script và CI để tìm cách chạy app, chạy test và phát hành.</li>
+                  <li>Hỏi quy ước bạn muốn giữ. Nếu bạn chưa có quy tắc sẵn, hỏi cách bạn thường làm task rồi tóm tắt để bạn duyệt.</li>
+                  <li>Lưu dữ kiện có nguồn và quy ước được duyệt vào <code>PROJECT-FORM.md</code>. Task sau đọc lại phần liên quan.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> <code>PROJECT-FORM.md</code> với dữ kiện có nguồn và quy ước đã được xác nhận.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Tìm lệnh test export trong repo rồi hỏi bạn muốn kiểm tra gì trước khi bàn giao.</p>
-                <a class="skill-source" href="../skills/learning/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-coaching" name="ak-skills">
               <summary><code>/ak:coaching</code> <span>Sửa kiến thức đã lưu</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Một thông tin cần đính chính hoặc câu trả lời cho câu hỏi nghiệp vụ.</dd></div>
-                  <div><dt>Làm gì</dt><dd>So chi tiết cũ với thông tin mới, tìm phần bị ảnh hưởng và xin xác nhận nếu thay đổi kiến thức đã ghi.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Ghi chú được cập nhật và có lịch sử thay đổi.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Một thông tin cần đính chính hoặc câu trả lời cho câu hỏi nghiệp vụ.</p>
+                <ol class="skill-steps">
+                  <li>Tìm mục trong form hoặc ghi chú nghiệp vụ đang dùng thông tin cũ.</li>
+                  <li>Đối chiếu thông tin mới với nguồn và chỉ ra phần bị ảnh hưởng.</li>
+                  <li>Xác nhận thay đổi cần duyệt, cập nhật đúng mục và ghi nguồn mới.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Ghi chú được cập nhật và có lịch sử thay đổi.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Bạn cho biết CSV chỉ dùng múi giờ người dùng. Agent ghi nguồn và các nơi đang dùng quy tắc cũ.</p>
-                <a class="skill-source" href="../skills/coaching/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-decompose" name="ak-skills">
               <summary><code>/ak:decompose</code> <span>Chia một việc lớn thành task con</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Yêu cầu có nhiều phần có thể giao riêng.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Xác định phạm vi, rủi ro, thứ tự phụ thuộc và đưa bản chia cho bạn duyệt.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Bản đồ task con và thứ tự nên xử lý.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Yêu cầu có nhiều phần có thể giao riêng.</p>
+                <ol class="skill-steps">
+                  <li>Xác định các phần có thể bàn giao riêng và điều kiện đạt của từng phần.</li>
+                  <li>Đánh dấu rủi ro và việc nào phải xong trước.</li>
+                  <li>Trình bản chia để bạn duyệt. Sau khi duyệt, luồng chính tiếp tục từ task con có thể làm.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Bản đồ task con và thứ tự nên xử lý.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Tách yêu cầu làm mới báo cáo thành API dữ liệu, màn hình báo cáo và xuất CSV.</p>
-                <a class="skill-source" href="../skills/decompose/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
           </section>
@@ -209,49 +391,66 @@
             <details class="skill" id="skill-spec" name="ak-skills">
               <summary><code>/ak:spec</code> <span>Viết tiêu chí nghiệm thu</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Ticket, mô tả hoặc tài liệu yêu cầu.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Xác định loại việc, mức rủi ro và kết quả mong đợi. Với UI, ghi tên nút, trạng thái hoặc tín hiệu cụ thể dùng để kiểm tra.</dd></div>
-                  <div><dt>Trả gì</dt><dd><code>02-spec.md</code> với tiêu chí nghiệm thu.</dd></div>
-                </dl>
-                <p class="skill-example"><strong>Ví dụ</strong> Khi bảng đang lọc theo tháng 11, CSV chỉ chứa các dòng thuộc tháng 11.</p>
-                <a class="skill-source" href="../skills/spec/SKILL.md">Xem hướng dẫn skill</a>
+                <p class="skill-context"><strong>Đầu vào</strong> Ticket, mô tả hoặc tài liệu yêu cầu.</p>
+                <ol class="skill-steps">
+                  <li>Phân loại ticket và mức rủi ro từ mô tả và code liên quan.</li>
+                  <li>Viết tiêu chí có thể kiểm tra theo tình huống, hành động và kết quả mong đợi.</li>
+                  <li>Với UI, ghi thao tác, tín hiệu để test và xác định có thay đổi hình ảnh hay không.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> <code>02-spec.md</code> mô tả điều kiện để người khác kiểm tra và biết task đã đạt.</p>
+                <p class="skill-example"><strong>Ví dụ</strong> Bấm “Học dự án” → popup hiển thị và vị trí cuộn giữ nguyên.</p>
               </div>
             </details>
             <details class="skill" id="skill-clarify" name="ak-skills">
               <summary><code>/ak:clarify</code> <span>Đối chiếu yêu cầu với code</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Tiêu chí và hành vi đang thấy trong hệ thống.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Với bug UI, mở app bằng Playwright hoặc công cụ trình duyệt của dự án, tái hiện lỗi rồi lưu ảnh hoặc video và log trước khi sửa. Lần theo code để tìm nguyên nhân.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Báo cáo đối chiếu và log quyết định.</dd></div>
-                </dl>
-                <p class="skill-example"><strong>Ví dụ</strong> Phát hiện CSV bỏ bộ lọc tìm kiếm và hỏi có cần giữ cả lựa chọn sắp xếp hay không.</p>
-                <a class="skill-source" href="../skills/clarify/SKILL.md">Xem hướng dẫn skill</a>
+                <p class="skill-context"><strong>Đầu vào</strong> Tiêu chí và hành vi đang thấy trong hệ thống.</p>
+                <ol class="skill-steps">
+                  <li>Với bug UI, chuẩn bị dữ liệu và gọi <a href="#skill-flow-diagram"><code>:flow-diagram</code></a> để bạn chạy từng bước. Lưu ảnh hoặc video cùng kết quả bạn quan sát trước khi sửa.</li>
+                  <li>Lần theo code và đối chiếu hành vi hiện tại với yêu cầu.</li>
+                  <li>Hỏi phần còn mơ hồ có thể đổi cách sửa. Ghi quyết định và bằng chứng tái hiện để xác nhận đã đủ căn cứ bắt đầu sửa (<code>G5</code>).</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Biết lỗi xảy ra ở đâu, bằng chứng nào đã ghi và câu hỏi nào còn chặn việc sửa.</p>
+                <p class="skill-example"><strong>Ví dụ</strong> Trên trình duyệt, bấm “Học dự án”, ghi lại trang cuộn đến mục khác và popup chưa mở.</p>
               </div>
             </details>
             <details class="skill" id="skill-confirm" name="ak-skills">
               <summary><code>/ak:confirm</code> <span>Ghi quyết định của người duyệt</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Các quyết định đã được trình bày và phản hồi của người có thẩm quyền.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Ghi nhận phê duyệt thực tế cùng nguồn, yêu cầu thêm xác nhận PM khi rủi ro P0.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Bằng chứng xác nhận G3 trong worklog.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Các quyết định đã được trình bày và phản hồi của người có thẩm quyền.</p>
+                <ol class="skill-steps">
+                  <li>Xác định quyết định nào đang chờ duyệt và ai có quyền duyệt.</li>
+                  <li>Nhận phản hồi trực tiếp. Với P0, ghi cả phê duyệt của người dùng và PM.</li>
+                  <li>Ghi người duyệt, thời điểm và nội dung đã chốt để chứng minh đã có xác nhận cần thiết (<code>G3</code>).</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Hồ sơ của việc ghi rõ quyết định đã được duyệt và ai duyệt.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Bạn xác nhận phạm vi chỉ giữ bộ lọc, còn thứ tự mặc định giữ như cũ.</p>
-                <a class="skill-source" href="../skills/confirm/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-plan" name="ak-skills">
               <summary><code>/ak:plan</code> <span>Lập kế hoạch có thể kiểm tra</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Tiêu chí và phần code cần sửa.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Nối mỗi tiêu chí với điểm sửa và cách kiểm tra. Với thay đổi hình ảnh, xác định ảnh mẫu đã duyệt và lệnh chạy golden test.</dd></div>
-                  <div><dt>Trả gì</dt><dd><code>04-plan.md</code> với các việc cần làm và cách kiểm chứng.</dd></div>
-                </dl>
-                <p class="skill-example"><strong>Ví dụ</strong> Đưa bộ lọc vào endpoint export và kiểm tra riêng CSV có đúng tập dòng hay không.</p>
-                <a class="skill-source" href="../skills/plan/SKILL.md">Xem hướng dẫn skill</a>
+                <p class="skill-context"><strong>Đầu vào</strong> Tiêu chí và phần code cần sửa.</p>
+                <ol class="skill-steps">
+                  <li>Nối từng tiêu chí với chỗ cần sửa và điều kiện hoàn thành.</li>
+                  <li>Kiểm tra lệnh test có thật và chọn ca kiểm tra phù hợp với repo.</li>
+                  <li>Với UI, ghi thao tác và điều kiện đạt. Nếu đổi hiển thị, tìm ảnh mẫu đã duyệt hoặc lên cách xin duyệt baseline.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> <code>04-plan.md</code> cho biết sửa ở đâu và chạy ca nào để chứng minh từng tiêu chí.</p>
+                <p class="skill-example"><strong>Ví dụ</strong> Kiểm tra xử lý click của sơ đồ và lên một ca trình duyệt kiểm tra cả popup lẫn vị trí cuộn.</p>
+              </div>
+            </details>
+            <details class="skill" id="skill-redteam" name="ak-skills">
+              <summary><code>/ak:redteam</code> <span>Phản biện kế hoạch trước khi sửa code</span></summary>
+              <div class="skill-body">
+                <p class="skill-context"><strong>Đầu vào</strong> Bản kế hoạch, yêu cầu đã chốt và code hoặc quy ước liên quan.</p>
+                <ol class="skill-steps">
+                  <li>Đóng vai người phản đối. Tìm một ca mà kế hoạch chạy đúng như mô tả nhưng vẫn để lọt lỗi.</li>
+                  <li>Lần theo các luồng dùng chung và ghi ai hoặc phần nào bị ảnh hưởng, mức nghiêm trọng, căn cứ và ca kiểm tra còn thiếu.</li>
+                  <li>Trả phát hiện cho <a href="#skill-plan"><code>:plan</code></a> chỉnh. Kiểm tra lại bản đã chỉnh và xác nhận kế hoạch qua phản biện (<code>G4</code>) khi các phát hiện đã được xử lý.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Biết kế hoạch có thể gãy ở đâu, đã thay đổi gì và bản hiện tại đã sẵn sàng để build chưa.</p>
+                <p class="skill-example"><strong>Ví dụ</strong> Chặn click của toàn sơ đồ có thể sửa popup nhưng làm hỏng mở tab mới ở các link khác. Thu hẹp chỗ sửa và bổ sung ca kiểm tra.</p>
               </div>
             </details>
           </section>
@@ -261,61 +460,66 @@
             <details class="skill" id="skill-build" name="ak-skills">
               <summary><code>/ak:build</code> <span>Triển khai theo kế hoạch</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Kế hoạch, tiêu chí và code hiện tại.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Bug UI cần qua G5 trước khi chỉnh code. Với thay đổi có test hành vi, xác nhận test đỏ đúng lý do rồi chạy lại cho xanh sau khi sửa.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Code đã sửa và log triển khai có bằng chứng.</dd></div>
-                </dl>
-                <p class="skill-example"><strong>Ví dụ</strong> Test xuất CSV ban đầu lấy thừa dòng. Sau bản sửa, nó lấy đúng các dòng đã lọc.</p>
-                <a class="skill-source" href="../skills/build/SKILL.md">Xem hướng dẫn skill</a>
+                <p class="skill-context"><strong>Đầu vào</strong> Kế hoạch, tiêu chí và code hiện tại.</p>
+                <ol class="skill-steps">
+                  <li>Kiểm tra kế hoạch đã qua phản biện (<code>G4</code>). Với bug UI, kiểm tra đã có bằng chứng tái hiện trước khi sửa (<code>G5</code>).</li>
+                  <li>Với hành vi có thể kiểm thử, chạy ca hồi quy và xác nhận test đỏ đúng vì lỗi cần sửa.</li>
+                  <li>Sửa phần tối thiểu, chạy lại để thấy test xanh và ghi kết quả theo tiêu chí.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Bản sửa kèm test hồi quy và kết quả đỏ → xanh khi có ca chạy được.</p>
+                <p class="skill-example"><strong>Ví dụ</strong> Ca hồi quy báo popup chưa mở. Sau khi chỉnh xử lý click, chạy lại và kiểm tra cả vị trí cuộn.</p>
               </div>
             </details>
             <details class="skill" id="skill-review" name="ak-skills">
               <summary><code>/ak:review</code> <span>Soi diff và ảnh hưởng phụ</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Diff thật cùng tiêu chí nghiệm thu.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Đọc thay đổi, đối chiếu với yêu cầu, tìm lỗi và ghi bằng chứng ở vị trí cụ thể.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Báo cáo review với phát hiện và mức độ nghiêm trọng.</dd></div>
-                </dl>
-                <p class="skill-example"><strong>Ví dụ</strong> Phát hiện test có bộ lọc nhưng lời gọi xuất CSV ở giao diện chưa truyền giá trị đó.</p>
-                <a class="skill-source" href="../skills/review/SKILL.md">Xem hướng dẫn skill</a>
+                <p class="skill-context"><strong>Đầu vào</strong> Diff thật cùng tiêu chí nghiệm thu.</p>
+                <ol class="skill-steps">
+                  <li>Đọc diff và các điểm gọi code bị ảnh hưởng.</li>
+                  <li>Đối chiếu từng tiêu chí và tìm lỗi ở luồng chính, trường hợp biên hoặc quyền truy cập có liên quan.</li>
+                  <li>Ghi vị trí, mức độ và bằng chứng cho mỗi phát hiện. Chuyển lỗi cần sửa cho <a href="#skill-fix"><code>:fix</code></a>.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Biết diff đã đáp ứng tiêu chí nào và lỗi nào phải xử lý trước khi bàn giao.</p>
+                <p class="skill-example"><strong>Ví dụ</strong> Soi xem bấm trong sơ đồ có mở popup bằng chuột lẫn bàn phím và có làm trang nhảy chỗ không.</p>
               </div>
             </details>
             <details class="skill" id="skill-fix" name="ak-skills">
               <summary><code>/ak:fix</code> <span>Xử lý phát hiện review</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Phát hiện còn mở, kèm vị trí và bằng chứng.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Phân loại phát hiện theo bằng chứng. Với lỗi UI cần sửa, tái hiện trên trình duyệt trước rồi xác minh lại sau khi chỉnh.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Bản sửa đúng phạm vi và log xử lý.</dd></div>
-                </dl>
-                <p class="skill-example"><strong>Ví dụ</strong> Sửa chỗ giao diện bỏ mất bộ lọc và chạy lại ca kiểm tra export tương ứng.</p>
-                <a class="skill-source" href="../skills/fix/SKILL.md">Xem hướng dẫn skill</a>
+                <p class="skill-context"><strong>Đầu vào</strong> Phát hiện còn mở, kèm vị trí và bằng chứng.</p>
+                <ol class="skill-steps">
+                  <li>Đọc từng phát hiện đang mở và quyết định sửa, bỏ qua có lý do hoặc hoãn.</li>
+                  <li>Với lỗi UI cần sửa, tái hiện trên trình duyệt và lưu trạng thái lỗi trước khi chỉnh.</li>
+                  <li>Sửa đúng phạm vi, cập nhật log xử lý và chạy lại kiểm tra bị ảnh hưởng.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Bản sửa đúng phạm vi và log xử lý.</p>
+                <p class="skill-example"><strong>Ví dụ</strong> Tái hiện việc popup đóng mà focus chưa về nút mở, rồi chỉnh và kiểm tra lại bằng bàn phím.</p>
               </div>
             </details>
             <details class="skill" id="skill-test" name="ak-skills">
               <summary><code>/ak:test</code> <span>Chạy kiểm tra và gắn bằng chứng</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Các tiêu chí, lệnh kiểm tra và trạng thái code hiện tại.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Với UI, kiểm tra hành vi trên code hiện tại và lưu ảnh cùng log. Thay đổi hình ảnh cần thêm golden test đạt với ảnh mẫu đã duyệt.</dd></div>
-                  <div><dt>Trả gì</dt><dd><code>06b-test-evidence.md</code> với lệnh, kết quả và bằng chứng.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Các tiêu chí, lệnh kiểm tra và trạng thái code hiện tại.</p>
+                <ol class="skill-steps">
+                  <li>Đọc các tiêu chí và kết quả đã chạy. Dùng lại kết quả khi đầu vào, câu kiểm tra và bản code còn khớp.</li>
+                  <li>Chạy kiểm tra còn thiếu. Với UI, lặp thao tác trên trình duyệt và lưu ảnh hoặc video cùng log. Nếu đổi hiển thị, chạy golden test với ảnh mẫu đã duyệt.</li>
+                  <li>Gắn kết quả với tiêu chí trên bản code hiện tại và gọi <a href="#skill-check"><code>:check</code></a> để xác nhận đủ bằng chứng bàn giao (<code>G8</code>).</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> <code>06b-test-evidence.md</code> ghi điều đã xác minh trên code hiện tại và còn thiếu gì để bàn giao.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Bấm lại cùng nút, kiểm tra popup hiện lên và vị trí cuộn giữ nguyên. Lưu kết quả chạy cùng bằng chứng UI.</p>
-                <a class="skill-source" href="../skills/test/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-check" name="ak-skills">
               <summary><code>/ak:check</code> <span>Chạy checker để biết đạt hay chưa</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Ticket và gate muốn kiểm tra.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Chạy script kiểm tra thực tế, đọc điều kiện còn thiếu và xác định bước chịu trách nhiệm.</dd></div>
-                  <div><dt>Trả gì</dt><dd>PASS hoặc FAIL cùng các lý do cụ thể.</dd></div>
-                </dl>
-                <p class="skill-example"><strong>Ví dụ</strong> <code>/ak:check TICKET-123 my-app tests</code> kiểm tra bằng chứng đến G8.</p>
-                <a class="skill-source" href="../skills/check/SKILL.md">Xem hướng dẫn skill</a>
+                <p class="skill-context"><strong>Đầu vào</strong> Mã việc và mốc bạn muốn kiểm tra.</p>
+                <ol class="skill-steps">
+                  <li>Xác định đúng việc, dự án và mốc cần kiểm tra.</li>
+                  <li>Chạy <code>check-gates.sh</code> để kiểm tra worklog và bằng chứng được yêu cầu.</li>
+                  <li>Đọc PASS hoặc FAIL, tìm lý do cụ thể và chuyển lại bước chịu trách nhiệm nếu thiếu.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> PASS hoặc FAIL cùng các lý do cụ thể.</p>
+                <p class="skill-example"><strong>Ví dụ</strong> <code>/ak:check TICKET-123 my-app tests</code> kiểm tra đến mốc đủ bằng chứng bàn giao (<code>G8</code>).</p>
               </div>
             </details>
           </section>
@@ -325,49 +529,53 @@
             <details class="skill" id="skill-status" name="ak-skills">
               <summary><code>/ak:status</code> <span>Xem task đang ở đâu</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Mã ticket hoặc workspace hiện tại.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Đọc worklog và đối chiếu kết quả checker khi có thể.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Trạng thái, phần còn thiếu và việc tiếp theo.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Mã ticket hoặc workspace hiện tại.</p>
+                <ol class="skill-steps">
+                  <li>Tìm đúng project và worklog của ticket.</li>
+                  <li>Đọc hồ sơ của việc và chạy kiểm tra để tìm mốc hiện tại.</li>
+                  <li>Báo bước đã đạt, mục còn thiếu, người đang cần phản hồi và việc tiếp theo.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Trạng thái, phần còn thiếu và việc tiếp theo.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Cho biết CSV đã sửa và review xong nhưng thiếu kết quả test hiện tại.</p>
-                <a class="skill-source" href="../skills/status/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-ship" name="ak-skills">
               <summary><code>/ak:ship</code> <span>Chuẩn bị phát hành</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Thay đổi đã có bằng chứng kiểm tra và cách phát hành của dự án.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Chuẩn bị rollout, rollback và điều kiện dừng phù hợp, rồi kiểm tra G9 ở chế độ strict.</dd></div>
-                  <div><dt>Trả gì</dt><dd><code>07-ship.md</code> và kết quả gate phát hành.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Thay đổi đã có bằng chứng kiểm tra và cách phát hành của dự án.</p>
+                <ol class="skill-steps">
+                  <li>Kiểm tra đã có đủ bằng chứng bàn giao (<code>G8</code>) và các xác nhận cần thiết.</li>
+                  <li>Ghi kế hoạch rollout, theo dõi và rollback phù hợp với loại dự án.</li>
+                  <li>Chạy kiểm tra nghiêm ngặt về mức sẵn sàng phát hành (<code>G9</code>). Khi cần rà soát toàn bộ hồ sơ, chuyển sang <a href="#skill-audit"><code>:audit</code></a>.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> <code>07-ship.md</code> ghi cách triển khai, quay lui và kết quả kiểm tra sẵn sàng phát hành.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Ghi cách tắt export mới nếu tỷ lệ lỗi xuất file tăng trong lúc rollout.</p>
-                <a class="skill-source" href="../skills/ship/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-audit" name="ak-skills">
               <summary><code>/ak:audit</code> <span>Đối chiếu bộ bằng chứng trước khi chốt</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Worklog đã đạt G9 strict.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Đối chiếu tám cặp nội dung, yêu cầu xử lý mâu thuẫn và lấy xác nhận của người duyệt.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Biên bản audit và trạng thái ký duyệt.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Hồ sơ đã qua kiểm tra nghiêm ngặt về mức sẵn sàng phát hành (<code>G9</code>).</p>
+                <ol class="skill-steps">
+                  <li>Xác nhận việc đã đủ các điều kiện phát hành được yêu cầu.</li>
+                  <li>Đối chiếu các cặp bằng chứng giữa spec, quyết định, test và kế hoạch phát hành. Chỉ ra chỗ lệch hoặc cần làm rõ.</li>
+                  <li>Khi bằng chứng nhất quán, lấy xác nhận của người duyệt để chốt lượt rà soát hồ sơ (<code>AUDIT</code>).</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Biên bản audit và trạng thái ký duyệt.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Kiểm tra cách rollback có thực sự xử lý thay đổi dữ liệu được nêu trong kế hoạch phát hành.</p>
-                <a class="skill-source" href="../skills/audit/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-clean" name="ak-skills">
               <summary><code>/ak:clean</code> <span>Lưu trữ worklog của một task</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Mã ticket chính xác và worklog đủ điều kiện.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Chuyển worklog vào kho lưu trữ. Xóa hẳn cần xác nhận rõ ràng.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Biên nhận lưu trữ cho ticket đó.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Mã ticket chính xác và worklog đủ điều kiện.</p>
+                <ol class="skill-steps">
+                  <li>Xác định đúng ticket và kiểm tra điều kiện lưu trữ.</li>
+                  <li>Chạy công cụ dọn worklog để chuyển ticket vào thư mục archive. Xóa hẳn cần xác nhận riêng.</li>
+                  <li>Kiểm tra worklog đã được chuyển và báo đường dẫn lưu trữ.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Biên nhận lưu trữ cho ticket đó.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Lưu worklog CSV đã ship để dễ tra lại bằng chứng khi cần.</p>
-                <a class="skill-source" href="../skills/clean/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
           </section>
@@ -377,49 +585,53 @@
             <details class="skill" id="skill-feedback" name="ak-skills">
               <summary><code>/ak:feedback</code> <span>Báo lỗi của chính ak</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Mô tả lỗi hoặc hành vi khó hiểu khi dùng ak.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Chuẩn bị nội dung, tìm issue trùng và hỏi bạn xác nhận trước khi gửi.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Bản nháp hoặc đường dẫn issue sau khi được phép gửi.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Mô tả lỗi hoặc hành vi khó hiểu khi dùng ak.</p>
+                <ol class="skill-steps">
+                  <li>Thu thập hành vi mong muốn, hành vi thực tế và cách tái hiện vấn đề của ak.</li>
+                  <li>Kiểm tra GitHub và tìm issue tương tự.</li>
+                  <li>Đưa bản nháp để bạn duyệt. Nếu được đồng ý, gửi issue và trả về đường dẫn.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Bản nháp hoặc đường dẫn issue sau khi được phép gửi.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Báo việc <code>/ak</code> hỏi lại quy ước dù project form đã lưu.</p>
-                <a class="skill-source" href="../skills/feedback/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-flow-diagram" name="ak-skills">
-              <summary><code>/ak:flow-diagram</code> <span>Vẽ lại luồng giao diện hoặc lỗi</span></summary>
+              <summary><code>/ak:flow-diagram</code> <span>Chuẩn bị sơ đồ tái hiện từng cú bấm</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Mô tả thao tác, log hoặc vị trí route và code.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Đọc bằng chứng rồi sắp xếp hành động, điểm xảy ra lỗi và tác động thành sơ đồ chữ.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Một sơ đồ cho mỗi lỗi đã mô tả.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Mô tả thao tác, log hoặc vị trí route và code.</p>
+                <ol class="skill-steps">
+                  <li>Lọc mô tả thành từng lỗi. Chuẩn bị URL, vai trò và dữ liệu test, dùng nhãn nút tiếng Anh khi app hỗ trợ.</li>
+                  <li>Lần theo route và code để xác định vị trí lỗi, kỳ vọng và nguyên nhân có căn cứ.</li>
+                  <li>Vẽ một sơ đồ chữ cho mỗi lỗi, ghi chính xác từng ô nhập và nút bấm để bạn tự chạy lại.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Sơ đồ và dữ liệu sẵn để chạy lại lỗi trên trình duyệt trước khi sửa.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Mở bảng → chọn tháng 11 → bấm Xuất CSV → file lại chứa cả tháng 10.</p>
-                <a class="skill-source" href="../skills/flow-diagram/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-grilling" name="ak-skills">
               <summary><code>grilling</code> <span>Hỏi sâu để chốt một quyết định</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Ý tưởng hoặc quyết định thiết kế còn mơ hồ.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Đọc những gì repo đã trả lời, hỏi từng câu còn thiếu theo thứ tự phụ thuộc.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Các quyết định rõ hơn và những điểm còn mở.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Ý tưởng hoặc quyết định thiết kế còn mơ hồ.</p>
+                <ol class="skill-steps">
+                  <li>Đọc repo trước để tự trả lời các câu đã có căn cứ.</li>
+                  <li>Hỏi từng câu còn mở theo thứ tự phụ thuộc, kèm câu trả lời đề xuất.</li>
+                  <li>Dùng câu trả lời hiện tại để chốt quyết định và chuyển sang câu tiếp theo.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Các quyết định rõ hơn và những điểm còn mở.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Chốt CSV sẽ xuất dòng đang lọc hay toàn bộ dữ liệu khi mô tả chỉ nói «xuất kết quả».</p>
-                <a class="skill-source" href="../skills/_vendor/grilling/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
             <details class="skill" id="skill-tdd" name="ak-skills">
               <summary><code>tdd</code> <span>Làm từng thay đổi theo vòng test trước</span></summary>
               <div class="skill-body">
-                <dl class="skill-sequence">
-                  <div><dt>Nhận gì</dt><dd>Một hành vi cần thêm hoặc sửa và môi trường chạy test.</dd></div>
-                  <div><dt>Làm gì</dt><dd>Viết test cho một hành vi, chạy thấy lỗi đúng lý do, sửa cho pass rồi mở rộng dần.</dd></div>
-                  <div><dt>Trả gì</dt><dd>Các test hồi quy và bản sửa theo từng hành vi.</dd></div>
-                </dl>
+                <p class="skill-context"><strong>Đầu vào</strong> Một hành vi cần thêm hoặc sửa và môi trường chạy test.</p>
+                <ol class="skill-steps">
+                  <li>Chọn một hành vi nhìn được từ bên ngoài và viết test cho nó.</li>
+                  <li>Chạy test để thấy đỏ đúng vì hành vi còn sai, rồi sửa tối thiểu để test xanh.</li>
+                  <li>Dọn code khi test đang xanh và lặp lại với hành vi tiếp theo.</li>
+                </ol>
+                <p class="skill-outcome"><strong>Kết quả</strong> Các test hồi quy và bản sửa theo từng hành vi.</p>
                 <p class="skill-example"><strong>Ví dụ</strong> Bắt đầu bằng test giữ một bộ lọc trước khi kiểm tra tổ hợp nhiều bộ lọc.</p>
-                <a class="skill-source" href="../skills/_vendor/tdd/SKILL.md">Xem hướng dẫn skill</a>
               </div>
             </details>
           </section>
@@ -451,11 +663,18 @@ bash install.sh --codex</code></pre>
       <p id="copy-status" class="copy-status" role="status"></p>
       <p id="host-note">Mở task mới trong repo sản phẩm, chọn skill start của ak và gửi việc cần làm.</p>
       <noscript><p>Dùng cờ <code>--claude</code>, <code>--cursor</code> hoặc <code>--agy</code> để cài cho host khác.</p></noscript>
-      <a class="text-link" href="INSTALL.md">Hướng dẫn cài đặt chi tiết</a>
+      <details class="skill-branches">
+        <summary>Yêu cầu và tùy chọn cài đặt</summary>
+        <ul>
+          <li>Cần Git và Bash 3.2 trở lên. Kiểm chứng UI cần Python 3.8 trở lên.</li>
+          <li>Dùng <code>--all</code> để cài cho mọi agent. Cài Antigravity hoặc dùng <code>--all</code> cần có lệnh <code>agy</code>.</li>
+          <li>Dùng <code>--path &lt;thư-mục-dự-án&gt;</code> để cài riêng cho repo dưới <code>.claude</code>. Dùng <code>--only start</code> để cài lệnh điều phối cùng các skill nó cần.</li>
+        </ul>
+      </details>
     </div>
   </section>
 
-  <section class="shell section questions" aria-labelledby="faq-title">
+  <section class="shell section questions" id="faq" aria-labelledby="faq-title">
     <h2 id="faq-title">Giải đáp nhanh</h2>
     <div class="question-list">
       <details>
@@ -485,16 +704,17 @@ bash install.sh --codex</code></pre>
       </form>
     </header>
     <div class="skill-dialog-content">
-      <button type="button" id="skill-dialog-back" class="skill-dialog-back" hidden>Về danh sách skill</button>
+      <button type="button" id="skill-dialog-back" class="skill-dialog-back" hidden>← Quay lại</button>
       <div id="skill-dialog-body"></div>
     </div>
   </dialog>
   <footer class="footer">
     <div class="shell footer-inner">
       <a class="brand" href="#" aria-label="ak, về đầu trang"><span>ak<span class="brand-dot">.</span></span></a>
-      <a href="USER-GUIDE.vi.md">Hướng dẫn</a>
-      <a href="USER-GUIDE.md" lang="en">English</a>
-      <a href="USER-GUIDE.ja.md" lang="ja">日本語</a>
+      <a href="#workflow">Luồng làm việc</a>
+      <a href="#vibe">Vibe code</a>
+      <a href="#skills">Bản đồ skill</a>
+      <a href="#install">Cài đặt</a>
       <a href="https://github.com/vantrong2405/dev-workflow">Mã nguồn</a>
     </div>
   </footer>

@@ -7,7 +7,7 @@ ticket usage, continue with [USER-GUIDE.md](./USER-GUIDE.md).
 
 - Git
 - Bash 3.2 or newer
-- Python 3.8 or newer for UI evidence checks
+- Python 3.8 or newer for UI evidence and JUnit report checks
 - One or more supported hosts: Claude Code, Cursor, Codex, or Antigravity
 - `agy` on `PATH` only when installing Antigravity or using `--all`
 
@@ -43,7 +43,10 @@ exit with status 2 and do not silently fall back to Claude.
 partial Claude/Cursor/Codex installation.
 
 Use `--only spec,build,review` for direct access to selected stages. Selecting `start`
-also includes its delivery stages. With `--path <dir>`, the installer makes a self-contained
+also includes its delivery stages. Selecting `plan` includes `redteam`. Selecting
+`clarify` or `fix` includes `flow-diagram`. Standalone `build` bundles planning and
+UI reproduction. Selecting `vibe` includes its preview files and the delivery stages.
+With `--path <dir>`, the installer makes a self-contained
 project installation under `<dir>/.claude`.
 
 The global installer uses the clone as the plugin source. Keep or deliberately relocate that directory;
@@ -61,7 +64,7 @@ It does not modify product source. Depending on the host, it creates or refreshe
 | Codex marketplace | Creates `~/.agents/plugins/marketplace.json` only when that file does not already exist |
 | Antigravity | Rebuilds and validates `hosts/antigravity/`, then runs `agy plugin install` |
 
-All 19 stage skills are installed by default for Cursor/Codex. Shared `references/` and
+All stage skills are installed by default for Cursor/Codex. Shared `references/` and
 `templates/` remain in the clone and are linked into every stage.
 Existing unrelated commands, skills, plugins, and an existing Codex marketplace file are preserved.
 
@@ -223,7 +226,7 @@ working conventions. The project form and worklogs default to
 | Update rejects a dirty repository | Commit or stash intentional changes yourself, then rerun; the updater never modifies them |
 | `git pull --ff-only` fails | Resolve branch/upstream divergence manually; update deliberately avoids creating a merge commit |
 | Codex plugin missing from picker | Existing `~/.agents/plugins/marketplace.json` was preserved; add the local plugin entry manually |
-| `worklog not found` | Set `AK_WORKSPACES_ROOT`, add `.ak.json`, or pass `--project` |
+| `cannot resolve worklog` | Set `AK_WORKSPACES_ROOT`, add `.ak.json`, or pass `--project` |
 | Permission error | Confirm the current user owns the target host directories under its home directory |
 | `agy CLI not found` | Install/configure `agy`, or choose a non-Antigravity target instead of `--agy`/`--all` |
 | Antigravity content stale | Rerun `bash install.sh --agy`; it rebuilds and validates before installing |

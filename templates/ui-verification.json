@@ -6,6 +6,7 @@
       "viewport": "",
       "actor": "",
       "locale": "",
+      "fixture": "",
       "steps": "",
       "expected": "",
       "before": {
@@ -13,6 +14,8 @@
         "checked_at": "",
         "source": "",
         "result": "REPRODUCED",
+        "performed_by": "",
+        "confirmation": "",
         "observed": "",
         "capture": "",
         "log": ""

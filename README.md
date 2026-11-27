@@ -26,6 +26,7 @@ a host that uses a skill picker.
 /ak Fix the CSV export so it retains the selected filters
 /ak TICKET-123 https://tracker.example/TICKET-123
 /ak TICKET-123 Prepare for release --ship
+/ak:vibe Add an order management screen for support staff
 ```
 
 ## What to expect
@@ -40,6 +41,10 @@ a host that uses a skill picker.
 
 Named commands, including `/ak:learning` for a targeted refresh and `/ak:status` for progress,
 are also available. The checker and worklogs support manual operation and CI.
+
+Use `/ak:vibe` for React and Next.js features that need a business diagram, a mockup, and
+a reviewed plan before implementation. It uses the installed `diagram-design` skill and
+renders PNGs from the included React/Tailwind templates. [Vibe conventions](references/vibe.md)
 
 [Daily guide](docs/USER-GUIDE.md) · [Install and update](docs/INSTALL.md) · [Repository layout](STRUCTURE.md) · [Stage contract](references/stage-contract.md)
 

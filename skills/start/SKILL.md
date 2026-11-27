@@ -53,10 +53,16 @@ for release preparation. It does not authorize a Git or deployment action.
 
 ## 2. Implement
 
-For a UI bug, complete the live browser reproduction in `:clarify` and pass G5
-before touching the fix. Read `references/ui-verification.md` for the required
-browser evidence and golden comparison. Missing required environment or evidence
-blocks the corresponding stage and should be reported in this conversation.
+After drafting the plan, run `:redteam` as a separate review pass. If the review finds a
+material issue, return to `:plan` to fix it and recheck the revision. Route changes to
+confirmed scope through `:clarify` or `:confirm` when they need a decision. Continue to
+`:build` only after the current plan passes the required G4 review.
+
+For a UI bug, use `:clarify` and `:flow-diagram` to prepare data and show one
+click-by-click diagram per bug in the current conversation. Let the user reproduce
+it or explicitly delegate that run. Resume this same task after an observed
+failure is recorded and G5 passes. Read `references/ui-verification.md` for the
+evidence and comparison requirements. Report any missing environment or evidence.
 
 Execute the scoped plan through `:build`. For behavior changes prove the regression
 and the fix where an executable surface exists. Log each run using
