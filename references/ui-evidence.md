@@ -1,7 +1,8 @@
 # UI evidence (screenshots that prove something, not just show a screen)
 
-Used by `:test` and `:review` whenever `Touches UI = Yes`. A plain screenshot proves the screen
-loaded, not that the bug is real or the fix works — everything here exists to close that gap.
+Use this capture guide in `:clarify` for the failing state and in `:test` and `:review`
+for the resulting behavior. See [required browser verification](ui-verification.md)
+for the evidence that G5 and G8 validate.
 
 ## Path convention
 

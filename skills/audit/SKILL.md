@@ -15,16 +15,15 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md`; a missing, UNCLEAR, or INCOHERENT pair can never PASS.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 Verify the worklog's own claims agree with each other — not a second code review, not a second
 clarify check. Both of those must already have structurally passed.
 
 ## Precondition
 
-Refuse to run if `check-gates.sh <Ticket> --min G9 --strict` has not exited 0. Print the command
-and ask the user to run it first if unclear.
+Refuse to run if `check-gates.sh <Ticket> --min G9 --strict` has not exited 0. Run the check or use its current recorded result.
+Report a failing prerequisite to the owning stage.
 
 ## Steps
 

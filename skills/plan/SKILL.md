@@ -15,31 +15,33 @@ Apply `references/skill-quality.md`; this stage owns an executable traceability 
 
 ## Precondition
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 No Ticket ID given → follow `references/task-isolation.md` "No Ticket ID given": proceed with
 this stage normally; only derive an `adhoc-<slug>` worklog name once a decision actually needs
 persisting, not before.
 
-Run `/ak:check <Ticket> [slug] G3` for awareness.
-- **PASS** (real `CONFIRM G3:` phrase, no open clarify claim): plan from that confirmed scope, as
-  below.
-- **FAIL because a clarify claim is still OPEN/unconfirmed**: don't silently resolve it yourself —
-  surface it and prefer routing to `:clarify`/`:confirm` over guessing a decision someone already
-  flagged as needing a human call.
-- **FAIL because `02-spec.md`/`03-clarify-report.md` simply don't exist** (standalone `:plan` call,
-  no `:spec`/`:clarify` run): self-analyze the ticket directly — read the ticket text and relevant
-  code the way `:spec`/`:clarify` would have — and produce the same task table anyway. Mark
-  `04-plan.md`'s header `Source: self-analyzed (no upstream spec/clarify)` so downstream stages
-  know this plan wasn't built from a confirmed scope. Still refuse only when there is truly nothing
-  to reason from (empty ticket, no description, no diff).
+Use the investigation already completed by `/ak`. Read its spec, decisions and applicable
+project form entries. Prefer the form's candidate test command and working directory, and
+resolve the actual task-specific check. A checker PASS with warnings does not prove G3
+approval. If a material claim is still open or required approval is missing, return that
+blocker. When called directly without spec/clarify, self-analyze as needed and label the
+plan `Source: self-analyzed (no upstream spec/clarify)`.
 
 ## Steps
 
-Create implementation plan from confirmed scope when available, else from the self-analysis above.
+Create the implementation plan from the available scope and record its provenance.
 Fill `templates/04-plan.md` for the ticket.
 Each task must map to AC/claim, target repo/path, DoD, and test command.
+When the spec has a `Vibe business flow` section, include `templates/vibe/plan.md` as an
+appendix. Use the same flow and acceptance IDs, and link the current diagram revision and
+approved mockup manifest for the linked screens. Keep the mapping current on revisions.
+Keep `- **Review protocol:** redteam-v2` on every new or revised plan. Track task
+progress in `05-impl-log.md` so the reviewed plan stays stable.
+
+For UI tickets specify the browser scenario and its assertion. For visual changes
+identify the existing approved baseline or plan how to get approval for a new one.
+Specify the comparison command and result to capture per `references/ui-verification.md`.
 
 **Task granularity should match the ticket's `Type:`** (see INDEX.md, set at `:spec`):
 - **Bug** — usually one focused task at the root-cause location found in `:clarify`; resist
@@ -61,7 +63,10 @@ with a fake-sounding command passes the machine gate and still leaves `:build` w
 concrete to run.
 
 Print uncovered AC/claim gaps; gaps block next stage.
-Do not enter build here and do not invent tasks beyond confirmed decisions.
+When invoked inside `:start` or `:vibe`, return the draft to the coordinator for `:redteam`.
+When invoked directly, run `:redteam` on the draft and report its result before ending
+the planning command. Revise material findings and have the changed plan rechecked.
+Keep product code untouched during planning and within the confirmed scope.
 
 ## 9/10 controls
 

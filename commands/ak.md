@@ -1,10 +1,8 @@
 ---
-description: "[Ticket ID] [URL/path/extra] Default entry point: analyze once, ask once, run to the first real stop."
-argument-hint: "[Ticket ID] [URL/path/extra]"
+description: "Start or resume a task, set up the project on first use, and deliver a verified result."
+argument-hint: "<task | ticket ID + link> [--ship] [--strict]"
 arguments: [ticket_id, url_or_path, extra]
 ---
 
-Default entry point — one analysis pass, one confirm, continuous dispatch.
-Invoke `skills/start`.
-Next: none to call yourself — it runs the whole chain and stops only where a human actually
-needs to decide something.
+Invoke `skills/start` with the full request and options. Continue in the same
+conversation through first-use setup, verification and requested release preparation.

@@ -16,16 +16,15 @@ Apply `references/skill-quality.md`. This stage owns **splitting decisions and
 the up-front risk/question map**; it does not own any child ticket's spec,
 clarify, or code.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per
-`references/locale.md` before anything else.
+Use the project locale from `references/locale.md`.
 
 ## When to run this
 
 - User calls `/ak:decompose <description>` directly on a request too
   big for one worklog (touches multiple modules/services, mixes ticket Types,
   or would need its own epic-tracking to stay isolated per `task-isolation.md`).
-- `:start`/`:spec` detect the same shape and offer this stage instead of
-  silently opening one oversized worklog — offer, never auto-run.
+- `:start` can invoke this stage to prepare the split in the active flow. A standalone
+  `:spec` offers the split before handing off. Both wait for approval of the split itself.
 
 **Signal it's an epic, not one ticket:** read `references/epic-signal.md` —
 the qualitative signal and the same-repo numeric backstop are defined there
@@ -74,7 +73,12 @@ once, shared with `skills/start/SKILL.md`; do not restate either here.
    questions **once**, before ten children each ask a smaller version of the
    same thing.
 
-4. **Present one summary, not a form:**
+4. **Cross-check dependencies before presenting the split.** Search the affected
+   callers and shared contracts across all children once. Include newly discovered
+   dependencies as evidence-backed proposals in the same summary the user will
+   confirm. Reopen only affected decisions if new evidence emerges after approval.
+
+5. **Present one summary, not a form:**
    - A short table: child ticket, Type, Risk (estimate), depends-on.
    - A short numbered list of open questions that decide *how the epic is
      split* or *whether a child is even needed* — not implementation
@@ -87,7 +91,7 @@ once, shared with `skills/start/SKILL.md`; do not restate either here.
      the human checkpoint) — so the user isn't surprised later by how heavy a given child turns
      out to be.
 
-5. **Wait for one confirm covering the whole split** — free-text reply is
+6. **Wait for one confirm covering the whole split** — free-text reply is
    fine, matched the same way `:clarify`'s "Ask once" step matches answers:
    echo the match back before writing anything. This confirm authorizes the
    *split and question answers*; it is not a `CONFIRM G3:` phrase and does
@@ -95,27 +99,13 @@ once, shared with `skills/start/SKILL.md`; do not restate either here.
    human confirm at its own Risk tier (`references/risk.md`; P0 children still
    need dual CONFIRM, no batching across children for P0).
 
-6. **Write `epic-map.md` at the project level**, not inside any one ticket's
+7. **Write `epic-map.md` at the project level**, not inside any one ticket's
    worklog (`~/.workspaces/<project-slug>/epic-map/<epic-slug>.md` — sibling
    to `worklogs/`, per `references/project-root.md`'s layout, so it isn't
    mistaken for one ticket's artifact and isn't deleted by `:clean <ticket>`).
    Contents: child ticket table (name, Type, Risk estimate, depends-on,
    status — updates as children progress), the epic-level questions and their
    answers with `Source: user-message`, and the split rationale.
-
-7. **Cross-check the dependency graph with a duplicate-scan before handing
-   off**, once `blocks`/`blocked by` edges from step 2 are on paper — apply
-   `references/ba-integrity.md`'s duplicate-scan across the *whole child
-   list*, not one ticket at a time: for every child A that writes a
-   field/contract another child B is recorded as depending on, actually
-   search whether B (or any other child not yet listed as depending on A)
-   also reads/encodes that same field/contract elsewhere. This catches an
-   edge the epic-level read missed, not just confirms the edges already
-   written down. Record any edge this finds as a **draft** addition to the
-   table (`Source: duplicate-scan, unconfirmed`) — do not silently add it as
-   fact. A human still reviews the full graph before the first child starts;
-   this step narrows that review to confirming/rejecting scan-found edges
-   instead of finding them from a blank page.
 
 8. **Hand back exactly one next command**: the first child with no unresolved
    `blocked by`. Do not dispatch multiple children's `:spec` yourself — the

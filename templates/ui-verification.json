@@ -1,0 +1,43 @@
+{
+  "cases": [
+    {
+      "id": "AC-01",
+      "url": "",
+      "viewport": "",
+      "actor": "",
+      "locale": "",
+      "fixture": "",
+      "steps": "",
+      "expected": "",
+      "before": {
+        "tool": "",
+        "checked_at": "",
+        "source": "",
+        "result": "REPRODUCED",
+        "performed_by": "",
+        "confirmation": "",
+        "observed": "",
+        "capture": "",
+        "log": ""
+      },
+      "after": {
+        "tool": "",
+        "checked_at": "",
+        "source": "",
+        "result": "PASS",
+        "observed": "",
+        "capture": "",
+        "log": ""
+      },
+      "golden": {
+        "approval": "",
+        "baseline": "",
+        "command": "",
+        "exit_code": null,
+        "source": "",
+        "report": "",
+        "test": ""
+      }
+    }
+  ]
+}

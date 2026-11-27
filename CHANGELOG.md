@@ -10,6 +10,18 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- UI bug intake prepares test data and a Unicode click-by-click reproduction for the user before G5.
+- Routine delivery verifies cited JUnit results, every declared UI case, and current Redteam inputs.
+- Added `:redteam` before build. G4 blocks on open findings or review evidence for a different plan revision.
+
+- `/ak` now carries a task from first-use setup through verified handoff. `--ship` continues
+  into release preparation and applicable audit in the same conversation.
+- The reusable project form records sourced setup facts and working rules the user confirmed.
+  Later tasks load the relevant entries and refresh selectively.
+- Build, review, and test share one execution ledger. The checker can verify recorded source
+  identity and catches stale results or open P0/P1 review findings.
+- UI bugs require browser reproduction at G5. UI tickets require current browser results at
+  G8, with an approved golden comparison for visual changes.
 - Renamed `:conflict` stage to `:clarify` (same G2/G5 role — surface spec-vs-code
   questions and record decisions). Worklog artifact filenames also renamed
   (`03-conflict-*.md` → `03-clarify-*.md`).
@@ -18,15 +30,12 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   marking the result `Source: self-analyzed (no upstream artifact)`, so any stage
   can be run standalone. `:confirm` and `:audit` still require real human sign-off;
   `:review`/`:test`/`:fix` still require an actual diff to act on.
-- `:learning` no longer asks unclear business-purpose questions inline — it opens a
+- Deeper `:learning` research opens a
   coaching ticket (`domain-knowledge/coaching-tickets/<NNN>-*.md`, new template
   `templates/domain-knowledge/coaching-ticket.md`) and keeps exploring. `:coaching`
   gained a ticket-answer path: append the answer, re-investigate using it as a lead,
   follow up or self-close (only when the answer doesn't conflict with recorded
   knowledge — contradictions still require explicit user confirm, same as before).
-- `:start` no longer dispatches `:learning`/`:coaching` itself — a G0 failure now
-  stops `:start` and tells the user to run them directly, then call `:start` again.
-  `:learning`/`:coaching` are independent of the delivery pipeline, not steps in it.
 - `:clarify` and `:confirm` UX simplified: `:clarify` now asks all open questions as
   one short numbered list (after a multi-angle BA pass — user-facing/data-state/
   consumer angles — documented in `references/ba-integrity.md`) and accepts one
@@ -60,7 +69,8 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Added `--claude`, `--cursor`, `--codex`, `--agy`, and `--all` shorthand flags; long-form
   `--host`/`--agent` remains supported and the default is Claude only.
-- Cursor and Codex now install all 16 stage skills as live links instead of stale copies/thin pointers.
+- Cursor and Codex install all stage skills as live links by default. Selecting only `start`
+  includes its delivery dependencies.
 - Antigravity install now rebuilds, validates, and registers the complete bundle through `agy`.
 - Added isolated installer acceptance tests for every host selection and invalid input.
 - Enabled model invocation for all 16 Codex-visible skills and completed the validated Codex interface manifest.
@@ -155,8 +165,8 @@ Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Neutral language:** no project-specific names or hardcoded paths in plugin source.
 - **Token-optimised docs:** all references and skill files written for minimal AI context load.
 
-[Unreleased]: https://github.com/trongdn2405/ak/compare/v0.4.0...HEAD
-[0.4.0]: https://github.com/trongdn2405/ak/releases/tag/v0.4.0
-[0.3.0]: https://github.com/trongdn2405/ak/releases/tag/v0.3.0
-[0.2.0]: https://github.com/trongdn2405/ak/releases/tag/v0.2.0
-[0.1.0]: https://github.com/trongdn2405/ak/releases/tag/v0.1.0
+[Unreleased]: https://github.com/vantrong2405/dev-workflow/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/vantrong2405/dev-workflow/releases/tag/v0.4.0
+[0.3.0]: https://github.com/vantrong2405/dev-workflow/releases/tag/v0.3.0
+[0.2.0]: https://github.com/vantrong2405/dev-workflow/releases/tag/v0.2.0
+[0.1.0]: https://github.com/vantrong2405/dev-workflow/releases/tag/v0.1.0

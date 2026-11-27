@@ -10,8 +10,8 @@ Script: `bin/check-workspace.sh [slug]`.
   [.ak.json]          # optional marker
   <slug>/
     PROJECT.md                  # required
-    domain-knowledge/           # required dir
-      INDEX.md                  # required for G0
+    PROJECT-FORM.md            # for new workspaces
+    domain-knowledge/          # optional, legacy G0 uses INDEX.md
     worklogs/                   # required dir (may be empty)
     repos/                      # optional; per-repo NOTES
 ```
@@ -22,7 +22,7 @@ Script: `bin/check-workspace.sh [slug]`.
 |----|-------|
 | W0 | Resolve plugin + workspaces root |
 | W1 | `PROJECT.md` exists and has Slug line |
-| W2 | `domain-knowledge/` + `INDEX.md` |
+| W2 | Valid `PROJECT-FORM.md` or, in a legacy workspace without a form, `domain-knowledge/INDEX.md` |
 | W3 | `worklogs/` directory exists |
 | W4 | No worklog file living **outside** `worklogs/<Ticket_ID>/` under project home |
 | W5 | Each `worklogs/<Ticket_ID>/` has `INDEX.md` (warn if missing) |
@@ -32,7 +32,7 @@ Exit `0` only if W0–W4 PASS. W5/W6 warn-only.
 
 ## When to run
 
-- `:learning` after create — must PASS before promote knowledge.
+- `:learning` after first-use setup — must PASS before ticket work.
 - `:start` / `:status` — run once; print result; FAIL → fix layout before gates.
 - Manual: `"$AK_PLUGIN/bin/check-workspace.sh" [slug]`
 

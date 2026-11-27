@@ -27,7 +27,7 @@ See [STRUCTURE.md](./STRUCTURE.md) for a full annotated layout. The key principl
 ## Development workflow
 
 ```bash
-git clone git@github.com:trongdn2405/ak.git
+git clone git@github.com:vantrong2405/dev-workflow.git ak
 cd ak
 bash install.sh --claude  # choose one host; use --all only when intended
 ```

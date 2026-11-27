@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sơ đồ luồng ak</title>
+  <style>
+    :root {
+      --ink: #211914;
+      --muted: #655246;
+      --accent: #b44213;
+      --white: #fff;
+      --night-text: #fffaf5;
+      --sans: "Be Vietnam Pro", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+    body { margin: 0; background: var(--white); }
+    main { overflow-x: auto; }
+    svg { display: block; width: 100%; max-width: 31rem; height: auto; margin-inline: auto; }
+    svg text { fill: var(--ink); text-anchor: middle; }
+    .diagram-node { font: 750 20px var(--sans); }
+    .diagram-side { font-size: 17px; }
+    .diagram-small { fill: var(--muted); font: 500 14px var(--sans); }
+    .diagram-label text { fill: var(--muted); font: 700 12px var(--mono); font-variant-ligatures: none; }
+    .diagram-on-dark { fill: var(--night-text); }
+    a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    a:hover .node-shape, a:focus-visible .node-shape { stroke: var(--accent); stroke-width: 2.5; }
+    [data-active] > .node-shape { stroke: var(--accent); stroke-width: 3; }
+    [data-active]:not([data-node="start"]) > .node-shape { fill: #fff0e3; }
+    .travel-line { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+    .travel-arrow { fill: var(--accent); stroke: white; stroke-width: 1; }
+    @media print { #flow-travel { display: none; } }
+  </style>
+</head>
+<body>
+  <main>
+    <svg class="workflow-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 432 632" role="img" aria-labelledby="ak-flow-title ak-flow-desc">
+      <title id="ak-flow-title">Luồng một task với ak</title>
+      <desc id="ak-flow-desc">Mở task với ak. Repo mới học dự án rồi quay lại luồng chính. Agent hiểu việc, tái hiện bug UI và lập kế hoạch. Redteam phản biện kế hoạch, yêu cầu xử lý phát hiện còn mở rồi mới cho sửa code. Sau đó chạy test và so với ảnh mẫu nếu giao diện thay đổi. Nếu chưa đạt, xử lý rồi kiểm chứng lại. Khi đạt, bàn giao để review. Tùy chọn ship tiếp tục sang chuẩn bị phát hành.</desc>
+      <defs>
+        <marker id="ak-flow-arrow" markerWidth="7" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0 0 L7 3 L0 6 Z" fill="#655246"/>
+        </marker>
+        <marker id="ak-flow-arrow-accent" markerWidth="7" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0 0 L7 3 L0 6 Z" fill="#b44213"/>
+        </marker>
+      </defs>
+      <rect width="432" height="632" fill="#fff"/>
+
+      <g fill="none" stroke="#655246" stroke-width="1.6" marker-end="url(#ak-flow-arrow)">
+        <path d="M116 96 V136"/>
+        <path id="understand-redteam" d="M116 192 V216"/>
+        <path id="redteam-build" d="M116 272 V300"/>
+        <path id="build-verify" d="M116 348 V372"/>
+        <path id="verify-decision" d="M116 428 V452"/>
+        <path id="decision-fix" d="M192 480 H280"/>
+        <path id="fix-verify" d="M344 452 V408 A8 8 0 0 0 336 400 H208"/>
+        <path id="start-learning" d="M208 64 H280" stroke-dasharray="5 4"/>
+        <path id="handoff-ship" d="M208 572 H280" stroke-dasharray="5 4"/>
+      </g>
+      <path d="M344 96 V104 A8 8 0 0 1 336 112 H116" fill="none" stroke="#655246" stroke-width="1.6" stroke-dasharray="5 4"/>
+      <circle cx="116" cy="112" r="3" fill="#655246"/>
+      <path id="decision-handoff" d="M116 508 V544" fill="none" stroke="#b44213" stroke-width="2" marker-end="url(#ak-flow-arrow-accent)"/>
+      <path id="learning-understand" d="M344 96 V104 A8 8 0 0 1 336 112 H116 V136" fill="none" visibility="hidden"/>
+
+      <g class="diagram-label" text-anchor="middle">
+        <rect x="212" y="40" width="64" height="16" fill="#fff"/>
+        <text x="244" y="52">REPO MỚI</text>
+        <text x="172" y="289">KẾ HOẠCH ĐẠT</text>
+        <rect x="200" y="456" width="72" height="16" fill="#fff"/>
+        <text x="236" y="468">CHƯA ĐẠT</text>
+        <rect x="126" y="516" width="36" height="16" fill="#fff"/>
+        <text x="144" y="528">ĐẠT</text>
+        <rect x="212" y="548" width="64" height="16" fill="#fff"/>
+        <text x="244" y="560">--ship</text>
+      </g>
+
+      <a data-node="start" href="catalog.html#skill-start" target="_top" aria-label="Xem skill start">
+        <rect class="node-shape" x="24" y="32" width="184" height="64" rx="28" fill="#b44213" stroke="#b44213"/>
+        <text x="116" y="58" class="diagram-node diagram-on-dark">/ak</text>
+        <text x="116" y="79" class="diagram-small diagram-on-dark">Giao việc</text>
+      </a>
+      <a data-node="learning" href="catalog.html#skill-learning" target="_top" aria-label="Xem skill learning">
+        <rect class="node-shape" x="280" y="32" width="128" height="64" rx="6" fill="#fffaf5" stroke="#987c6d"/>
+        <text x="344" y="58" class="diagram-node diagram-side">Học dự án</text>
+        <text x="344" y="79" class="diagram-small">:learning</text>
+      </a>
+      <a data-node="understand" href="catalog.html#skills-understand" target="_top" aria-label="Xem các skill hiểu việc">
+        <rect class="node-shape" x="24" y="136" width="184" height="56" rx="6" fill="#fffaf5" stroke="#987c6d"/>
+        <text x="116" y="159" class="diagram-node">Hiểu việc</text>
+        <text x="116" y="179" class="diagram-small">Tiêu chí · tái hiện lỗi UI</text>
+      </a>
+      <a data-node="redteam" href="catalog.html#skill-redteam" target="_top" aria-label="Xem bước Redteam phản biện kế hoạch">
+        <rect class="node-shape" x="24" y="216" width="184" height="56" rx="6" fill="#fffaf5" stroke="#987c6d"/>
+        <text x="116" y="239" class="diagram-node">Redteam</text>
+        <text x="116" y="259" class="diagram-small">Phản biện kế hoạch</text>
+      </a>
+      <a data-node="build" href="catalog.html#skill-build" target="_top" aria-label="Xem skill build">
+        <rect class="node-shape" x="24" y="300" width="184" height="48" rx="6" fill="#fffaf5" stroke="#987c6d"/>
+        <text x="116" y="330" class="diagram-node">Sửa code</text>
+      </a>
+      <a data-node="verify" href="catalog.html#skills-verify" target="_top" aria-label="Xem các skill kiểm chứng">
+        <rect class="node-shape" x="24" y="372" width="184" height="56" rx="6" fill="#fffaf5" stroke="#987c6d"/>
+        <text x="116" y="395" class="diagram-node">Kiểm chứng</text>
+        <text x="116" y="415" class="diagram-small">Review · test · check</text>
+      </a>
+      <a data-node="decision" href="catalog.html#skill-check" target="_top" aria-label="Xem bước kiểm tra đạt hay chưa">
+        <polygon class="node-shape" points="116,452 192,480 116,508 40,480" fill="#fff" stroke="#655246" stroke-width="1.4"/>
+        <text x="116" y="486" class="diagram-node diagram-side">Đạt?</text>
+      </a>
+      <a data-node="fix" href="catalog.html#skill-fix" target="_top" aria-label="Xem cách xử lý khi kiểm chứng chưa đạt">
+        <rect class="node-shape" x="280" y="452" width="128" height="56" rx="6" fill="#fffaf5" stroke="#987c6d"/>
+        <text x="344" y="475" class="diagram-node diagram-side">Xử lý lỗi</text>
+        <text x="344" y="496" class="diagram-small">Rồi kiểm lại</text>
+      </a>
+      <a data-node="handoff" href="catalog.html#skills-release" target="_top" aria-label="Xem các skill bàn giao">
+        <rect class="node-shape" x="24" y="544" width="184" height="56" rx="28" fill="#fff0e3" stroke="#b44213" stroke-width="1.5"/>
+        <text x="116" y="567" class="diagram-node">Bàn giao</text>
+        <text x="116" y="587" class="diagram-small">Sẵn sàng review</text>
+      </a>
+      <a data-node="ship" href="catalog.html#skill-ship" target="_top" aria-label="Xem skill ship">
+        <rect class="node-shape" x="280" y="544" width="128" height="56" rx="6" fill="#fffaf5" stroke="#987c6d"/>
+        <text x="344" y="567" class="diagram-node diagram-side">Chuẩn bị ship</text>
+        <text x="344" y="587" class="diagram-small">:ship · :audit</text>
+      </a>
+      <g id="flow-travel" visibility="hidden" aria-hidden="true" pointer-events="none">
+        <path class="travel-line"/>
+        <path class="travel-arrow" d="M-7 -5 L3 0 L-7 5 Z"/>
+      </g>
+    </svg>
+  </main>
+</body>
+</html>

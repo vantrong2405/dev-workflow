@@ -12,8 +12,7 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md`; resolve and print the exact canonical target before mutation.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 Free memory after a finished ticket by removing **that ticket’s worklog only**.
 

@@ -13,8 +13,7 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md` and the authoritative `references/stage-contract.md`.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 No Ticket ID given → follow `references/task-isolation.md` "No Ticket ID given": proceed with
 this stage normally; only derive an `adhoc-<slug>` worklog name once a decision actually needs
@@ -39,10 +38,10 @@ split into separate claims per type rather than forcing one strategy over both.
 test coverage in `02-spec.md`'s Intent section. Still write `02-spec.md` (G1 checks for it) with
 `Type: Refactor`
 selected, Risk set per `references/risk.md`, and the no-behavior-change claim + coverage
-confirmation in place of Scenario AC/NEG/PERM/EDGE — there is no new AC to normalize, so the AC
-section states that plainly instead of being left blank. Then hand off straight to `:build`,
-skipping `:clarify`/`:confirm` (stage-contract.md's entry-point routing) — no spec delta exists
-for `:clarify` to diff. If any claim in the ticket isn't provably behavior-preserving, that claim
+confirmation as a Scenario AC that describes the existing behavior to preserve. Use the same
+acceptance ID in the plan and coverage map. Absent negative/permission/edge changes can be
+recorded as N/A with reasons. Use that baseline for planning and verification. Any required G3 approval or strict
+artifact still applies. If any claim in the ticket isn't provably behavior-preserving, that claim
 is not Refactor — reclassify it and run this stage's full process for it.
 
 If the ticket URL argument is a Redmine link, resolve it per `references/tracker-fetch.md` before
@@ -55,26 +54,39 @@ analyst inference remains `INFERRED`.
 Set **Risk** per `references/risk.md`.
 If P0: create `02b-security.md` from template (`references/security.md`).
 
-Also invoke the `security-review` skill against the pending/planned changes for broader
-OWASP-style coverage on top of the required `02b-security.md` template above — it does not
-replace the template. Fold any findings it surfaces into `02b-security.md`.
+Use an available security review skill when P0 or the affected surface calls for deeper
+review. Fold verified findings into the applicable artifact.
 Fill Scenario AC + NEG/PERM/EDGE (+ UI if needed).
 
-If Touches UI = Yes: fill the **QA handoff — testable oracle** table in `02-spec.md`. This
-worklog does not run QA itself — that happens later, outside this pipeline, by a human tester or
-a tool like `qa-intelligence`. Its only job here is to make sure whoever does QA next can design
-test cases **from this file alone**, without asking the dev what a field is called or what
+If Touches UI = Yes: fill the **QA handoff — testable oracle** table in `02-spec.md`.
+Give `:clarify` and `:test` enough detail to run the browser case **from this file alone**,
+without asking the dev what a field is called or what
 "success" looks like on screen. "Shows success message" is not a testable oracle; name the real
 field/button label and the exact machine-checkable signal (`expected_text`,
 `expected_url_includes`, `expected_result_count`, `expected_network`, or `other` with a precise
 description). Screen not designed yet → mark the row `☐ TBD — confirm before :build closes`,
 never leave it silently blank.
+Keep `UI evidence protocol: guided-v1`. Identify each required UI case. Assign
+`BUG-01`, `BUG-02`, etc. to cases that reproduce each existing defect, and mark
+the cases that need a golden comparison. Pick the app's English UI and exact
+labels where available, unless the defect depends on a different locale.
 
-Empty knowledge → `:learning`; wrong/changed → `:coaching`.
+For UI tickets select exactly one `Visual change?` answer. A Yes requires an
+approved golden comparison along with the browser evidence described in
+`references/ui-verification.md`.
+
+Reuse the project form and any relevant confirmed domain knowledge. Do not rerun `:learning` for
+each ticket or because this ticket touches a new area: investigate ticket-
+specific gaps from code/docs and resolve requirement questions in `:clarify`.
+Use `:learning` when setup is missing or the user requests a targeted refresh; use `:coaching` when a previously confirmed business
+rule is corrected or changed.
 Before PASS, verify exactly one Type per claim, exactly one Risk, every requirement has a source or
 explicit `UNVERIFIED`, and every UI oracle is observable without asking the implementer.
 
 ## Standalone use — self-chain into `:clarify`
+
+Inside `:start`, return the evidence and questions to the coordinator, which
+will use them to complete clarify and plan.
 
 `:spec` runs standalone with no other stage's output required. Once this stage's own PASS bar
 above is met, check whether any claim is ambiguous or contradicts observed running behavior. If

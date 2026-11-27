@@ -1,9 +1,8 @@
 ---
-description: "[brief/path] AI self-learns project workspace."
-argument-hint: "[brief/path]"
+description: "Create the reusable project form or refresh selected facts or conventions."
+argument-hint: "[project path] [topic to refresh]"
 arguments: [brief]
 ---
 
-Self-learn from brief.
-Invoke `skills/learning`.
-Next: `/ak:spec` on your first ticket (or `/ak:coaching` if something it learned is wrong).
+Invoke `skills/learning` for explicit setup, refresh, or a lasting working rule update.
+The normal `/ak` entry point runs setup itself when needed.

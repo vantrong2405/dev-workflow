@@ -6,6 +6,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/resolve-paths.sh
 source "$SCRIPT_DIR/lib/resolve-paths.sh"
+source "$SCRIPT_DIR/lib/project-form.sh"
 
 SLUG_HINT="${1:-${AK_PROJECT_SLUG:-}}"
 FAILS=0
@@ -43,10 +44,14 @@ else
   fi
 fi
 
-if [[ ! -d "${HOME_P}/domain-knowledge" ]]; then
-  fail W2 "missing domain-knowledge/"
+if [[ -e "${HOME_P}/PROJECT-FORM.md" ]]; then
+  if project_form_ready "${HOME_P}/PROJECT-FORM.md" "$SLUG"; then
+    pass W2 "PROJECT-FORM.md ready"
+  else
+    fail W2 "PROJECT-FORM.md incomplete or invalid — finish project onboarding"
+  fi
 elif [[ ! -f "${HOME_P}/domain-knowledge/INDEX.md" ]]; then
-  fail W2 "missing domain-knowledge/INDEX.md"
+  fail W2 "missing PROJECT-FORM.md or legacy domain-knowledge/INDEX.md"
 else
   pass W2 "domain-knowledge/INDEX.md ok"
 fi

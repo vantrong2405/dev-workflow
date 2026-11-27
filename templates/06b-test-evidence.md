@@ -10,8 +10,10 @@
 |---|---|
 | Commit SHA | [40-char or short SHA] |
 | CI run URL | [https://… or N/A-local] |
-| JUnit / XML / log path | [path or URL] |
+| JUnit / XML / log path | [local path (optional with CI run URL)] |
 | Branch | [name] |
+| Tested source | [commit:sha or worktree:hash] |
+| Evidence checkout | [absolute Git checkout path] |
 
 **Forbid G8 PASS** when any required machine field is empty/`[…]` placeholder (P0/P1/`--strict`).
 
@@ -25,11 +27,12 @@ Paste raw output (or representative excerpt) from test runner here.
 
 ## Executed-command ledger
 
-One row per distinct command in `04-plan.md` and PASS command in `05-impl-log.md`.
+Record each execution once. Cover every planned check and any PASS referenced by the
+implementation log, with current results for final verification.
 
-| Command | Repo / cwd | Started / ended | Exit | Artifact | Covered IDs | Supersedes |
-|---|---|---|---|---|---|---|
-| | | | | | | N/A |
+| Command | Repo / cwd | Started / ended | Exit | Artifact | Covered IDs | Supersedes | Run ID | Source state |
+|---|---|---|---|---|---|---|---|---|
+| | | | | | | N/A | | |
 
 ## Assertion evidence
 
@@ -41,6 +44,8 @@ One row per distinct command in `04-plan.md` and PASS command in `05-impl-log.md
 
 For any UI-touching AC: capture per `references/ui-evidence.md` (highlight box on the exact
 element, before/after pair for a bug fix) — not a plain unmarked screenshot. Leave N/A if no UI.
+For UI tickets, also record the validated cases and capture paths in
+`evidence/ui-verification.json` using `templates/ui-verification.json`.
 
 | AC / scenario | File / URL | Notes |
 |---|---|---|

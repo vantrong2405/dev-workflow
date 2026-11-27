@@ -14,6 +14,8 @@ Apply `references/skill-quality.md`; report deterministic structure/provenance o
 Run real checker only.
 Pre-ship: `--min G8`. Pre-merge: `--min G9 --strict`.
 Optional `--verify-net` for CI URL HTTP check.
+For active pre-build checks, use `--min G5 --require-plan-review` to enforce G4 redteam
+review even on older plans.
 Nonzero exit = refuse PASS.
 Validate JSON when requested, separate warnings from PASS, and route each failure to its owning
 stage. Ship-final check is `--min AUDIT --strict`, not G9 alone.

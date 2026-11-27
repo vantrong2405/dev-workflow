@@ -1,7 +1,7 @@
 {
   "name": "ak",
   "version": "0.4.0+codex.20260814084616",
-  "description": "Evidence-backed delivery with typed requirements, TDD, G0-G9 structural gates, and C1-C8 semantic audit.",
+  "description": "One task workflow with reusable project conventions, verified delivery, and release preparation.",
   "author": {
     "name": "trongdn2405",
     "email": "trongdn2405@gmail.com"
@@ -23,9 +23,9 @@
     "displayName": "ak",
     "developerName": "trongdn2405",
     "category": "Productivity",
-    "shortDescription": "Clear-spec gated delivery for multi-repo projects",
-    "longDescription": "Learn domain, clarify specs, clarify-check against running code, plan/TDD/build with evidence maps, confirm with How/By, and enforce gates via check-gates.sh. Works across multiple project workspaces.",
-    "defaultPrompt": "Use ak to route this ticket through the first failing evidence gate. Do not invent PASS or human confirmation.",
+    "shortDescription": "One workflow across your projects",
+    "longDescription": "Start a task, learn the repository setup on first use, and apply confirmed working rules to later tasks. Review and verify changes before handoff.",
+    "defaultPrompt": "Use ak's start skill to carry this task from understanding through verified handoff.",
     "capabilities": [
       "Requirements analysis",
       "Type-specific clarify investigation",

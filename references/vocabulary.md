@@ -44,7 +44,7 @@ filled Template, not inventing its own ad hoc output shape each time.
   (`02-spec.md` … `08-semantic-audit.md`, `02-spec.md`'s own Intent section replaces what used to
   be a separate `01-intent.md`), `02b-security.md` (P0 only), `03b-human-confirm.md` (anti-forge
   confirm), `pilot-metrics.md`, `ci/github-actions-ak.yml`, `CLAUDE.md` (the one template that
-  doesn't land in a worklog — `:learning` seeds/updates it straight into each product repo's own
+  doesn't land in a worklog — on explicit request this template can be used in the product repo's
   root, inside a marked block it never overwrites the rest of), plus the `domain-knowledge/` and
   `workspaces/` scaffolds a new project starts from. Kept deliberately short — a checklist that
   restates what `check-gates.sh`/`references/workflow.md` already decide isn't a template, it's

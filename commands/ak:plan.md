@@ -4,6 +4,5 @@ argument-hint: "<Ticket ID>"
 arguments: [ticket_id]
 ---
 
-Create implementation plan.
-Invoke `skills/plan`.
-Next: `/ak:build`.
+Invoke `skills/plan` to draft the plan and hand it to `:redteam`.
+Proceed to `/ak:build` after the current revision passes review.

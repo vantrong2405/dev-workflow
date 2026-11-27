@@ -12,7 +12,8 @@ host-installed copies or links need refreshing.
 ak/
 ├── bin/
 │   ├── check-gates.sh              # G0–G9 + AUDIT structural enforcer
-│   ├── check-workspace.sh          # Workspace layout health (W0–W6)
+│   ├── check-workspace.sh          # Workspace layout and project form
+│   ├── source-state.sh             # Commit or local checkout identity
 │   ├── clean-worklog.sh            # Archive/purge one ticket worklog
 │   ├── pilot-score.sh              # 10-ticket measurable success bar
 │   └── lib/resolve-paths.sh        # Project/workspace/slug resolution
@@ -36,6 +37,8 @@ ak/
 │   ├── maturity.md                 # Expert rubric (≥8)
 │   ├── enforce.md                  # Checker flags
 │   ├── project-root.md             # Path resolution
+│   ├── project-form.md             # Reusable facts and conventions
+│   ├── execution-evidence.md       # Shared run ledger and evidence reuse
 │   ├── learning.md / coaching.md
 │   ├── clarify-check.md
 │   ├── code-review.md              # Neutral diff review + :fix triage
@@ -53,7 +56,7 @@ ak/
 │   ├── 06b-test-evidence.md        # G8
 │   ├── 06c-fix-log.md              # Review finding triage / fixes
 │   ├── pilot-metrics.md
-│   ├── CLAUDE.md                    # Seeded/updated by :learning into each product repo's own CLAUDE.md
+│   ├── CLAUDE.md                    # Optional workspace pointer for product repos
 │   ├── ci/github-actions-ak.yml
 │   ├── domain-knowledge/
 │   └── workspaces/_project|/_repo/
@@ -74,7 +77,7 @@ ak/
 ```
 
 **Stages in `install.sh`:**
-`decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback flow-diagram`
+`decompose start learning coaching spec clarify confirm plan redteam build review fix test check ship audit status clean feedback flow-diagram`
 
 **Host selection:** default is `claude`; shorthand flags are `--claude`, `--cursor`, `--codex`,
 `--agy`, `--all` (the long-form `--host`/`--agent` is also supported). Cursor and Codex receive live
@@ -89,11 +92,12 @@ clone, worklogs, unrelated files, and any modified Codex marketplace configurati
 
 | Template | Gate |
 |----------|------|
-| domain-knowledge / PROJECT.md | G0 |
+| PROJECT.md + PROJECT-FORM.md (or legacy domain index) | G0 |
 | `02-spec.md` (+ `02b-security.md` if P0) | G1 |
 | `03-clarify-report.md` | G2 |
 | `03b-human-confirm.md` + INDEX CONFIRM | G3 |
 | `04-plan.md` | G4 |
+| `04b-plan-review.md` | G4 plan review tied to the approved plan |
 | `03-qa-log.md` (no OPEN) | G5 |
 | `05-impl-log.md` | G6 |
 | `06-review-qa.md` | G7 |

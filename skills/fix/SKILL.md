@@ -12,8 +12,8 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md`; every triage decision needs current evidence and an accountable owner.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`. Record regression runs in the shared
+ledger in `references/execution-evidence.md`. Refresh checks affected by the fix.
 
 Remediate code-review findings without cargo-cult patching.
 
@@ -32,11 +32,15 @@ will still fail G7, not silently pass.
 3. **Triage every OPEN finding** before editing code:
    - Read cited `path:line` and surrounding call sites.
    - Decide `FIX` / `SKIP` / `DEFER` using rules in template + below.
-4. Apply **only** `FIX` items. Prefer smallest change that removes the defect.
-5. Add/adjust test when defect class is `500` / `missing` / `injection` / `case` and no covering test exists.
-6. Update `06-review-qa.md`: set finding Status to `FIXED` / `SKIPPED` / `DEFERRED` + link to fix-log row.
-7. Update `05-impl-log.md` if coverage map gains tests.
-8. Print: fixed count / skipped count / remaining P0/P1 → next command (`:review` or `:test`).
+4. Before applying a UI fix, reuse a matching diagram and reproduction when
+   they already prove the finding. Otherwise prepare test data and a new
+   `:flow-diagram`, then record the user's browser run or a delegated run.
+   Follow `references/ui-verification.md`.
+5. Apply **only** `FIX` items. Prefer smallest change that removes the defect.
+6. Add/adjust test when defect class is `500` / `missing` / `injection` / `case` and no covering test exists.
+7. Update `06-review-qa.md`: set finding Status to `FIXED` / `SKIPPED` / `DEFERRED` + link to fix-log row.
+8. Update `05-impl-log.md` if coverage map gains tests.
+9. Print: fixed count / skipped count / remaining P0/P1 → next command (`:review` or `:test`).
 
 ## Triage rules (strict)
 

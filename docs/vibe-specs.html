@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kho spec nghiệp vụ — ak</title>
+  <link rel="icon" href="../assets/logo/favicon.svg?v=orange" type="image/svg+xml">
+  <link rel="stylesheet" href="catalog.css?v=vibe-pages">
+  <script src="catalog.js?v=vibe-pages" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Đến nội dung chính</a>
+  <div class="site-header">
+    <header class="shell header">
+      <a class="brand" href="catalog.html" aria-label="ak, về catalog"><img src="../assets/logo/favicon.svg?v=orange" width="34" height="34" alt=""><span>ak<span class="brand-dot">.</span></span></a>
+      <nav aria-label="Điều hướng Vibe">
+        <a href="catalog.html">Catalog</a>
+        <a href="vibe.html">Luồng Vibe</a>
+        <a href="mockups.html">Kho Mockup</a>
+        <a href="vibe-specs.html" aria-current="page">Kho spec</a>
+      </nav>
+      <a class="source-link" href="https://github.com/vantrong2405/dev-workflow">GitHub</a>
+    </header>
+  </div>
+  <main class="shell section vibe-page" id="main" data-skill-links>
+    <header class="vibe-page-heading">
+      <p class="eyebrow"><code>/ak:vibe</code></p>
+      <h1>Kho spec nghiệp vụ</h1>
+      <p>Đọc quy tắc đang áp dụng, theo dõi phần việc còn lại và mở hồ sơ kiểm chứng khi cần.</p>
+    </header>
+    <section class="vibe-library" id="vibe-specs" aria-labelledby="vibe-specs-title">
+      <h2 id="vibe-specs-title" class="vibe-library-context">Ví dụ · Kho Mộc</h2>
+      <div class="vibe-library-flow">
+        <details class="skill vibe-library-card" id="skill-vibe-spec-change">
+          <summary>
+            <span>Change đang làm</span>
+            <code>changes/release-hold/</code>
+            <small>Tự bỏ giữ đơn sau 24 giờ · 2/3 mục xong</small>
+          </summary>
+          <div class="skill-body">
+            <p><strong>Đề xuất thay đổi</strong> Bổ sung quy tắc tự bỏ giữ sau 24 giờ. Checklist dưới đây theo dõi đúng thay đổi đó.</p>
+            <ul class="vibe-checklist" aria-label="Checklist của change">
+              <li><b>Đã xong</b><span>Chốt điều kiện bỏ giữ và trạng thái sau xử lý.</span></li>
+              <li><b>Đã xong</b><span>Triển khai luồng tự bỏ giữ đơn.</span></li>
+              <li><b>Đang chờ</b><span>Kiểm tra tác vụ chạy lại nhiều lần chỉ bỏ giữ một lần.</span></li>
+            </ul>
+            <p class="skill-outcome"><strong>Tiếp tục ở đây</strong> Chạy ca test còn thiếu. Sau khi đủ bằng chứng, Vibe cập nhật spec chính và lưu change.</p>
+          </div>
+        </details>
+        <div class="vibe-library-transfer">
+          <span>Chỉ cập nhật khi đều đạt</span>
+          <strong>Redteam · Checklist · Test</strong>
+          <b aria-hidden="true">→</b>
+        </div>
+        <div class="vibe-library-results">
+          <details class="skill vibe-library-card" id="skill-vibe-spec-main">
+            <summary>
+              <span>Spec đang áp dụng</span>
+              <code>specs/orders/spec.md</code>
+              <small>Giữ đơn khi chưa bàn giao</small>
+            </summary>
+            <div class="skill-body">
+              <p><strong>Quy tắc nghiệp vụ</strong> Nhân viên được giữ đơn chưa bàn giao. Đơn chuyển sang trạng thái Đang giữ khi yêu cầu hợp lệ.</p>
+              <dl class="vibe-spec-scenarios">
+                <div><dt>Đơn chưa bàn giao</dt><dd>Yêu cầu hợp lệ → Đang giữ.</dd></div>
+                <div><dt>Đơn đã bàn giao</dt><dd>Từ chối yêu cầu, giữ nguyên trạng thái.</dd></div>
+              </dl>
+              <p class="skill-outcome"><strong>AI dùng gì</strong> Đọc quy tắc này trước khi sửa nghiệp vụ đơn hàng. <a href="#skill-vibe-spec-change">Xem change đang làm</a> để biết phần nào sẽ thay đổi.</p>
+            </div>
+          </details>
+          <details class="skill vibe-library-card" id="skill-vibe-spec-archive">
+            <summary>
+              <span>Lịch sử đã kiểm chứng</span>
+              <code>changes/archive/</code>
+              <small>Thêm quy tắc giữ đơn · Có bằng chứng test</small>
+            </summary>
+            <div class="skill-body">
+              <p><strong>Change đã xong</strong> Thêm thao tác giữ đơn đang chờ bàn giao.</p>
+              <ul class="vibe-checklist" aria-label="Bằng chứng được lưu">
+                <li><b>Phạm vi</b><span>Quy tắc, sơ đồ và quyết định đã duyệt.</span></li>
+                <li><b>Checklist</b><span>Đã triển khai thao tác giữ đơn và ca từ chối khi giao.</span></li>
+                <li><b>Kiểm chứng</b><span>Kết quả test đi cùng task và phiên bản spec đã review.</span></li>
+              </ul>
+              <p class="skill-outcome"><strong>AI dùng gì</strong> Mở hồ sơ này khi cần biết vì sao quy tắc trong <a href="#skill-vibe-spec-main">spec đang áp dụng</a> được chọn.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dialog class="skill-dialog" id="skill-dialog" aria-labelledby="skill-dialog-title">
+    <header class="skill-dialog-header">
+      <div>
+        <code id="skill-dialog-command" hidden></code>
+        <h2 id="skill-dialog-title" tabindex="-1">Chi tiết skill</h2>
+      </div>
+      <form method="dialog">
+        <button type="submit" class="skill-dialog-close" aria-label="Đóng popup">×</button>
+      </form>
+    </header>
+    <div class="skill-dialog-content">
+      <button type="button" id="skill-dialog-back" class="skill-dialog-back" hidden>← Quay lại</button>
+      <div id="skill-dialog-body"></div>
+    </div>
+  </dialog>
+</body>
+</html>

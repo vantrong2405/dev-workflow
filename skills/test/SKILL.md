@@ -1,8 +1,8 @@
 ---
 name: test
 description: >-
-  Run tests; record machine evidence. Under --strict/P0, checker verifies
-  SHA vs git HEAD and junit file contents.
+  Run tests and record evidence for the current code. The checker reads cited
+  local JUnit results at G8. Strict/P0 verification also checks committed source.
 argument-hint: "<Ticket ID> Run after review — fill 06b-test-evidence.md"
 arguments: [ticket_id]
 disable-model-invocation: false
@@ -12,36 +12,23 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md`; filenames and logs count only when tied to executed assertions.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
-1. Refuse if `06-review-qa.md` still has P0/P1 Status=`OPEN` — run `/ak:fix` first.
-2. Fill `06b-test-evidence.md` (output + SHA + CI URL or junit path).
-3. Prefer real junit/xml path so `--strict` can parse failures=0.
-4. If `Touches UI = Yes`: read `references/ui-evidence.md` before capturing any screenshot — a
-   plain screenshot proves the screen loaded, not that the bug is real or the fix works. Use the
-   before/after technique for a bug fix, the highlight-box technique to point at the exact element
-   for anything else.
-5. Run `/ak:check <Ticket> [slug] G8` (add `--strict` before merge path).
-6. Zero failing tests required.
+1. Resolve checks from the plan, acceptance criteria, and relevant project form entries.
+   If P0/P1 review findings are still open, route to `:fix`.
+2. Review the shared ledger in `06b-test-evidence.md`. Follow
+   `references/execution-evidence.md` to reuse runs only when they still prove the current
+   change. Run missing or stale checks. Record superseded runs as history.
+3. Map assertions to the acceptance IDs. Include command results, source state, and
+   the raw output or CI/JUnit/log artifact. For UI tickets, complete the required
+   browser verification on the current code per `references/ui-verification.md`.
+   Repeat the bug scenario in the same conditions and run the approved golden
+   comparison for visual changes. Use `references/ui-evidence.md` for captures.
+4. Run `/ak:check <Ticket> [slug] G8` with strict verification when required. Any required
+   failing or missing evidence blocks verification. Report whether checks covered the
+   working tree or the committed source.
 
-## Non-strict vs `--strict` — what actually changes
-
-Non-strict (default): checker verifies the evidence file's *shape* — SHA present and
-plausible-looking, a CI URL or junit path filled in, no failing-suite row. It does not open the
-junit file or check the SHA against git.
-
-`--strict` (required before merge): checker actually opens the junit/log file and searches for
-`failures="[1-9]` / `<error`, and confirms the Commit SHA matches `git rev-parse HEAD` in this
-repo right now. A stale SHA (yesterday's commit, evidence pasted from a different branch) passes
-non-strict and fails `--strict` — that gap is the whole point of running `--strict` before merge
-instead of trusting the non-strict pass from earlier in the loop.
-
-Run non-strict while iterating; always run `--min G9 --strict` as the actual pre-merge gate.
-
-## 9/10 controls
-
-Add an executed-command ledger for every distinct command in `04-plan.md` and every PASS command in
-`05-impl-log.md`: command, cwd, start/end, exit code, artifact, and covered IDs. Missing commands fail
-G8 unless a confirmed supersession names the replacement. Require assertion-level evidence per AC;
-suite totals alone do not prove intended behavior.
+A PASS claimed under `--strict` or P0 requires native evidence checks. The usual local
+handoff can report verified working tree changes. Release preparation requires a separate
+strict G9 check and applicable audit. Keep the genuine assertions and outputs in the
+ledger and preserve the gate's required fields.

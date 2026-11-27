@@ -3,7 +3,7 @@
 - **Project:** [Name]
 - **Slug:** `[project-slug]`
 - **Project home:** `workspaces/<project-slug>/`
-- **Chat locale:** [vi|en|ja|…]   (asked once on first command in this workspace — see `references/locale.md`)
+- **Chat locale:** [vi|en|ja|…] (legacy workspace preference; see `references/locale.md`)
 - **Updated:** [YYYY-MM-DD]
 - **Needs learning:** ☐ no  ☐ yes
 - **Needs coaching:** ☐ no  ☐ yes — topics: …
@@ -51,7 +51,7 @@
 - Topics: …
 - Open questions: …
 
-## G0 DoD (PASS when)
+## Domain research checklist (legacy G0)
 
 Tick for **current ticket scope**:
 

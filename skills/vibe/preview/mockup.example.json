@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "locale": "vi-VN",
+  "theme": "orange",
+  "workspace": {
+    "mark": "M",
+    "navigation": [
+      { "label": "Tổng quan" },
+      { "label": "Đơn hàng", "current": true },
+      { "label": "Danh mục" },
+      { "label": "Khách hàng" }
+    ]
+  },
+  "viewport": { "width": 1200, "height": 760 },
+  "screens": [
+    {
+      "id": "orders-a",
+      "label": "Vận hành / Đơn hàng",
+      "template": "list",
+      "variant": "comfortable",
+      "scene": "default",
+      "acceptance": ["AC-01"],
+      "data": {
+        "app": "Kho Mộc",
+        "title": "Đơn hàng",
+        "description": "Theo dõi tình trạng xử lý và bàn giao đơn.",
+        "search": "Tìm mã đơn hoặc người nhận",
+        "actions": { "primary": "Tạo đơn hàng" },
+        "summary": [
+          { "label": "Đơn trong danh sách", "value": "4" },
+          { "label": "Đang xử lý", "value": "2", "tone": "warning" },
+          { "label": "Đã bàn giao", "value": "1", "tone": "success" },
+          { "label": "Đã hủy", "value": "1" }
+        ],
+        "filters": ["Tất cả trạng thái", "Ngày đặt · Mới nhất"],
+        "columns": ["Mã đơn", "Người nhận", "Ngày đặt", "Trạng thái"],
+        "statusColumn": 3,
+        "statusTones": { "Đang xử lý": "warning", "Đã bàn giao": "success", "Đã hủy": "neutral" },
+        "rows": [
+          ["DH-1042", "Minh An", "25/11/2026", "Đang xử lý"],
+          ["DH-1041", "Hồng Vân", "24/11/2026", "Đã bàn giao"],
+          ["DH-1040", "Gia Bảo", "24/11/2026", "Đang xử lý"],
+          ["DH-1039", "Nam Phương", "23/11/2026", "Đã hủy"]
+        ],
+        "rowAction": "Xem đơn",
+        "emptyMessage": "Không có đơn phù hợp với bộ lọc."
+      }
+    },
+    {
+      "id": "orders-b",
+      "label": "Chi tiết đơn hàng",
+      "template": "detail",
+      "variant": "panel",
+      "scene": "default",
+      "background": "orders-a",
+      "acceptance": ["AC-01"],
+      "data": {
+        "app": "Kho Mộc",
+        "title": "Đơn DH-1042",
+        "description": "Thông tin giao hàng và người nhận.",
+        "status": "Đang xử lý",
+        "statusTone": "warning",
+        "dismissLabel": "Đóng chi tiết đơn",
+        "actions": { "primary": "Sửa đơn" },
+        "fields": [
+          { "label": "Người nhận", "value": "Minh An" },
+          { "label": "Ngày đặt", "value": "25/11/2026" },
+          { "label": "Giao hàng", "value": "Tiêu chuẩn" }
+        ]
+      }
+    },
+    {
+      "id": "edit-order-invalid",
+      "label": "Sửa đơn · Thiếu người nhận",
+      "template": "form",
+      "variant": "dialog",
+      "scene": "invalid",
+      "background": "orders-a",
+      "acceptance": ["AC-02"],
+      "data": {
+        "app": "Kho Mộc",
+        "title": "Sửa đơn DH-1042",
+        "description": "Cập nhật thông tin nhận hàng.",
+        "dismissLabel": "Đóng form sửa đơn",
+        "actions": { "secondary": "Quay lại", "primary": "Lưu thay đổi" },
+        "fields": [
+          { "label": "Người nhận", "kind": "input", "value": "", "error": "Nhập tên người nhận." },
+          { "label": "Giao hàng", "kind": "select", "value": "Tiêu chuẩn", "options": ["Tiêu chuẩn", "Nhanh"] },
+          { "label": "Ghi chú", "kind": "textarea", "value": "Giao trong giờ làm việc" }
+        ]
+      }
+    }
+  ]
+}

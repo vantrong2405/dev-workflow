@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Luồng Vibe — ak</title>
+  <link rel="icon" href="../assets/logo/favicon.svg?v=orange" type="image/svg+xml">
+  <link rel="stylesheet" href="catalog.css?v=vibe-pages">
+  <script src="catalog.js?v=vibe-pages" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Đến nội dung chính</a>
+  <div class="site-header">
+    <header class="shell header">
+      <a class="brand" href="catalog.html" aria-label="ak, về catalog"><img src="../assets/logo/favicon.svg?v=orange" width="34" height="34" alt=""><span>ak<span class="brand-dot">.</span></span></a>
+      <nav aria-label="Điều hướng Vibe">
+        <a href="catalog.html">Catalog</a>
+        <a href="vibe.html" aria-current="page">Luồng Vibe</a>
+        <a href="mockups.html">Kho Mockup</a>
+        <a href="vibe-specs.html">Kho spec</a>
+      </nav>
+      <a class="source-link" href="https://github.com/vantrong2405/dev-workflow">GitHub</a>
+    </header>
+  </div>
+  <main class="shell section vibe-page" id="main" data-skill-links>
+    <header class="vibe-page-heading">
+      <p class="eyebrow"><code>/ak:vibe</code> React · Next.js · Tailwind</p>
+      <h1>Từ ý tưởng đến bản demo</h1>
+      <p>Làm rõ nghiệp vụ, duyệt ảnh và phản biện kế hoạch trước khi code.</p>
+    </header>
+    <div class="vibe-page-flow" id="vibe">
+      <div class="vibe-process">
+        <h3>Một lệnh, năm bước</h3>
+        <p class="vibe-prompt"><code>/ak:vibe</code> Cho nhân viên sửa và hủy đơn hàng</p>
+        <ol class="vibe-steps">
+          <li>
+            <details class="skill" id="skill-vibe-business">
+              <summary><code>01</code> <span>Làm rõ nghiệp vụ</span></summary>
+              <div class="skill-body">
+                <p>Đọc luồng và quy tắc có sẵn. Xác định ai được thao tác, khi nào thao tác được và dữ liệu thay đổi ra sao. Agent tự chọn chi tiết trình bày như popup hay trang riêng.</p>
+                <p class="skill-context"><strong>Ví dụ cần bạn quyết</strong> Với đơn đã bàn giao, nhân viên được hủy trực tiếp hay gửi yêu cầu xử lý?</p>
+                <p class="skill-outcome"><strong>Đầu ra</strong> Các nhánh nghiệp vụ, tiêu chí nghiệm thu và quyết định còn mở.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="skill" id="skill-vibe-plan">
+              <summary><code>02</code> <span>Vẽ sơ đồ và lên kế hoạch</span></summary>
+              <div class="skill-body">
+                <p>Agent dùng <code>diagram-design</code> để vẽ luồng và cập nhật mẫu kế hoạch song song. Mỗi nhánh nối với phần code cần xây và ca test tương ứng.</p>
+                <figure class="vibe-rule">
+                  <figcaption>Ví dụ sơ đồ quyết định hủy đơn</figcaption>
+                  <p class="vibe-rule-root">Nhân viên yêu cầu hủy đơn</p>
+                  <dl>
+                    <div><dt>Chưa bàn giao</dt><dd>Đề xuất chuyển sang Đã hủy</dd></div>
+                    <div><dt>Đã bàn giao</dt><dd>Cần chốt cách xử lý</dd></div>
+                    <div><dt>Đã hủy</dt><dd>Đề xuất giữ nguyên trạng thái</dd></div>
+                  </dl>
+                </figure>
+                <p class="skill-outcome"><strong>Đầu ra</strong> Sơ đồ nghiệp vụ và kế hoạch dùng cùng mã luồng, tiêu chí và ca test.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="skill" id="skill-vibe-render">
+              <summary><code>03</code> <span>Chọn bảng màu và duyệt mockup</span></summary>
+              <div class="skill-body">
+                <p>Skill thiết kế xem nhận diện dự án và nguồn tham khảo, rồi ghi cách phối màu và bố cục. Agent kiểm tra tương phản, nạp dữ liệu vào mẫu danh sách, chi tiết hoặc form và chụp PNG bằng Playwright.</p>
+                <p class="skill-context"><strong>Bạn duyệt ảnh</strong> Phiên bản được duyệt mới chuyển sang Stitch nếu dự án đã kết nối Stitch.</p>
+                <p class="skill-outcome"><strong>Đầu ra</strong> Ảnh cùng phiên bản cấu hình và mã kiểm tra từng ảnh.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="skill" id="skill-vibe-redteam">
+              <summary><code>04</code> <span>Redteam phản biện kế hoạch</span></summary>
+              <div class="skill-body">
+                <p>Reviewer thử tìm trường hợp làm quy tắc sai, luồng khác bị ảnh hưởng hoặc test có thể qua dù nghiệp vụ vẫn hỏng. Agent sửa phát hiện có căn cứ rồi đưa bản kế hoạch hiện tại đi review lại.</p>
+                <p class="skill-context"><strong>Ví dụ</strong> Hai lần gửi yêu cầu hủy liên tiếp có tạo hai yêu cầu xử lý cho cùng một đơn không?</p>
+                <p class="skill-outcome"><strong>Đầu ra</strong> Biên bản phản biện và kế hoạch sẵn sàng để bạn quyết định bắt đầu.</p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="skill" id="skill-vibe-build">
+              <summary><code>05</code> <span>Triển khai, test và demo</span></summary>
+              <div class="skill-body">
+                <p>Sau khi bạn đồng ý bắt đầu, agent xây theo kế hoạch đã qua phản biện. Agent review thay đổi, mở app thật và kiểm tra các luồng đã chốt bằng Playwright hoặc công cụ trình duyệt của repo.</p>
+                <p class="skill-outcome"><strong>Đầu ra</strong> Link demo, kết quả kiểm tra và <a href="vibe-specs.html#skill-vibe-spec-archive">lịch sử thay đổi đã xác minh</a> trong kho spec.</p>
+              </div>
+            </details>
+          </li>
+        </ol>
+      </div>
+      <aside class="vibe-page-links" aria-label="Tài liệu Vibe">
+        <a class="vibe-destination" href="mockups.html"><strong>Kho Mockup <span aria-hidden="true">↗</span></strong><small>Xem các mẫu UI đã render từ bộ component.</small></a>
+        <a class="vibe-destination" href="vibe-specs.html"><strong>Kho spec nghiệp vụ <span aria-hidden="true">↗</span></strong><small>Xem quy tắc hiện tại, checklist và lịch sử.</small></a>
+      </aside>
+    </div>
+  </main>
+  <dialog class="skill-dialog" id="skill-dialog" aria-labelledby="skill-dialog-title">
+    <header class="skill-dialog-header">
+      <div>
+        <code id="skill-dialog-command" hidden></code>
+        <h2 id="skill-dialog-title" tabindex="-1">Chi tiết skill</h2>
+      </div>
+      <form method="dialog">
+        <button type="submit" class="skill-dialog-close" aria-label="Đóng popup">×</button>
+      </form>
+    </header>
+    <div class="skill-dialog-content">
+      <button type="button" id="skill-dialog-back" class="skill-dialog-back" hidden>← Quay lại</button>
+      <div id="skill-dialog-body"></div>
+    </div>
+  </dialog>
+</body>
+</html>

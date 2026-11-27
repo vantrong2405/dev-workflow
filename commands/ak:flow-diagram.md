@@ -1,5 +1,5 @@
 ---
-description: "[input] Bug/UI-flow reproduction as a plain-text box-drawing diagram. No mid-task questions."
+description: "[input] Prepare test data and draw a click-by-click Unicode UI reproduction."
 argument-hint: "[free text] — logs, bug description, controller/route context, UI steps"
 arguments: [input]
 ---
@@ -7,4 +7,5 @@ arguments: [input]
 Reconstruct the flow and bug(s) in the input as plain-text Unicode box-drawing diagram(s).
 Invoke `skills/flow-diagram`.
 Read `references/flow-diagram.md`.
-Never asks mid-task — delivers finished diagram(s), human decides what to do with the result.
+Show one diagram per distinct bug. Inside a ticket, return the diagrams and prepared test data to
+`:clarify` for the human browser run.

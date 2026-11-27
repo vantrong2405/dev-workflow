@@ -44,13 +44,13 @@ _dw_match_project_by_cwd_repo() {
   local root="$1" cwd="$2"
   local -a matches=()
   local pf slug repo_path real_repo_path real_cwd
-  real_cwd="$(cd "$cwd" 2>/dev/null && pwd || echo "$cwd")"
+  real_cwd="$(cd -P "$cwd" 2>/dev/null && pwd || echo "$cwd")"
   for pf in "$root"/*/PROJECT.md "$root/workspaces"/*/PROJECT.md; do
     [[ -f "$pf" ]] || continue
     slug="$(basename "$(dirname "$pf")")"
     while IFS= read -r repo_path; do
       [[ -z "$repo_path" ]] && continue
-      real_repo_path="$(cd "$repo_path" 2>/dev/null && pwd || echo "")"
+      real_repo_path="$(cd -P "$repo_path" 2>/dev/null && pwd || echo "")"
       [[ -z "$real_repo_path" ]] && continue
       if [[ "$real_cwd" == "$real_repo_path" || "$real_cwd" == "$real_repo_path"/* ]]; then
         matches+=("$slug")
@@ -77,6 +77,10 @@ _dw_match_project_by_cwd_repo() {
   if [[ ${#uniq[@]} -eq 1 ]]; then
     echo "${uniq[0]}"
     return 0
+  fi
+  if [[ ${#uniq[@]} -gt 1 ]]; then
+    echo "ERROR: this checkout belongs to multiple projects: ${uniq[*]}. Pass --project <slug>." >&2
+    return 2
   fi
   return 1
 }
@@ -182,73 +186,65 @@ PY
 # Infer project slug from user tree (no product hardcode).
 resolve_project_slug() {
   local hint="${1:-${AK_PROJECT_SLUG:-}}"
+  AK_PROJECT_SLUG_RESOLVED=""
+  AK_WORKSPACES_ROOT_RESOLVED=""
+  AK_PROJECT_IDENTIFIED=0
   if [[ -n "$hint" ]]; then
     AK_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$hint")"
+    AK_PROJECT_IDENTIFIED=1
+    [[ -n "$AK_PROJECT_SLUG_RESOLVED" ]] || return 1
     return 0
   fi
 
-  local root line slug f
+  local root slug result base
+  local -a roots=()
   while IFS= read -r root; do
-    [[ -z "$root" ]] && continue
-    # Strongest signal first: does any PROJECT.md's own Repos table declare
-    # the repo we're standing in right now? Multiple projects under one
-    # workspaces root is the normal case (one domain repo per project), so
-    # this must be tried before falling back to "there happens to be only
-    # one project total" — that fallback is wrong the moment a second
-    # project exists, even though the caller is unambiguously standing in
-    # a specific repo the whole time.
-    slug="$(_dw_match_project_by_cwd_repo "$root" "$PWD" || true)"
-    if [[ -n "${slug:-}" ]]; then
-      AK_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$slug")"
-      AK_WORKSPACES_ROOT_RESOLVED="$root"
-      return 0
-    fi
+    [[ -z "$root" ]] || roots+=("$root")
+  done < <(_dw_collect_workspace_roots)
+  for root in "${roots[@]}"; do
     slug="$(_dw_slug_from_marker "$root" || true)"
     if [[ -n "${slug:-}" ]]; then
       AK_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$slug")"
-      AK_WORKSPACES_ROOT_RESOLVED="$root"
+      AK_PROJECT_IDENTIFIED=1
+      [[ -n "$AK_PROJECT_SLUG_RESOLVED" ]] || return 1
       return 0
     fi
-    # nearest workspaces/*/PROJECT.md or ~/.workspaces/<slug>/PROJECT.md
-    local -a homes=()
-    if [[ -d "$root/workspaces" ]]; then
-      for f in "$root/workspaces"/*/PROJECT.md; do
-        [[ -f "$f" ]] || continue
-        homes+=("$(basename "$(dirname "$f")")")
-      done
+  done
+  for root in "${roots[@]}"; do
+    if slug="$(_dw_match_project_by_cwd_repo "$root" "$PWD")"; then
+      if [[ -n "$AK_PROJECT_SLUG_RESOLVED" && "$AK_PROJECT_SLUG_RESOLVED" != "$slug" ]]; then
+        echo "ERROR: this checkout belongs to multiple projects: $AK_PROJECT_SLUG_RESOLVED $slug. Pass --project <slug>." >&2
+        return 2
+      fi
+      if [[ -z "$AK_PROJECT_SLUG_RESOLVED" ]]; then
+        AK_PROJECT_SLUG_RESOLVED="$slug"
+        AK_WORKSPACES_ROOT_RESOLVED="$root"
+        AK_PROJECT_IDENTIFIED=1
+      fi
+    else
+      result=$?
+      [[ "$result" -ne 2 ]] || return 2
     fi
-    for f in "$root"/*/PROJECT.md; do
-      [[ -f "$f" ]] || continue
-      homes+=("$(basename "$(dirname "$f")")")
-    done
-    if [[ ${#homes[@]} -eq 1 ]]; then
-      AK_PROJECT_SLUG_RESOLVED="${homes[0]}"
-      AK_WORKSPACES_ROOT_RESOLVED="$root"
-      return 0
-    fi
-    # More than one project under this root and no explicit --project hint:
-    # silently falling through to a lower-priority root here would let the
-    # script pick an unrelated project's slug with zero warning (verified:
-    # a workspaces root with proj-a/ and proj-b/ both present caused this to
-    # fall through to an entirely different root and return that root's
-    # unrelated single project). Ambiguity at the *highest-priority* root is
-    # not something a lower-priority root should silently resolve for the
-    # caller — stop here and force an explicit --project instead of guessing
-    # which of several real projects the caller meant.
-    if [[ ${#homes[@]} -gt 1 ]]; then
-      echo "ERROR: ambiguous project — multiple PROJECT.md found under $root: ${homes[*]}. Pass --project <slug>." >&2
-      return 1
-    fi
-  done < <(_dw_collect_workspace_roots)
+  done
+  [[ -z "$AK_PROJECT_SLUG_RESOLVED" ]] || return 0
 
-  # cwd / git folder name as last resort slug hint (do not create yet)
-  local base
-  if command -v git >/dev/null 2>&1; then
-    base="$(basename "$(git rev-parse --show-toplevel 2>/dev/null || echo "")")"
+  # Derive a name for a new checkout without inheriting an unrelated workspace.
+  if base="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+    AK_PROJECT_IDENTIFIED=1
+    base="$(basename "$base")"
+  else
+    base="$(basename "$PWD")"
   fi
-  [[ -z "$base" || "$base" == "." ]] && base="$(basename "$PWD")"
   if [[ -n "$base" && "$base" != "/" ]]; then
     AK_PROJECT_SLUG_RESOLVED="$(_dw_slugify "$base")"
+    if [[ "$AK_PROJECT_IDENTIFIED" -eq 1 ]]; then
+      for root in "${roots[@]}"; do
+        if [[ -f "$(_dw_project_home_from_root "$root" "$AK_PROJECT_SLUG_RESOLVED")/PROJECT.md" ]]; then
+          echo "ERROR: workspace $AK_PROJECT_SLUG_RESOLVED does not map this checkout. Pass --project <slug> or add its repo mapping." >&2
+          return 2
+        fi
+      done
+    fi
     return 0
   fi
   return 1
@@ -296,10 +292,12 @@ resolve_workspaces_root() {
 
 resolve_project_home() {
   local slug="${1:-}"
-  resolve_project_slug "$slug" || true
+  resolve_project_slug "$slug" || return $?
   slug="${AK_PROJECT_SLUG_RESOLVED:-}"
   [[ -n "$slug" ]] || return 1
-  resolve_workspaces_root "$slug" || return 1
+  if [[ -z "$AK_WORKSPACES_ROOT_RESOLVED" ]]; then
+    resolve_workspaces_root "$slug" || return 1
+  fi
   AK_PROJECT_HOME="$(_dw_project_home_from_root "$AK_WORKSPACES_ROOT_RESOLVED" "$slug")"
   return 0
 }
@@ -307,34 +305,42 @@ resolve_project_home() {
 # Find worklog dir for ticket under auto-detected roots.
 resolve_worklog_dir() {
   local ticket="$1"
-  local slug="${2:-}"
-  local root candidate
-
-  resolve_project_slug "$slug" || true
-  slug="${AK_PROJECT_SLUG_RESOLVED:-}"
+  local hint="${2:-${AK_PROJECT_SLUG:-}}" root candidate actual selected="" slug
+  if [[ -z "$ticket" || "$ticket" == */* || "$ticket" == "." || "$ticket" == ".." ]]; then
+    echo "ERROR: invalid ticket directory name" >&2
+    return 2
+  fi
+  resolve_project_slug "$hint" || return $?
+  slug="$AK_PROJECT_SLUG_RESOLVED"
+  if [[ -n "$AK_WORKSPACES_ROOT_RESOLVED" ]]; then
+    candidate="$(_dw_project_home_from_root "$AK_WORKSPACES_ROOT_RESOLVED" "$slug")/worklogs/$ticket"
+    [[ -d "$candidate" ]] || return 1
+    (cd -P "$candidate" && pwd)
+    return $?
+  fi
 
   while IFS= read -r root; do
     [[ -z "$root" ]] && continue
-    if [[ -n "$slug" ]]; then
-      candidate="$(_dw_project_home_from_root "$root" "$slug")/worklogs/$ticket"
-      if [[ -d "$candidate" ]]; then
-        echo "$(cd "$candidate" && pwd)"
-        AK_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
-        AK_PROJECT_SLUG_RESOLVED="$slug"
-        AK_PROJECT_HOME="$(cd "$(_dw_project_home_from_root "$root" "$slug")" && pwd)"
+    local -a candidates
+    if [[ "$AK_PROJECT_IDENTIFIED" -eq 1 ]]; then
+      candidates=("$(_dw_project_home_from_root "$root" "$slug")/worklogs/$ticket")
+    else
+      candidates=("$root/workspaces"/*/worklogs/"$ticket" "$root"/*/worklogs/"$ticket")
+    fi
+    for candidate in "${candidates[@]}"; do
+      [[ -d "$candidate" ]] || continue
+      actual="$(cd -P "$candidate" && pwd)" || return 1
+      if [[ -n "$hint" ]]; then
+        printf '%s\n' "$actual"
         return 0
       fi
-    else
-      for candidate in "$root/workspaces"/*/worklogs/"$ticket" "$root"/*/worklogs/"$ticket"; do
-        if [[ -d "$candidate" ]]; then
-          echo "$(cd "$candidate" && pwd)"
-          AK_WORKSPACES_ROOT_RESOLVED="$(cd "$root" && pwd)"
-          AK_PROJECT_SLUG_RESOLVED="$(basename "$(dirname "$(dirname "$candidate")")")"
-          AK_PROJECT_HOME="$(cd "$(dirname "$(dirname "$candidate")")" && pwd)"
-          return 0
-        fi
-      done
-    fi
+      if [[ -n "$selected" && "$selected" != "$actual" ]]; then
+        echo "ERROR: ambiguous worklog for ticket=$ticket. Select --project and AK_WORKSPACES_ROOT." >&2
+        return 2
+      fi
+      selected="$actual"
+    done
   done < <(_dw_collect_workspace_roots)
-  return 1
+  [[ -n "$selected" ]] || return 1
+  printf '%s\n' "$selected"
 }

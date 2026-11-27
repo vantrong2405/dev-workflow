@@ -12,14 +12,25 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md` and the type dispatch in `references/stage-contract.md`.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 No Ticket ID given → follow `references/task-isolation.md` "No Ticket ID given": proceed with
 this stage normally; only derive an `adhoc-<slug>` worklog name once a decision actually needs
 persisting, not before.
 
 Compare spec to running behavior and force decisions.
+
+For a UI bug, prepare the test data and invoke `:flow-diagram` for the click-by-click
+reproduction before code edits. Show the diagram in chat and let the user run it.
+Prefer English UI when supported, except when the original locale matters to the bug.
+Once the user observes the failure, record their browser evidence per
+`references/ui-verification.md`. If the user delegates the reproduction, use
+Playwright or the project's browser tool and record the run as yours. G5 requires
+an observed failure and the diagram. Source inspection alone cannot clear it.
+
+Inside `:start`, use the shared investigation and the decisions already provided in that
+conversation. Record the G2/G5 artifacts from those findings. Investigate gaps only, and
+return any questions that still need a decision to `:start` in one list.
 
 **Read `Type:` from INDEX.md (or `02-spec.md`'s own `Type:` field if INDEX.md predates it) before
 investigating anything.** `:spec` already classified this ticket as Bug / New feature / Spec
@@ -68,7 +79,7 @@ up front is exactly the "lan man, tốn tài nguyên" the user is trying to prev
 
 Then:
 
-1. Present all non-MATCH claims as a short numbered list — one line each, sharpest form of the
+1. Present unresolved non-MATCH claims as a short numbered list — one line each, sharpest form of the
    question, a recommended answer alongside it (same recommend-an-answer instinct the `grilling`
    skill uses; ak installs `grilling` automatically if not already present). Do not dump
    the full evidence table here — that's already in `03-clarify-report.md` for reference.

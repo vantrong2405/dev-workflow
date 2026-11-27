@@ -1,207 +1,99 @@
 ---
 name: start
 description: >-
-  Default entry point. One deep analysis pass, one collapsed confirm, then
-  continuous dispatch through the pipeline to the first genuine stop (a
-  P0/P1 finding, an unresolved clarify claim, or ship/audit — always manual).
-  Use /ak.
-argument-hint: "[Ticket ID] [ticket URL] [spec path or paste] — analyze once, ask once, then run to the first real stop; Ticket ID optional, derived if omitted"
+  Start or resume a task from one entry point. Learn reusable project setup on first use,
+  then understand, implement, verify, and hand off. Continue into release preparation on request.
+argument-hint: "<task description | ticket ID + link> [--ship] [--strict]"
 arguments: [ticket_id, url_or_path, extra]
 disable-model-invocation: false
 ---
 
 # /ak
 
-Apply `references/skill-quality.md` and dispatch exclusively from `references/stage-contract.md`.
+Read `references/workflow.md`, `references/stage-contract.md`,
+`references/skill-quality.md`, and `references/risk.md`. Resolve the installed plugin path
+with `references/project-root.md` so checker commands use the plugin's own scripts.
+Coordinate the stage owners
+through the four phases below. Interpret plain descriptions and tracker references as
+input. Treat an explicit request to prepare a release/merge or `--ship` as a request
+for release preparation. It does not authorize a Git or deployment action.
 
-## What this is, in one line
+## 1. Understand
 
-Same pipeline, same gates, same evidence bar as calling every
-`/ak:<stage>` command by hand in order — the only thing this stage
-optimizes is **how many times the user is interrupted**, not what gets
-verified or skipped. Nothing here weakens G0–G9/AUDIT; each stage it dispatches
-still owns its own real PASS/FAIL. Prefer this over calling stages one at a
-time by hand; call a named stage directly only when you want manual control
-of one specific step.
+- If the user only asks a read-only question, answer it with relevant project context.
+  Bootstrap during the first delivery task, and create no ticket worklog for the question.
+- Resolve the actual project and relevant repo(s) per `references/project-form.md`.
+  Load the form or run the scoped `:learning` steps here, including the first-use
+  conversation about working conventions. Once confirmed or skipped, resume this
+  task in place. If the form already exists, read its relevant entries and refresh
+  only missing/stale facts needed now.
+- Resolve or derive the ticket ID using `references/task-isolation.md`.
+  Reuse the existing worklog and inspect current evidence before repeating a stage.
+- Do one investigation for spec, clarify and plan. Establish Type, Risk, concrete
+  acceptance criteria, constraints, touched surfaces, duplicate occurrences and
+  the relevant checks. Use the Type strategy in `references/stage-contract.md`.
+  Read the relevant code and independent sources of intent. Preserve the applicable
+  stage artifacts, sharing the same claim and acceptance IDs.
+- If `references/epic-signal.md` applies, run `:decompose` in this flow to present
+  the split for confirmation. After confirmation, run the first unblocked child in
+  its own worklog and continue in dependency order, preserving every child's own
+  decisions and checks.
+- Proceed on a clear, routine task. Ask together only the unresolved questions
+  that change scope, behavior or authority. Ask for required G3 approval before
+  edits for P0 or an explicitly strict task. A release request made at intake also
+  needs G3 before editing because its release gate is strict. When release is
+  requested after a routine handoff, confirm the existing scope before strict G9
+  and record the actual approval timing. Use
+  `:confirm` to record actual decisions and approvals. Project conventions and
+  task approvals are separate.
+- Keep documentation and read-only checks proportional. A clear Trivial ticket
+  still gets a relevant diff check and a truthful handoff. A behavior-preserving
+  refactor uses existing behavior as its acceptance baseline. Neither takes a
+  shortcut around a required P0 approval or the requested gate.
 
-## Step 0 — preflight and routing
+## 2. Implement
 
-Read `references/workflow.md`, `references/project-root.md`,
-`references/locale.md`, `references/task-isolation.md`,
-`references/epic-signal.md`.
-If this is the first `/ak:*` command in this workspace, ask
-`[LOCALE]` per `references/locale.md` before anything else — do not guess
-from message language. Otherwise read the already-set `Chat locale` from
-`domain-knowledge/INDEX.md` and use it silently.
-If no Ticket ID was given, follow `references/task-isolation.md` "No Ticket ID
-given" — proceed regardless; only derive an `adhoc-<slug>` name once a stage
-actually needs to persist a decision/worklog, not before.
-Resolve and print `project=<slug> home=<path> ticket=<id-or-adhoc-slug-or-empty> worklog=<path-or-none> locale=<code>`.
-Run `bin/check-workspace.sh` once; FAIL → fix layout before gates.
-Ensure worklog is **only** `worklogs/<Ticket_ID>/` — never mix another ticket.
+After drafting the plan, run `:redteam` as a separate review pass. If the review finds a
+material issue, return to `:plan` to fix it and recheck the revision. Route changes to
+confirmed scope through `:clarify` or `:confirm` when they need a decision. Continue to
+`:build` only after the current plan passes the required G4 review.
 
-**Epic check.** Read `references/epic-signal.md` and apply it now, while
-running step 1's investigation below, before the question list visibly
-balloons — this file is the only source for the signal and the numeric
-backstop; do not restate either here.
+For a UI bug, use `:clarify` and `:flow-diagram` to prepare data and show one
+click-by-click diagram per bug in the current conversation. Let the user reproduce
+it or explicitly delegate that run. Resume this same task after an observed
+failure is recorded and G5 passes. Read `references/ui-verification.md` for the
+evidence and comparison requirements. Report any missing environment or evidence.
 
-Otherwise this is one ticket (any size) — continue below.
+Execute the scoped plan through `:build`. For behavior changes prove the regression
+and the fix where an executable surface exists. Log each run using
+`references/execution-evidence.md`. Preserve unrelated changes. If implementation
+reveals a material decision or causes a risk escalation, pause for that decision,
+then resume here.
 
-**`:start` never dispatches `:learning` or `:coaching`.** They're independent
-of this pipeline (see `references/workflow.md` "Stage order"). If G0 FAILs
-because domain-knowledge is missing or contradicted, **stop and tell the
-user** to run `:learning`/`:coaching` themselves first, then call `:start`
-again — never auto-invoke either on their behalf.
+## 3. Verify
 
-## Step 1 — one deep analysis pass, before asking anything
+Use `:review` for a fresh review of the diff. Route justified findings through
+`:fix` and revisit the affected parts of the review. Use `:test` for final
+acceptance evidence and the project form to resolve commands and working
+directories. Reuse a recorded run only if it covers the required command,
+assertions and current source state. Run missing, newly applicable or stale
+checks. A passing test never substitutes for review.
 
-This is the step that makes stopping-once possible later — do not shortcut
-it to get to code faster; a shallow pass here is exactly what forces a
-second, third, fourth round of questions mid-build, which is what this step
-exists to prevent.
+Run the real checker through G8 and inspect its verdict and warnings. Apply strict
+verification when requested and the hard conditions for P0. An open P0/P1 review
+finding, failed test, or missing required check blocks a verified handoff even
+if a relaxed gate renders a warning. Surface the exact blocker and available
+evidence. Never claim a commit was verified when evidence only covers local edits.
 
-1. Classify `Type:` (Bug / New feature / Spec change / Requirement change /
-   Refactor — `references/ba-integrity.md`) and run **that type's actual
-   investigation strategy** — reproduce-and-trace for Bug, closest-analog
-   survey for New feature, before/after-and-every-consumer for Spec change,
-   every-encoding for Requirement change, no-behavior-change-claim +
-   coverage-check for Refactor. Do not skip straight to writing tasks.
+## 4. Hand off
 
-   **Type=Refactor routes differently, regardless of size.** If every claim
-   in the ticket is provably behavior-preserving (`ba-integrity.md`
-   "Refactor" section), say so once and route straight to `:build <Ticket>`
-   — skip spec/clarify/confirm entirely, same as the fast-path below, but
-   for a different reason (type, not size — a Refactor can span many files
-   and still skip ceremony, because there is no spec delta to normalize).
-   The moment any claim isn't provably behavior-preserving, that claim drops
-   out of Refactor and back into whichever type actually fits; continue this
-   step normally for it.
-2. Run the duplicate-scan (`ba-integrity.md` "Duplicate-scan") regardless of
-   Type/Risk — same text/logic elsewhere is a real question, not an
-   afterthought.
-3. Set Risk per `references/risk.md`. If it touches money/authz/PII/legacy →
-   P0, and **P0 always gets the full stop-by-stop flow below, never the
-   collapsed one** — this step's speed is for P1/P2, not a way to rush a P0
-   change.
-4. Run the multi-angle BA pass (`ba-integrity.md` "Multi-angle BA pass" —
-   user-facing / data-state / consumer angles) on every claim that isn't a
-   clean MATCH against an independent source. The test from that section
-   applies at full strength: *"if the user answers this literally as asked,
-   would I immediately need to ask a second question?"* — if yes, fold it
-   into the same question now.
-5. Identify what genuinely cannot be resolved without the user or a named
-   business authority — a NO/UNCLEAR claim, an ambiguous requirement, a
-   decision only a PM/domain owner can make. Everything else — an
-   INFERRED-with-high-confidence claim backed by a real analog, a MATCH
-   against independent evidence, a mechanical task breakdown — proceed on
-   without asking; record the inference and its evidence so the user can
-   correct it later instead of being asked to pre-approve it now.
+Summarize what changed, what was verified and what remains. Default delivery ends
+at the verified result for review. When release preparation was requested, continue
+automatically through `:ship` and applicable `:audit`. Prepare the relevant rollout
+or publication controls before asking for any required decision or sign-off. Use
+the same task and worklog when resuming. Record a justified P2 audit skip only when
+allowed by `references/risk.md`. Push, merge and deploy require separate explicit
+authority. Archiving is available when requested.
 
-**Fast-path.** This is not a third skip criterion — it's `references/risk.md`'s
-"Single source for 'skip ceremony'" table applied early, before the pipeline
-starts, so the user picks once instead of discovering the soft-gate stage by
-stage. If step 1's classification lands on Risk=P2 (see risk.md "How to
-choose") or Type=Refactor (per `ba-integrity.md`), check `references/risk.md`
-"Trivial" first:
-
-- **Trivial matches** (P2, ≤1 file, ≤5 lines, no public identifier change,
-  duplicate-scan clean, not a multi-file Refactor): skip the offer-and-wait
-  below entirely. Run `:build <Ticket>` directly, log the one-line Trivial
-  entry on INDEX, then report what was done — never ask first. See risk.md
-  "Trivial" for the exact log line and report text.
-- **Otherwise** (P2 or Refactor but not Trivial), say so once and offer the
-  matching shortcut instead of silently deciding for the user:
-  `"Việc này nhỏ, không đổi hành vi (Risk=P2 candidate) — chạy :build <Ticket>
-  luôn (tự phân tích, bỏ qua spec/clarify)? Nói 'full pipeline' nếu bạn muốn qua
-  đủ từng gate."` Wait for their answer.
-
-Never offer either path if the ticket touches money/authz/PII/legacy or
-changes user-visible behavior/API contract — neither qualifies for P2 or
-Refactor, so dispatch the full flow below instead.
-
-## Step 2 — the one stop (skipped only by the fast-path above)
-
-Present, in a single message:
-- Verdict: Type, Risk, one-paragraph scope.
-- Every finding from `ba-integrity.md`'s "actively look for" list that
-  applies (old-spec-vs-new conflict, documented-vs-actual mismatch,
-  fix-only-patches-symptom) — say these plainly, not buried in a table.
-- The numbered list of genuine open questions from step 1.5, sharpest form,
-  with a recommended answer next to each — this list should be short
-  precisely because step 1 already resolved everything resolvable without a
-  human.
-- What proceeds automatically once answered: spec → clarify →
-  confirm-line-only → plan → build → review → (fix if needed) → test →
-  check, then stop again before ship/audit.
-
-User replies once, free text, any order — same matching/echo discipline as
-`skills/clarify/SKILL.md` "Ask once, in plain language": echo the matches
-before writing anything, re-ask only genuinely unmatched items.
-
-**This is the only planning-phase stop for P1/P2.** Once every question here
-is resolved, do not re-open discussion mid-build unless build/review surfaces
-something step 1's analysis could not have found (a contradicted confirmed
-claim, new scope discovered only once code is touched) —
-`skills/build/SKILL.md` already requires routing upstream rather than
-guessing in that case; this does not override that safety, it just means the
-*normal* path doesn't hit it.
-
-## Step 3 — confirm
-
-Once step 2's questions are resolved, dispatch `skills/confirm/SKILL.md`
-directly — its simplified reply path (a name, "ok <name>", "đồng ý, <name>"
-is enough; it composes and shows back the exact line, no verbatim retype
-required) applies the same way here as it does when the user calls
-`/ak:confirm` by hand. Nothing to duplicate here.
-
-Risk=P2: still offer the existing skip (`skills/confirm/SKILL.md`'s P2 fast
-path) in the same message as the line, so the user picks once: send the name,
-or say "skip".
-
-## Step 4 — run to the next real stop, without re-asking settled things
-
-Dispatch in the order `references/workflow.md` "Stage order" defines (this
-file does not restate that order — read it there so the two never drift).
-Each stage still does its own required work in full (TDD, real diff review,
-real test execution, real checker run) — nothing here shortens what an
-individual stage owes; it only removes the *user* having to type the next
-command each time. Print each stage's normal verdict/evidence as it
-completes, grouped by the phase from `references/workflow.md` "Phase
-grouping" — this optimizes stop count, not visibility into what happened.
-
-This ordering is enforced by **you reading and following it**, not by a
-script — `check-gates.sh` verifies each stage's *output artifact* is real,
-and every individual stage is independently runnable (each self-analyzes
-when its preferred upstream artifact is missing, see
-`references/stage-contract.md`). Dispatching `:build` here always means
-routing through `:plan` first (which routes through `:spec`/`:clarify`
-first), not calling `:build` standalone and letting it self-analyze a plan
-on the fly.
-
-Stop immediately, mid-sequence, on any of:
-- A P0/P1 review finding still OPEN after `:fix` triage.
-- `:build` or `:plan` hitting a clarify claim someone flagged OPEN that step
-  1 didn't (and per `skills/build/SKILL.md`, must not guess).
-- Any gate FAIL that isn't P2-soft.
-
-## Step 5 — ship and audit stay manual stops
-
-`:ship` (G9) and `:audit` (AUDIT) are never auto-dispatched, even after
-check PASS. Both require a human decision this stage cannot supply on the
-user's behalf — G9 rollout/rollback judgment, AUDIT sign-off. Report check
-PASS and hand back exactly `/ak:ship <Ticket>` as the next
-command.
-
-## Forbid
-
-- Skipping step 1's real investigation to reach step 2's single stop faster —
-  a shallow question list that needs a second round defeats the whole point.
-- Treating "fewer stops" as license to lower evidence bars any gate already
-  requires — `check-gates.sh` is unchanged and still the source of truth.
-- Auto-composing a `CONFIRM G3:` line the user never actually agreed to; step
-  3's simplification is about typing less, not proving less.
-- Running this on a P0 ticket as if it were P1/P2 speed — P0 keeps every
-  existing hard requirement (dual CONFIRM, no G3/G8 WAIVE, CI-native
-  evidence).
-- Absorbing an owning stage's responsibility or continuing past a
-  human/failed gate.
+Inside this flow, each stage returns its output here. Use internal names and the
+next command only when useful for diagnosis; the user can resume by replying.

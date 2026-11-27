@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "ak",
   "version": "0.4.0",
-  "description": "Evidence-backed requirements and delivery: type-specific investigation, G0-G9 structural gates, and C1-C8 semantic audit.",
+  "description": "One task workflow with reusable project conventions, verified delivery, and release preparation.",
   "author": {
     "name": "trongdn2405",
     "email": "trongdn2405@gmail.com"

@@ -11,7 +11,7 @@ export AK_PLUGIN=/path/to/ak
 | Flag | Effect |
 |------|--------|
 | `--min G9` | Include ship safety |
-| `--strict` | SHA↔git, junit parse, no P2 soft, no G8 WAIVE; **implies `--verify-net`** |
+| `--strict` | Git and JUnit verification, hard gates for P1/P2, no G8 WAIVE; **implies `--verify-net`** |
 | `--verify-net` | HTTP HEAD on CI URL |
 | `--json` | CI machine output |
 

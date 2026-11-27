@@ -3,7 +3,8 @@
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ALL_STAGES=(decompose start learning coaching spec clarify confirm plan build review fix test check ship audit status clean feedback flow-diagram)
+source "$PLUGIN_DIR/bin/lib/stages.sh"
+START_STAGES=(decompose learning spec clarify flow-diagram confirm plan redteam build review fix test check ship audit)
 STAGES=("${ALL_STAGES[@]}")
 VENDORED_SKILLS=(grilling tdd)
 TARGET_HOST="claude"
@@ -126,6 +127,22 @@ if [[ -n "$ONLY_RAW" ]]; then
     STAGES+=("$_s")
   done
   [[ "${#STAGES[@]}" -gt 0 ]] || { echo "ERROR: --only matched no stages" >&2; exit 2; }
+  _dependencies=()
+  case " ${STAGES[*]} " in
+    *" vibe "*) _dependencies=(vibe-design start "${START_STAGES[@]}") ;;
+    *" start "*) _dependencies=("${START_STAGES[@]}") ;;
+    *" build "*) _dependencies=(spec plan redteam clarify flow-diagram) ;;
+    *" plan "*) _dependencies=(redteam) ;;
+  esac
+  case " ${STAGES[*]} " in
+    *" clarify "*|*" fix "*) _dependencies+=(flow-diagram) ;;
+  esac
+  for _s in ${_dependencies[@]+"${_dependencies[@]}"}; do
+    case " ${STAGES[*]} " in
+      *" $_s "*) ;;
+      *) STAGES+=("$_s") ;;
+    esac
+  done
 fi
 
 case "$TARGET_HOST" in
@@ -152,7 +169,7 @@ fi
 
 prepare_source() {
   local s local_dest
-  for _bin in check-gates.sh check-workspace.sh clean-worklog.sh pilot-score.sh; do
+  for _bin in check-gates.sh check-workspace.sh clean-worklog.sh pilot-score.sh source-state.sh plan-review-state.sh vibe-specs.sh; do
     if [[ -f "$PLUGIN_DIR/bin/$_bin" ]]; then
       chmod +x "$PLUGIN_DIR/bin/$_bin"
     fi
@@ -255,7 +272,7 @@ install_claude() {
     install_colon_commands "$PROJECT_CLAUDE_CMDS" "project-claude-command"
   fi
   install_vendored_skills_if_missing "$HOME/.claude/skills" "claude-skill"
-  echo "  Reload plugins, then run /ak:status"
+  echo "  Reload plugins, then run /ak with a task"
 }
 
 install_cursor() {
@@ -265,7 +282,7 @@ install_cursor() {
   rm -rf "$HOME/.cursor/skills/ak" "$HOME/.cursor/skills/dev-workflow"
   install_stage_links "$HOME/.cursor/skills" "cursor-skill"
   install_vendored_skills_if_missing "$HOME/.cursor/skills" "cursor-skill"
-  echo "  Restart/reload Cursor, then run /ak:status"
+  echo "  Restart/reload Cursor, then run /ak with a task"
 }
 
 install_codex_marketplace_seed() {
@@ -310,7 +327,7 @@ install_antigravity() {
   bash "$PLUGIN_DIR/hosts/antigravity/rebuild.sh"
   agy plugin validate "$PLUGIN_DIR/hosts/antigravity"
   agy plugin install "$PLUGIN_DIR/hosts/antigravity"
-  echo "  Restart/reload Antigravity, then run /ak:status"
+  echo "  Restart/reload Antigravity, then select ak's start skill"
 }
 
 # Self-contained project install: real copies under <dir>/.claude, no ~/.claude touched,
@@ -344,7 +361,8 @@ install_path() {
   echo "  [project-skill] ${#STAGES[@]} stages copied under $dest/skills"
 
   cp "$PLUGIN_DIR"/bin/*.sh "$dest/bin/"
-  cp -R "$PLUGIN_DIR/bin/lib" "$dest/bin/lib"
+  mkdir -p "$dest/bin/lib"
+  cp -R "$PLUGIN_DIR/bin/lib/." "$dest/bin/lib/"
   chmod +x "$dest"/bin/*.sh
   echo "  [project-bin] check-gates.sh + friends -> $dest/bin"
 

@@ -29,6 +29,8 @@ Each skill owns only its declared output and may not repair an upstream artifact
 upstream defect, report `owner stage → broken claim → evidence → required next command` and stop.
 Every completed stage prints: verdict, uncovered/uncertain items, artifacts changed, checker/test
 actually run, and exactly one next command. A PASS without its required evidence is dishonest.
+Inside `:start`, return that information to the coordinator, which reports decisions,
+blockers and the handoff without asking the user to invoke each stage.
 
 ## Investigation discipline
 

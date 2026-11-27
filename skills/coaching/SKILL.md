@@ -13,8 +13,7 @@ disable-model-invocation: false
 
 Apply `references/skill-quality.md`; this stage owns a confirmed knowledge delta and its impact list.
 
-If first `/ak:*` command in this workspace, ask `[LOCALE]` per `references/locale.md`
-before anything else.
+Use the project locale from `references/locale.md`.
 
 Use when user corrects or changes business rules, or answers a coaching ticket `:learning` opened.
 Read `references/project-root.md` and `references/coaching.md` (defines Path A — ticket answer —
@@ -40,12 +39,12 @@ confirm. Before confirmation, search direct consumers of the old rule (active sp
 tests, config, copy) and present location, old assumption, follow-up, and owner. Never silently
 edit active ticket decisions; route them back to `:spec`/`:clarify`.
 
-If knowledge is empty, route to `:learning`.
+If the user wants to change a working convention, update the confirmed rules in the project
+form per `references/project-form.md`. New domain facts can initialize a focused domain note;
+route to deeper `:learning` if more research is needed.
 
-If this correction changes the project's slug, workspace root, or chat locale (not a business
-fact), refresh the affected repo's `CLAUDE.md` too — same `<!-- ak:managed:start -->`/`:end` block
-`:learning` seeds, update only what's between the markers. Ordinary business/domain corrections
-don't touch it.
+If a correction concerns the workspace settings, update their workspace records. On
+explicit request to refresh a managed `CLAUDE.md` pointer, replace only the ak block.
 
 ## Diff, don't overwrite
 
